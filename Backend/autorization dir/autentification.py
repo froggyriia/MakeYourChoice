@@ -1,1 +1,1 @@
-print("nvjenvnkd")
+from db.supabase_client import DATABASE
