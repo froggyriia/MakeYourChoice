@@ -39,12 +39,6 @@ def send_code(request):
 
     code = "".join(random.choices("0123456789", k=6))
 
-    # Сохраняем и в UserRole и в EmailCode
-    # UserRole.objects.update_or_create(
-    #     email=email,
-    #     defaults={'role': role, 'verification_code': code}
-    # )
-    # EmailCode.objects.create(email=email, code=code)
 
     print(f"Verification code for {email}: {code}")
     return JsonResponse({'status': 'success', 'message': 'Code generated'})
