@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import CourseList from '../components/CourseList';
 import { useAuth } from '../context/AuthContext';
+import SidebarMenu from "../components/SidebarMenu.jsx";
+import mockCourses from '../utils/fakeCoursesDB.js';
 
-// Заглушка курсов — позже будем загружать с сервера
-const mockCourses = [
-    { id: 1, title: 'Math 101', description: 'Intro to Math', language: 'Eng', program: 'Eng Program', years: [1, 2] },
-    { id: 2, title: 'История России', description: 'Прошлое и настоящее', language: 'Rus', program: 'Rus Program', years: [1] }
-];
+
+
 
 const CataloguePage = () => {
     // Состояние курсов, инициализируем заглушкой
@@ -26,11 +25,14 @@ const CataloguePage = () => {
 
     return (
         <div>
+
             <h1>Каталог курсов</h1>
             {/* Кнопка добавления курса видна только админам */}
             {role === 'admin' && <button className="btn">+ Добавить курс</button>}
             {/* Список курсов */}
+            <SidebarMenu />
             <CourseList courses={courses} />
+
         </div>
     );
 };
