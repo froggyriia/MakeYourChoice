@@ -12,18 +12,15 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import EmailCode
 
-
+#checking for the university's domain
 def is_university_email(email: str) -> bool:
-    """Проверка, что email принадлежит домену @innopolis.university"""
     return email.lower().endswith('@innopolis.university')
 
 
-@csrf_exempt
+#@csrf_exempt
 def send_code(request):
-    """Обработка запроса на отправку кода"""
-    if request.method != 'POST':
+    if request.method != 'POST': #request on sending
         return JsonResponse({'error': 'Only POST method allowed'}, status=405)
-
     try:
         data = json.loads(request.body)
         email = data.get('email', '').strip().lower()
@@ -35,12 +32,11 @@ def send_code(request):
 
     code = ''.join(random.choices('0123456789', k=6))
     EmailCode.objects.create(email=email, code=code)
-
     try:
         send_mail(
             subject='Your verification code',
             message=f'Your code is: {code}',
-            from_email='your_email@innopolis.university',  # Замени на свой
+            from_email='your_email@innopolis.university',
             recipient_list=[email],
             fail_silently=False,
         )
@@ -52,7 +48,6 @@ def send_code(request):
 
 @csrf_exempt
 def verify_code(request):
-    """Обработка запроса на проверку кода"""
     if request.method != 'POST':
         return JsonResponse({'error': 'Only POST method allowed'}, status=405)
 
