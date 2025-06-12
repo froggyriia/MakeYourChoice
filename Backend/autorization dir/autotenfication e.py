@@ -31,7 +31,7 @@ def send_code(request):
     if not is_university_email(email):
         return JsonResponse("ERROR")
 
-    if email.startswith("a.potyomkin"):
+    if email.startswith("a.potyomkin" or "m.karpova" or "d.potapova" or "e.shaikhutdinova" or "s.mukhamedshina" or "v.gorbacheva" or "a.narimov"):
         role = "admin"
     else:
         role = "student"
