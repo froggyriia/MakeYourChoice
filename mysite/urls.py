@@ -16,7 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from Backend.autorization.autentification import send_code, verify_code
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('send_code/', send_code, name='send_code'),
+    path('verify_code/', verify_code, name='verify_code'),
 ]
