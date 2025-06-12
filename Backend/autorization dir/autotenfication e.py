@@ -1,62 +1,81 @@
 from db.supabase_client import DATABASE
-#Backend developer + DevOps/Security
+#Devops/Security
+
 import json
 import random
+from datetime import timedelta
+
 from django.http import JsonResponse
+from django.core.mail import send_mail
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+
 from .models import EmailCode
-from django.db import models
 
-class user_role(models.Model):
-    email = models.EmailField(unique=True)
-    role = models.CharField(max_length=10, choices=[("student", "Student"), ("admin", "Admin")])
-    verification_code = models.CharField(max_length=6, blank=True)
-    def __str__(self):
-        return f"{self.email} ({self.role})"
 
-#checking for the university's domain
 def is_university_email(email: str) -> bool:
-    return email.lower().endswith("@innopolis.university")
+    """Проверка, что email принадлежит домену @innopolis.university"""
+    return email.lower().endswith('@innopolis.university')
+
 
 @csrf_exempt
 def send_code(request):
-    if request.method != "POST": #request on sending
-        return JsonResponse("ERROR")
+    """Обработка запроса на отправку кода"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST method allowed'}, status=405)
+
     try:
         data = json.loads(request.body)
-        email = data.get("email", "").strip().lower()
+        email = data.get('email', '').strip().lower()
     except Exception:
-        return JsonResponse("ERROR")
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
     if not is_university_email(email):
-        return JsonResponse("ERROR")
+        return JsonResponse({'error': 'Email must end with @innopolis.university'}, status=403)
 
-    if email.startswith("a.potyomkin" or "m.karpova" or "d.potapova" or "e.shaikhutdinova" or "s.mukhamedshina" or "v.gorbacheva" or "a.narimov"):
-        role = "admin"
-    else:
-        role = "student"
-
-    code = "".join(random.choices("0123456789", k=6))
+    code = ''.join(random.choices('0123456789', k=6))
     EmailCode.objects.create(email=email, code=code)
-    print("Hello, " + email + "! Verification code: " + code)
-    return JsonResponse({'message': 'Code generated (sent) (DEMO)'})
+
+    try:
+        send_mail(
+            subject='Your verification code',
+            message=f'Your code is: {code}',
+            from_email='your_email@innopolis.university',  # Замени на свой
+            recipient_list=[email],
+            fail_silently=False,
+        )
+    except Exception as e:
+        return JsonResponse({'error': f'Failed to send email: {str(e)}'}, status=500)
+
+    return JsonResponse({'message': 'Code sent to email'})
+
 
 @csrf_exempt
-def verify_code():
-    if request.method != "POST":
-        return JsonResponse("ERROR")
+def verify_code(request):
+    """Обработка запроса на проверку кода"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST method allowed'}, status=405)
+
     try:
         data = json.loads(request.body)
-        email = data.get("email", "").strip().lower()
-        code = data.get("code", "").strip()
+        email = data.get('email', '').strip().lower()
+        code = data.get('code', '').strip()
     except Exception:
-        return JsonResponse("ERROR")
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    if not is_university_email(email):
+        return JsonResponse({'error': 'Email must end with @innopolis.university'}, status=403)
 
     try:
-        user = UserRole.objects.get(email=email, verification_code=code)
-    except UserRole.DoesNotExist:
-        return JsonResponse("ERROR")
+        last_code = EmailCode.objects.filter(email=email).latest('created_at')
+    except EmailCode.DoesNotExist:
+        return JsonResponse({'error': 'No code found for this email'}, status=404)
 
-    print("Code checking " + code + " for " + email + ". Result: YEEAAAAHHH!!")
-    return JsonResponse({'message': 'Authorized successfully (demo)'})
+    if last_code.code != code:
+        return JsonResponse({'error': 'Invalid code'}, status=401)
 
+    if timezone.now() - last_code.created_at > timedelta(minutes=5):
+        return JsonResponse({'error': 'Code expired'}, status=403)
+
+    request.session['user_email'] = email  # Сохраняем в сессию
+    return JsonResponse({'message': 'Authorized successfully'})
