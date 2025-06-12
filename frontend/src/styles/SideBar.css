@@ -1,0 +1,25 @@
+.sidebar {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+    width: 200px;
+}
+
+.menu-title {
+    font-size: 20px;
+    color: limegreen;
+    font-weight: bold;
+}
+
+.menu-item {
+    display: block;
+    margin: 10px 0;
+    color: gray;
+    text-decoration: none;
+}
+
+.menu-item.active {
+    color: limegreen;
+    font-weight: bold;
+}
