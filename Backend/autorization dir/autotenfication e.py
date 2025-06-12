@@ -1,5 +1,5 @@
 from db.supabase_client import DATABASE
-#Backend developer
+#Backend developer + DevOps/Security
 
 import json
 import random
@@ -32,45 +32,45 @@ def send_code(request):
 
     code = ''.join(random.choices('0123456789', k=6))
     EmailCode.objects.create(email=email, code=code)
-    try:
-        send_mail(
-            subject='Your verification code',
-            message=f'Your code is: {code}',
-            from_email='your_email@innopolis.university',
-            recipient_list=[email],
-            fail_silently=False,
-        )
-    except Exception as e:
-        return JsonResponse({'error': f'Failed to send email: {str(e)}'}, status=500)
-
-    return JsonResponse({'message': 'Code sent to email'})
+    # try:
+    #     send_mail(
+    #         subject='Your verification code',
+    #         message=f'Your code is: {code}',
+    #         from_email='your_email@innopolis.university',
+    #         recipient_list=[email],
+    #         fail_silently=False,
+    #     )
+    # except Exception as e:
+    #     return JsonResponse({'error': f'Failed to send email: {str(e)}'}, status=500)
+    print("Hello, " + email + "! Verification code: " + code)
+    return JsonResponse({'message': 'Code generated (sent) (DEMO)'})
 
 
 @csrf_exempt
 def verify_code(request):
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Only POST method allowed'}, status=405)
-
-    try:
-        data = json.loads(request.body)
-        email = data.get('email', '').strip().lower()
-        code = data.get('code', '').strip()
-    except Exception:
-        return JsonResponse({'error': 'Invalid JSON'}, status=400)
-
-    if not is_university_email(email):
-        return JsonResponse({'error': 'Email must end with @innopolis.university'}, status=403)
-
-    try:
-        last_code = EmailCode.objects.filter(email=email).latest('created_at')
-    except EmailCode.DoesNotExist:
-        return JsonResponse({'error': 'No code found for this email'}, status=404)
-
-    if last_code.code != code:
-        return JsonResponse({'error': 'Invalid code'}, status=401)
-
-    if timezone.now() - last_code.created_at > timedelta(minutes=5):
-        return JsonResponse({'error': 'Code expired'}, status=403)
-
-    request.session['user_email'] = email  # Сохраняем в сессию
-    return JsonResponse({'message': 'Authorized successfully'})
+    # if request.method != 'POST':
+    #     return JsonResponse({'error': 'Only POST method allowed'}, status=405)
+    #
+    # try:
+    #     data = json.loads(request.body)
+    #     email = data.get('email', '').strip().lower()
+    #     code = data.get('code', '').strip()
+    # except Exception:
+    #     return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    #
+    # if not is_university_email(email):
+    #     return JsonResponse({'error': 'Email must end with @innopolis.university'}, status=403)
+    #
+    # try:
+    #     last_code = EmailCode.objects.filter(email=email).latest('created_at')
+    # except EmailCode.DoesNotExist:
+    #     return JsonResponse({'error': 'No code found for this email'}, status=404)
+    #
+    # if last_code.code != code:
+    #     return JsonResponse({'error': 'Invalid code'}, status=401)
+    #
+    # if timezone.now() - last_code.created_at > timedelta(minutes=5):
+    #     return JsonResponse({'error': 'Code expired'}, status=403)
+    # request.session['user_email'] = email  # Сохраняем в сессию
+    print("Проверка кода " +code + " для " + email + " Результат: УСПЕХ")
+    return JsonResponse({'message': 'Authorized successfully (demo)'})
