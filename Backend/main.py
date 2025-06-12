@@ -1,4 +1,4 @@
-import django
-print("панятна")
-print("lunch")
-print("энже")
+from django.db import connection
+
+connection.ensure_connection()
+print("Подключение к Supabase успешно!")
