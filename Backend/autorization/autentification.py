@@ -44,6 +44,6 @@ def send_code(request):
 @csrf_exempt
 def verify_code(request):
     if request.method != "POST":
-        return JsonResponse({"status": "error", "message": "Only POST allowed"}, status=405)
+        return JsonResponse({"status": "error", "message": "Only POST allowed"}, status=400)
     else:
         return JsonResponse({"status": "success", "message": "Verified successfully"}, status=200)
