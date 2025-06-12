@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import '../styles/CourseFormPage.css'
 import mockCourses from '../utils/fakeCoursesDB.js';
 
-export default function ElectivesForm({ type }) {
+export default function ElectivesForm({ type, onSubmit}) {
     const filteredCourses = mockCourses.filter(course => course.type === type);
 
     const [selectedCourses, setSelectedCourses] = useState(Array(5).fill(""));
@@ -14,7 +14,10 @@ export default function ElectivesForm({ type }) {
     };
 
     return (
-        <form>
+        <form onSubmit={(e) => {
+            e.preventDefault();
+            onSubmit(selectedCourses);
+        }}>
             <h2> {type === 'tech' ? 'Technical Electives' : 'Humanities Electives'}</h2>
 
             {[...Array(5)].map((_, i) => {
@@ -45,7 +48,7 @@ export default function ElectivesForm({ type }) {
                 );
 
             })}
-            <button className="submit-button">Submit</button>
+            <button className="submit-button" type="submit">Submit</button>
         </form>
     );
 }

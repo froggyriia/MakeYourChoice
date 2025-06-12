@@ -32,7 +32,7 @@ export default function LoginPage() {
 
             const newUser = { email, password };
             addUser(newUser);
-            loginAs('student');
+            loginAs('student', email);
             navigate('/catalogue');
             console.log(getUsers())
         } else {
@@ -43,14 +43,14 @@ export default function LoginPage() {
             }
 
             if (isAdmin(email, password)) {
-                loginAs('admin');
+                loginAs('admin', email);
                 navigate('/catalogue');
                 console.log("admin was logged in");
                 console.log(getUsers())
                 return;
             }
 
-            loginAs('student');
+            loginAs('student', email);
             navigate('/catalogue');
             console.log(getUsers())
         }
