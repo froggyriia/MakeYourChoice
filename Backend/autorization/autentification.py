@@ -5,6 +5,7 @@ import random
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from MakeYourChoice.models import EmailCode
+from MakeYourChoice.models import UserRole
 from django.db import models
 
 class user_role(models.Model):
@@ -48,21 +49,22 @@ def send_code(request):
 def verify_code(request):  # Добавлен параметр request
     if request.method != "POST":
         return JsonResponse({"status": "error", "message": "Only POST allowed"}, status=405)
-
-    try:
-        data = json.loads(request.body)
-        email = data.get("email", "").strip().lower()
-        code = data.get("code", "").strip()
-    except Exception:
-        return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
-
-    try:
-        user = UserRole.objects.get(email=email, verification_code=code)
-        return JsonResponse({
-            'status': 'success',
-            'message': 'Authorized successfully',
-            'role': user.role
-        })
-    except UserRole.DoesNotExist:
-        return JsonResponse({"status": "error", "message": "Invalid code"}, status=400)
+    else:
+        return JsonResponse({"status": "success", "message": "Verified successfully"}, status=405)
+    # try:
+    #     data = json.loads(request.body)
+    #     email = data.get("email", "").strip().lower()
+    #     code = data.get("code", "").strip()
+    # except Exception:
+    #     return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
+    #
+    # try:
+    #     user = UserRole.objects.get(email=email, verification_code=code)
+    #     return JsonResponse({
+    #         'status': 'success',
+    #         'message': 'Authorized successfully',
+    #         'role': user.role
+    #     })
+    # except UserRole.DoesNotExist:
+    #     return JsonResponse({"status": "error", "message": "Invalid code"}, status=400)
     #please
