@@ -3,8 +3,10 @@ import SidebarMenu from '../components/SidebarMenu';
 import HumElectivesForm from '../components/ElectivesForm';
 import '../styles/CourseFormPage.css';
 import ElectivesForm from "../components/ElectivesForm";
+import { useAuth } from '../context/AuthContext';
 
 export default function CourseFormPage() {
+    const { email } = useAuth();
     const [activeTab, setActiveTab] = useState('tech');
 
     return(

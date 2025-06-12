@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import '../styles/CourseFormPage.css'
 import mockCourses from '../utils/fakeCoursesDB.js';
+import students_pref from "../utils/students_pref.js";
 
 export default function ElectivesForm({ type }) {
     const filteredCourses = mockCourses.filter(course => course.type === type);
@@ -12,6 +13,12 @@ export default function ElectivesForm({ type }) {
         updated[index] = value;
         setSelectedCourses(updated);
     };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        const result = {}
+    }
 
     return (
         <form>
@@ -45,7 +52,7 @@ export default function ElectivesForm({ type }) {
                 );
 
             })}
-            <button className="submit-button">Submit</button>
+            <button className="submit-button" type="submit">Submit</button>
         </form>
     );
 }
