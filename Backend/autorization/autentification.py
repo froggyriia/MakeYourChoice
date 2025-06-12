@@ -65,3 +65,4 @@ def verify_code(request):  # Добавлен параметр request
         })
     except UserRole.DoesNotExist:
         return JsonResponse({"status": "error", "message": "Invalid code"}, status=400)
+    #please
