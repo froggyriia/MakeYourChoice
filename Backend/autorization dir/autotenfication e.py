@@ -57,6 +57,6 @@ def verify_code():
     except UserRole.DoesNotExist:
         return JsonResponse("ERROR")
 
-    print("Проверка кода " + code + " для " + email + " Результат: ураааа!!")
+    print("Code checking " + code + " for " + email + ". Result: YEEAAAAHHH!!")
     return JsonResponse({'message': 'Authorized successfully (demo)'})
 
