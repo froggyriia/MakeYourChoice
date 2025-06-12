@@ -1,0 +1,707 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #e6e6e6;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.menu {
+  width: 200px;
+  background: white;
+  margin: 20px;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+}
+
+.menu h2 {
+  color: #31b404;
+  margin-top: 0;
+}
+
+.menu a {
+  display: block;
+  margin: 10px 0;
+  color: grey;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 8px 10px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.menu a:hover {
+  background-color: #f0f0f0;
+  color: #31b404;
+  cursor: pointer;
+}
+
+.menu a.active {
+  color: #31b404;
+  background-color: #e8f5e9;
+}
+
+.main {
+  flex: 1;
+  margin: 20px;
+}
+
+.main h1 {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  color: #31b404;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  margin-top: 0;
+}
+
+.course-card {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  margin: 20px 0;
+  position: relative;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.course-card h2 {
+  color: #31b404;
+  margin-top: 0;
+}
+
+.course-card p {
+  color: grey;
+  margin: 5px 0;
+}
+
+.description {
+  color: #31b404;
+  font-weight: bold;
+}
+
+/* Добавьте эти стили в существующий файл */
+.see-more {
+  background: #31b404;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  margin-top: 10px;
+  cursor: pointer; /* Добавлено свойство cursor */
+  transition: background-color 0.3s ease;
+}
+
+.see-more:hover {
+  background-color: #269c03;
+  cursor: pointer; /* Явное указание для hover */
+}
+
+.see-more:active {
+  cursor: pointer; /* Явное указание для active (нажатие) */
+}
+
+.star {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.star:hover {
+  transform: scale(1.2);
+}
+
+.star.favorite path {
+  fill: #31b404;
+  stroke: #31b404;
+}
+
+.empty-state {
+  text-align: center;
+  color: grey;
+  font-style: italic;
+  padding: 40px;
+  background: white;
+  border-radius: 15px;
+}
+
+/* Form Styles */
+.form-container {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.form-container h2 {
+  color: #31b404;
+  margin-top: 0;
+}
+
+.form-container p {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.courses-list {
+  margin-bottom: 20px;
+}
+
+.course-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.course-item:last-child {
+  border-bottom: none;
+}
+
+.course-info {
+  flex: 1;
+}
+
+.course-info h3 {
+  margin: 0 0 5px 0;
+  color: #31b404;
+}
+
+.course-info p {
+  margin: 0;
+  color: #666;
+}
+
+.priority-select {
+  width: 60px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-left: 15px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.submit-btn {
+  background: #31b404;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #269c03;
+}
+
+.thank-you-message {
+  display: none;
+  text-align: center;
+  padding: 30px;
+}
+
+.thank-you-message h3 {
+  color: #31b404;
+}
+
+.thank-you-message p {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+#new-vote-btn {
+  background: #31b404;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#new-vote-btn:hover {
+  background-color: #269c03;
+}
+
+/* Стили для модального окна */
+.modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 15px;
+  width: 80%;
+  max-width: 600px;
+  position: relative;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.close-modal {
+  position: absolute;
+  right: 20px;
+  top: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #aaa;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.close-modal:hover {
+  color: #333;
+}
+
+.modal-info {
+  margin-top: 20px;
+}
+
+.modal-info p {
+  margin: 10px 0;
+  color: #555;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 90%;
+    padding: 20px;
+  }
+  
+  .close-modal {
+    right: 15px;
+    top: 10px;
+    font-size: 24px;
+  }
+}
+
+/* Мобильные стили */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .menu {
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+    position: static;
+    display: none;
+  }
+
+  .menu.active {
+    display: block;
+  }
+
+  .main {
+    margin: 10px;
+  }
+
+  .modal-content {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .menu-button {
+    display: block;
+    background: #31b404;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin: 10px;
+    cursor: pointer;
+  }
+
+  .course-card {
+    padding: 15px;
+  }
+
+  .form-container {
+    padding: 15px;
+  }
+
+  .course-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .priority-select {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+}
+
+@media (min-width: 769px) {
+  .menu-button {
+    display: none;
+  }
+}
+
+/* Базовые стили для мобильных */
+body {
+  font-size: 16px;
+}
+
+button, input, select, textarea {
+  font-size: 16px; /* Убирает автоматическое увеличение в iOS */
+}
+
+/* Улучшаем отображение карточек на мобильных */
+@media (max-width: 480px) {
+  .course-card h2 {
+    font-size: 1.2rem;
+  }
+  
+  .course-card p {
+    font-size: 0.9rem;
+  }
+  
+  .see-more {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+  
+  .star {
+    width: 25px;
+    height: 25px;
+  }
+}
+
+/* Menu styles */
+.menu-toggle {
+  display: none;
+  background: #31b404;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.menu {
+  width: 200px;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.menu h2 {
+  color: #31b404;
+  margin-top: 0;
+}
+
+.menu button {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 10px;
+  margin: 5px 0;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.menu button:hover {
+  background-color: #f0f0f0;
+}
+
+.menu button.active {
+  color: #31b404;
+  font-weight: bold;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .menu {
+    display: none;
+    position: absolute;
+    width: calc(100% - 40px);
+    z-index: 100;
+    margin: 10px;
+  }
+
+  .menu.visible {
+    display: block;
+  }
+
+  .container {
+    flex-direction: column;
+  }
+}
+
+/* Добавьте это в конец файла */
+.thank-you-message {
+  display: block;
+  text-align: center;
+  padding: 30px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  margin-top: 20px;
+}
+
+.thank-you-message h3 {
+  color: #31b404;
+  margin-bottom: 15px;
+}
+
+#new-vote-btn {
+  background: #31b404;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 15px;
+}
+
+#new-vote-btn:hover {
+  background-color: #269c03;
+}
+
+.thank-you-message {
+  text-align: center;
+  padding: 30px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  margin: 20px auto;
+  max-width: 600px;
+}
+
+.thank-you-message h3 {
+  color: #31b404;
+  margin-bottom: 15px;
+}
+
+#new-vote-btn {
+  background: #31b404;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 15px;
+}
+
+#new-vote-btn:hover {
+  background-color: #269c03;
+}
+
+/* Стили для уникальных приоритетов */
+.priority-select option:disabled {
+  color: #ccc;
+  background-color: #f8f8f8;
+}
+
+.priority-select:invalid {
+  border-color: #ff6b6b;
+}
+
+/* Улучшенные стили для формы */
+.course-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+}
+
+.course-item:hover {
+  background-color: #f9f9f9;
+}
+
+.priority-select {
+  width: 80px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-left: 15px;
+  background-color: white;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .course-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .priority-select {
+    margin-left: 0;
+    margin-top: 10px;
+    width: 100%;
+  }
+}
+
+/* Мобильное меню */
+.menu-toggle {
+  display: none;
+  background: #31b404;
+  color: white;
+  border: none;
+  padding: 12px 15px;
+  margin: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 20px;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1001;
+  transition: all 0.3s ease;
+}
+
+.menu-toggle:hover {
+  background: #269c03;
+  transform: scale(1.05);
+}
+
+.menu {
+  width: 250px;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+  transition: transform 0.3s ease;
+}
+
+.menu a {
+  display: block;
+  padding: 10px 15px;
+  margin: 8px 0;
+  color: #555;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.menu a:hover {
+  background: #f0f0f0;
+  color: #31b404;
+}
+
+.menu a.active {
+  background: #e8f5e9;
+  color: #31b404;
+  font-weight: bold;
+}
+
+/* Мобильные стили */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 70%;
+    height: 100vh;
+    border-radius: 0;
+    padding-top: 60px;
+    z-index: 1000;
+    transform: translateX(-100%);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .menu.visible {
+    transform: translateX(0);
+  }
+
+  /* Затемнение фона */
+  .menu.visible::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 30%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: -1;
+  }
+
+  .container {
+    padding-top: 60px;
+  }
+}
+
+/* Анимации */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.menu {
+  animation: fadeIn 0.3s ease-out;
+}
