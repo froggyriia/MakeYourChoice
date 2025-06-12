@@ -1,10 +1,10 @@
-from db.supabase_client import DATABASE
+#from db.supabase_client import DATABASE
 #Backend developer + DevOps/Security
 import json
 import random
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import EmailCode
+from MakeYourChoice.models import EmailCode
 from django.db import models
 
 class user_role(models.Model):
@@ -18,45 +18,56 @@ class user_role(models.Model):
 def is_university_email(email: str) -> bool:
     return email.lower().endswith("@innopolis.university")
 
+
 @csrf_exempt
 def send_code(request):
-    if request.method != "POST": #request on sending
-        return JsonResponse("ERROR")
+    if request.method != "POST":
+        return JsonResponse({"status": "error", "message": "Only POST allowed"}, status=405)
+
     try:
         data = json.loads(request.body)
         email = data.get("email", "").strip().lower()
     except Exception:
-        return JsonResponse("ERROR")
+        return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
 
     if not is_university_email(email):
-        return JsonResponse("ERROR")
+        return JsonResponse({"status": "error", "message": "Invalid university email"}, status=400)
 
-    if email.startswith("a.potyomkin" or "m.karpova" or "d.potapova" or "e.shaikhutdinova" or "s.mukhamedshina" or "v.gorbacheva" or "a.narimov"):
-        role = "admin"
-    else:
-        role = "student"
+    # Исправленная проверка админов
+    admin_prefixes = ["a.potyomkin", "m.karpova", "d.potapova","e.shaikhutdinova", "s.mukhamedshina","v.gorbacheva", "a.narimov"]
+    role = "admin" if any(email.startswith(prefix) for prefix in admin_prefixes) else "student"
 
     code = "".join(random.choices("0123456789", k=6))
-    EmailCode.objects.create(email=email, code=code)
-    print("Hello, " + email + "! Verification code: " + code)
-    return JsonResponse({'message': 'Code generated (sent) (DEMO)'})
+
+    # Сохраняем и в UserRole и в EmailCode
+    # UserRole.objects.update_or_create(
+    #     email=email,
+    #     defaults={'role': role, 'verification_code': code}
+    # )
+    # EmailCode.objects.create(email=email, code=code)
+
+    print(f"Verification code for {email}: {code}")
+    return JsonResponse({'status': 'success', 'message': 'Code generated'})
+
 
 @csrf_exempt
-def verify_code():
+def verify_code(request):  # Добавлен параметр request
     if request.method != "POST":
-        return JsonResponse("ERROR")
+        return JsonResponse({"status": "error", "message": "Only POST allowed"}, status=405)
+
     try:
         data = json.loads(request.body)
         email = data.get("email", "").strip().lower()
         code = data.get("code", "").strip()
     except Exception:
-        return JsonResponse("ERROR")
+        return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
 
     try:
         user = UserRole.objects.get(email=email, verification_code=code)
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Authorized successfully',
+            'role': user.role
+        })
     except UserRole.DoesNotExist:
-        return JsonResponse("ERROR")
-
-    print("Code checking " + code + " for " + email + ". Result: YEEAAAAHHH!!")
-    return JsonResponse({'message': 'Authorized successfully (demo)'})
-
+        return JsonResponse({"status": "error", "message": "Invalid code"}, status=400)
