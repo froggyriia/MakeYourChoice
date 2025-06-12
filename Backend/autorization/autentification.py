@@ -19,22 +19,18 @@ class user_role(models.Model):
 def is_university_email(email: str) -> bool:
     return email.lower().endswith("@innopolis.university")
 
-
 @csrf_exempt
 def send_code(request):
     if request.method != "POST":
-        return JsonResponse({"status": "error", "message": "Only POST allowed"}, status=405)
-
+        return JsonResponse({"status": "error", "message": "Only POST allowed"}, status=400)
     try:
         data = json.loads(request.body)
         email = data.get("email", "").strip().lower()
     except Exception:
         return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
-
     if not is_university_email(email):
         return JsonResponse({"status": "error", "message": "Invalid university email"}, status=400)
 
-    # Исправленная проверка админов
     admin_prefixes = ["a.potyomkin", "m.karpova", "d.potapova","e.shaikhutdinova", "s.mukhamedshina","v.gorbacheva", "a.narimov"]
     role = "admin" if any(email.startswith(prefix) for prefix in admin_prefixes) else "student"
 
@@ -46,25 +42,8 @@ def send_code(request):
 
 
 @csrf_exempt
-def verify_code(request):  # Добавлен параметр request
+def verify_code(request):
     if request.method != "POST":
         return JsonResponse({"status": "error", "message": "Only POST allowed"}, status=405)
     else:
-        return JsonResponse({"status": "success", "message": "Verified successfully"}, status=405)
-    # try:
-    #     data = json.loads(request.body)
-    #     email = data.get("email", "").strip().lower()
-    #     code = data.get("code", "").strip()
-    # except Exception:
-    #     return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
-    #
-    # try:
-    #     user = UserRole.objects.get(email=email, verification_code=code)
-    #     return JsonResponse({
-    #         'status': 'success',
-    #         'message': 'Authorized successfully',
-    #         'role': user.role
-    #     })
-    # except UserRole.DoesNotExist:
-    #     return JsonResponse({"status": "error", "message": "Invalid code"}, status=400)
-    #please
+        return JsonResponse({"status": "success", "message": "Verified successfully"}, status=200)
