@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { addUser, getUsers, findUser, userExists } from '../utils/fakeUserDB.js';
+import { addUser, getUsers, findUser, userExists, isAdmin } from '../utils/fakeUserDB.js';
 import '../styles/global.css';
 
 export default function LoginPage() {
@@ -42,7 +42,15 @@ export default function LoginPage() {
                 return;
             }
 
-            loginAs('admin');
+            if (isAdmin(email, password)) {
+                loginAs('admin');
+                navigate('/catalogue');
+                console.log("admin was logged in");
+                console.log(getUsers())
+                return;
+            }
+
+            loginAs('student');
             navigate('/catalogue');
             console.log(getUsers())
         }

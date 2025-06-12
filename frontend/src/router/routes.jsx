@@ -2,6 +2,8 @@ import LoginPage from '../pages/LoginPage.jsx';
 import CataloguePage from '../pages/CataloguePage.jsx';
 import { Navigate } from 'react-router-dom';
 import ProtectedRoute from "../components/ProtectedRoute.jsx";
+import CourseFormPage from '../pages/CourseFormPage.jsx';
+
 
 // Определяем маршруты приложения
 const routes = [
@@ -18,7 +20,9 @@ const routes = [
         element: <ProtectedRoute element={<CataloguePage />} requireAdmin={true} />
     },
     // Все остальные пути редиректим на логин
-    { path: '*', element: <Navigate to="/" /> }
+    { path: '*', element: <Navigate to="/" /> },
+
+    {path: '/form', element: <ProtectedRoute element={<CourseFormPage />} />}
 ];
 
 export default routes;
