@@ -2,18 +2,18 @@ import { useState, useEffect } from 'react';
 import CourseList from '../components/CourseList';
 import { useAuth } from '../context/AuthContext';
 import SidebarMenu from "../components/SidebarMenu.jsx";
-import mockCourses from '../utils/fakeCoursesDB.js';
 import AddCourseModal from "../components/AddCourseModal.jsx";
 import styles from './CataloguePage.module.css';
-
-
-
+import { supabase } from './supabaseClient.jsx';
+import { fetchCourses, addCourse } from '../api/functions_for_courses.js';
 
 const CataloguePage = () => {
-    // Состояние курсов, инициализируем заглушкой
-    const [courses, setCourses] = useState(mockCourses);
+    // Добавляем недостающие состояния
+    const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [showAddForm, setShowAddForm] = useState(false);
-    // Получаем роль пользователя из контекста
+
     const { role } = useAuth();
     const [newCourse, setNewCourse] = useState({
         title: '',
@@ -24,6 +24,7 @@ const CataloguePage = () => {
         type: 'tech',
         years: [],
     });
+
     const handleYearsChange = (e) => {
         const year = parseInt(e.target.value);
         setNewCourse(prev => {
@@ -39,10 +40,31 @@ const CataloguePage = () => {
         setNewCourse(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        //во здесь нудно делать POST запрос на дб -> добавлять курс там
-        setCourses(prev => [...prev, { ...newCourse, id: Date.now() }]);
+
+        try {
+            const { data, error } = await addCourse(newCourse);
+            if (error) throw error;
+
+            setCourses(prev => [...prev, data[0]]);
+            setNewCourse({
+                title: '',
+                description: '',
+                teacher: '',
+                language: 'Rus',
+                program: 'Rus Program',
+                type: 'tech',
+                years: [],
+            });
+            setShowAddForm(false);
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    const handleCancel = () => {
+        setShowAddForm(false);
         setNewCourse({
             title: '',
             description: '',
@@ -52,30 +74,24 @@ const CataloguePage = () => {
             type: 'tech',
             years: [],
         });
-        setShowAddForm(false);
     };
 
-    const handleCancel = () => {
-        setShowAddForm(false);
-        setNewCourse({
-            title: '',
-            description: '',
-            teacher: '',
-            language: 'ru',
-            program: 'first',
-            years: [],
-        });
-    };
-
-    // В будущем здесь можно сделать useEffect для загрузки курсов с бэка
-    /*
     useEffect(() => {
-      fetch('/api/courses')
-        .then(res => res.json())
-        .then(data => setCourses(data))
-        .catch(err => console.error('Ошибка загрузки курсов', err));
+        const loadCourses = async () => {
+            try {
+                setLoading(true);
+                const data = await fetchCourses();
+                setCourses(data);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadCourses();
     }, []);
-    */
+
 
     return (
         <>

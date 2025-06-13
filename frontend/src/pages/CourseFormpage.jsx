@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import SidebarMenu from '../components/SidebarMenu.jsx';
 import ElectivesForm from "../components/ElectivesForm.jsx";
-import studentsPreferences from "../utils/students_pref.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import styles from './CourseFormPage.module.css';
+import { supabase } from './supabaseClient.jsx';
 
 export default function CourseFormPage() {
     const { email, role } = useAuth();  // получили роль из контекста
