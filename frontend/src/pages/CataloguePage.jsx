@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import SidebarMenu from "../components/SidebarMenu.jsx";
 import mockCourses from '../utils/fakeCoursesDB.js';
 import AddCourseModal from "../components/AddCourseModal.jsx";
+import styles from './CataloguePage.module.css';
 
 
 
@@ -41,13 +42,15 @@ const CataloguePage = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         //во здесь нудно делать POST запрос на дб -> добавлять курс там
-        setCourses(prev => [...prev, { ...newCourse, years: [], id: Date.now() }]);
+        setCourses(prev => [...prev, { ...newCourse, id: Date.now() }]);
         setNewCourse({
             title: '',
             description: '',
             teacher: '',
-            language: 'ru',
-            program: 'first',
+            language: 'Rus',
+            program: 'Rus Program',
+            type: 'tech',
+            years: [],
         });
         setShowAddForm(false);
     };
@@ -60,6 +63,7 @@ const CataloguePage = () => {
             teacher: '',
             language: 'ru',
             program: 'first',
+            years: [],
         });
     };
 
@@ -74,14 +78,19 @@ const CataloguePage = () => {
     */
 
     return (
-        <div>
+        <>
+            <div className={styles.headerContainer}>
+                <div className={styles.titleContainer}>Course Catalogue</div>
 
-            <h1>Каталог курсов</h1>
-            {/* Кнопка добавления курса видна только админам */}
-            {role === 'admin' &&
-                <button className="btn" onClick={() => setShowAddForm(true)}>
-                    + Добавить курс
-                </button>}
+                {role === 'admin' && (
+                    <button
+                        className={styles.addCourseButton}
+                        onClick={() => setShowAddForm(true)}
+                    >
+                        Add course
+                    </button>
+                )}
+            </div>
 
             {showAddForm && (
                 <AddCourseModal
@@ -93,10 +102,11 @@ const CataloguePage = () => {
                 />
             )}
 
-            <SidebarMenu />
-            <CourseList courses={courses} />
-
-        </div>
+            <div className={styles.pageWrapper}>
+                <SidebarMenu />
+                <CourseList courses={courses} />
+            </div>
+        </>
     );
 };
 
