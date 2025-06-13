@@ -7,6 +7,16 @@
     max-width: 600px;
     width: 100%;
     font-family: 'Montserrat', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.courseItem.deleting {
+    transform: scale(0.9);
+    opacity: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 0;
 }
 
 .title {
@@ -28,8 +38,13 @@
     line-height: 1.4;
 }
 
-.toggleButton {
+.buttonsContainer {
+    display: flex;
+    gap: 12px;
     margin-top: 15px;
+}
+
+.toggleButton {
     padding: 10px 0;
     width: 100%;
     border: none;
@@ -42,5 +57,21 @@
 }
 
 .toggleButton:hover {
-    background-color: #349918; /* чуть темнее при наведении */
+    background-color: #349918;
+}
+
+.deleteButton {
+    padding: 10px 0;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    background-color: #ff4444;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.deleteButton:hover {
+    background-color: #cc0000;
 }
