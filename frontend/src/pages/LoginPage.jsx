@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { addUser, getUsers, findUser, userExists, isAdmin } from '../utils/fakeUserDB.js';
-import '../styles/global.css';
+import styles from './LoginPage.module.css';
 
 export default function LoginPage() {
     const { loginAs } = useAuth();
@@ -57,47 +57,45 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="login-page">
-            <div className="login-card">
-                <h2 className="login-title">Welcome!</h2>
+        <div className={styles.wrapper}>
+        <div className={styles.container}>
+
+                <h2 className={styles.title}>Welcome!</h2>
                 <input
+                    className={styles.input}
                     type="email"
                     placeholder="email@innopolis.university"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="login-input"
+
                 />
                 <input
+                    className={styles.input}
                     type="password"
                     placeholder="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="login-input"
+
                 />
-                <div className="login-button-row">
+                <div className={styles.modeButtons}>
                     <button
                         onClick={() => setMode('signup')}
-                        className="login-button"
-                        style={{ backgroundColor: mode === 'signup' ? '#32CD32' : '#a0a0a0' }}
-                    >
-                        Sign up
+                        className={`${styles.modeButton} ${mode === 'signup' ? styles.active : styles.inactive}`}>                        Sign up
                     </button>
                     <button
                         onClick={() => setMode('login')}
-                        className="login-button"
-                        style={{ backgroundColor: mode === 'login' ? '#32CD32' : '#a0a0a0' }}
-                    >
+                        className={`${styles.modeButton} ${mode === 'login' ? styles.active : styles.inactive}`}>
                         Log in
                     </button>
                 </div>
                 <button
                     onClick={handleAction}
-                    className="login-button login-continue"
-                >
+                className={styles.continueButton}>
                     Continue
                 </button>
-                {error && <div className="login-error">{error}</div>}
-            </div>
+                {error && <div className={styles.error}>{error}</div>}
+
+        </div>
         </div>
     );
 }

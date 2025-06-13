@@ -1,16 +1,15 @@
 import { useState } from 'react';
-import SidebarMenu from '../components/SidebarMenu';
-import HumElectivesForm from '../components/ElectivesForm';
-import '../styles/CourseFormPage.css';
-import ElectivesForm from "../components/ElectivesForm";
+import SidebarMenu from '../components/SidebarMenu.jsx';
+import ElectivesForm from "../components/ElectivesForm.jsx";
 import studentsPreferences from "../utils/students_pref.js";
-import {useAuth} from "../context/AuthContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
+import styles from './CourseFormPage.module.css';
 
 export default function CourseFormPage() {
-    const { email } = useAuth();
+    const { email, role } = useAuth();  // получили роль из контекста
     const [activeTab, setActiveTab] = useState('tech');
-    const onSubmit = (selectedCourses) => {
 
+    const onSubmit = (selectedCourses) => {
         console.log("Submitted courses:", selectedCourses);
         let student = studentsPreferences.find(s => s.email === email);
         if (!student) {
@@ -19,32 +18,46 @@ export default function CourseFormPage() {
         }
         student[activeTab] = selectedCourses;
         console.log("Updated studentsPreferences:", studentsPreferences);
+    };
 
-    }
-    return(
-        <div className="form-container">
+    const handleAdminClick = () => {
+        console.log("Students preferences:", studentsPreferences);
+    };
+
+    return (
+        <div className={styles.pageWrapper}>
             <SidebarMenu />
-            <div className="form-content">
-                <div className="tabs">
+            <div className={styles.content}>
+                <div className={styles.headerContainer}>
                     <button
-                        className={`tab-button ${activeTab === 'hum' ? 'active' : 'inactive'}`}
-                        onClick={() => setActiveTab('hum')}>
+                        className={`${styles.tabButton} ${activeTab === 'hum' ? styles.active : styles.inactive}`}
+                        onClick={() => setActiveTab('hum')}
+                    >
                         Hum
                     </button>
+                    <h1 className={styles.title}>Course Form</h1>
                     <button
-                        className={`tab-button ${activeTab === 'tech' ? 'active' : 'inactive'}`}
-                        onClick={() => setActiveTab('tech')}>
+                        className={`${styles.tabButton} ${activeTab === 'tech' ? styles.active : styles.inactive}`}
+                        onClick={() => setActiveTab('tech')}
+                    >
                         Tech
                     </button>
                 </div>
-                <h1 className="form-title">Course Form</h1>
-                <ElectivesForm type={activeTab} onSubmit={onSubmit}/>
-            </div>
 
+                {/* Кнопка для администратора */}
+                {role === 'admin' && (
+                    <div style={{ marginBottom: '20px', textAlign: 'center' }}>
+                        <button
+                            onClick={handleAdminClick}
+                            className={styles.resultsButton}
+                        >
+                            Show All Students Preferences
+                        </button>
+                    </div>
+                )}
+
+                <ElectivesForm type={activeTab} onSubmit={onSubmit} />
+            </div>
         </div>
     );
 }
-
-
-
-
