@@ -5,7 +5,7 @@ const CourseItem = ({ course, onDelete }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         if (window.confirm(`Are you sure you want to delete "${course.title}"?`)) {
             setIsDeleting(true);
             setTimeout(() => onDelete(course.id), 300);
