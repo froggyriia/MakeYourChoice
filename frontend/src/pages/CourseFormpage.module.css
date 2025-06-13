@@ -1,0 +1,91 @@
+.pageWrapper {
+    display: flex;
+    gap: 40px; /* расстояние между меню и контентом */
+    padding: 20px;
+    min-height: 80vh;
+    align-items: flex-start;
+}
+
+/* SidebarMenu фиксированной ширины и с отступом сверху, как в каталоге */
+.pageWrapper > div:first-child {
+    width: 220px;
+    flex-shrink: 0;
+    margin-top: 60px; /* сдвигаем меню вниз */
+}
+
+/* Контент справа от меню */
+.content {
+    flex-grow: 1;
+    max-width: 1000px; /* увеличили ширину */
+    margin-left: 40px; /* отступ от меню */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* центрируем по горизонтали */
+    width: 100%;
+}
+
+/* Хедер с заголовком и кнопками по бокам */
+.headerContainer {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 24px;
+    width: 100%;
+    max-width: 700px; /* чуть шире, чтобы поместились кнопки и заголовок */
+    justify-content: center; /* центрируем контент внутри */
+}
+
+/* Заголовок */
+.title {
+    font-weight: 700;
+    font-size: 28px;
+    color: var(--color-primary, #007BFF);
+    user-select: none;
+    margin: 0;
+}
+
+/* Кнопки переключения */
+.tabButton {
+    padding: 10px 24px;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    min-width: 100px;
+    user-select: none;
+}
+
+.resultsButton {
+    background-color: var(--color-primary);
+    padding: 10px 24px;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    min-width: 100px;
+    user-select: none;
+}
+
+.active {
+    background-color: var(--color-primary, #007BFF);
+    color: white;
+}
+
+.inactive {
+    background-color: var(--color-inactive, #ccc);
+    color: white;
+}
+
+.tabButton:hover:not(.active) {
+    background-color: #aaa;
+}
+
+/* Расширяем форму ElectivesForm */
+.content form {
+    width: 100%;
+    max-width: 900px; /* ширина формы */
+}
