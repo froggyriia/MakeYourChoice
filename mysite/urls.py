@@ -16,7 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from Backend.autorization.autentification import send_code, verify_code
+from MakeYourChoice.views import home
+#please
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('send_code/', send_code, name='send_code'),
+    path('verify_code/', verify_code, name='verify_code'),
+    path('', home, name='home'),
 ]
