@@ -17,6 +17,6 @@ export function userExists(email) {
     return users.some(u => u.email === email);
 }
 
-export function isAdmin(email, password) {
-    return email === "admin@innopolis.university" && password === "admin";
+export function isAdmin(email) {
+    return email === "admin@innopolis.university";
 }
