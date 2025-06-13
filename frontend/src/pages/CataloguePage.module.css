@@ -1,37 +1,32 @@
 .pageWrapper {
     display: flex;
-    gap: 40px; /* больше расстояния между меню и списком */
+    gap: 40px;
     padding: 20px;
     min-height: 80vh;
     align-items: flex-start;
 }
 
-/* SidebarMenu фиксированной ширины */
 .pageWrapper > div:first-child {
     width: 220px;
     flex-shrink: 0;
-
 }
 
-/* Контент (CourseList) с небольшим отступом слева и максимальной шириной */
 .pageWrapper > div:last-child {
     flex-grow: 1;
     max-width: 900px;
-    margin-left: 180px; /* дополнительный отступ справа от меню */
+    margin-left: 180px;
 }
 
-/* Контейнер заголовка и кнопки */
 .headerContainer {
     display: flex;
     align-items: center;
     gap: 20px;
-    margin-left: 630px; /* ширина меню (220) + gap (24) для смещения */
+    margin-left: 630px;
     margin-bottom: 16px;
 }
 
-/* Заголовок */
 .titleContainer {
-    margin-top:  30px;
+    margin-top: 30px;
     display: inline-block;
     padding: 10px 18px;
     border-radius: 12px;
@@ -39,12 +34,10 @@
     font-weight: 700;
     font-size: 28px;
     color: var(--color-primary);
-
     user-select: none;
     white-space: nowrap;
 }
 
-/* Кнопка "Добавить курс" */
 .addCourseButton {
     margin-top: 30px;
     padding: 15px 20px;
@@ -58,4 +51,6 @@
     transition: background-color 0.3s ease;
 }
 
-
+.addCourseButton:hover {
+    background-color: #0056b3;
+}
