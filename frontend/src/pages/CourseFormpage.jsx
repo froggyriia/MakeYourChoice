@@ -1,77 +1,83 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SidebarMenu from '../components/SidebarMenu.jsx';
 import ElectivesForm from "../components/ElectivesForm.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import styles from './CourseFormPage.module.css';
 import { supabase } from './supabaseClient.jsx';
 import Header from "../components/Header.jsx";
-import mockCourses from '../utils/fakeCoursesDB.js';
+import { fetchCourses } from '../api/functions_for_courses.js';
 
 export default function CourseFormPage() {
-    const { email, role } = useAuth();  // получили роль из контекста
+    const { email, role } = useAuth();
     const [activeTab, setActiveTab] = useState('tech');
+    const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [submitLoading, setSubmitLoading] = useState(false);
 
-   const onSubmit = async (selectedCourseIds) => {
-    const trimmed = selectedCourseIds.slice(0, 5);
+    useEffect(() => {
+        const loadCourses = async () => {
+            try {
+                setLoading(true);
+                const data = await fetchCourses();
+                setCourses(data || []);
+            } catch (error) {
+                console.error('Ошибка загрузки курсов:', error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    // Находим названия по ID
-    const selectedCourseTitles = trimmed.map(id => {
-        const course = mockCourses.find(c => String(c.id) === String(id));
-        return course ? course.title : '';
-    });
+        loadCourses();
+    }, []);
 
-    const fieldPrefix = activeTab === 'tech' ? 'tecn' : 'hum';
-    const insertData = {
-        email,
-        created_at: new Date().toISOString()
+    const onSubmit = async (selectedCourseIds) => {
+        if (loading || submitLoading) return;
+
+        setSubmitLoading(true);
+
+        try {
+            const trimmed = selectedCourseIds.slice(0, 5);
+
+            const selectedCourseTitles = trimmed.map(id => {
+                const course = courses.find(c => String(c.id) === String(id));
+                return course?.title || '';
+            });
+
+            const fieldPrefix = activeTab === 'tech' ? 'tecn' : 'hum';
+            const operationData = {
+                email,
+                created_at: new Date().toISOString(),
+                ...selectedCourseTitles.reduce((acc, title, index) => {
+                    acc[`${fieldPrefix}${index + 1}`] = title;
+                    return acc;
+                }, {})
+            };
+
+            const { data: existing } = await supabase
+                .from('priorities')
+                .select('*')
+                .eq('email', email)
+                .single();
+
+            const { error } = existing
+                ? await supabase
+                    .from('priorities')
+                    .update(operationData)
+                    .eq('email', email)
+                : await supabase
+                    .from('priorities')
+                    .insert([operationData]);
+
+            if (error) throw error;
+            alert('Данные успешно сохранены!');
+
+        } catch (error) {
+            console.error('Ошибка сохранения:', error.message);
+            alert('Произошла ошибка при сохранении');
+        } finally {
+            setSubmitLoading(false);
+        }
     };
-
-    selectedCourseTitles.forEach((title, index) => {
-        insertData[`${fieldPrefix}${index + 1}`] = title;
-    });
-
-    // Проверка на существование записи
-    const { data: existing, error: fetchError } = await supabase
-        .from('priorities')
-        .select('*')
-        .eq('email', email)
-        .single();
-
-    if (fetchError && fetchError.code !== 'PGRST116') {
-        console.error('Ошибка при получении:', fetchError.message);
-        return;
-    }
-
-    if (existing) {
-        const updateData = {};
-        selectedCourseTitles.forEach((title, index) => {
-            updateData[`${fieldPrefix}${index + 1}`] = title;
-        });
-
-        const { error: updateError } = await supabase
-            .from('priorities')
-            .update(updateData)
-            .eq('email', email);
-
-        if (updateError) {
-            console.error('Ошибка при обновлении:', updateError.message);
-        } else {
-            console.log('Успешно обновлено.');
-        }
-    } else {
-        const { error: insertError } = await supabase
-            .from('priorities')
-            .insert([insertData]); // вставка массива объектов
-
-        if (insertError) {
-            console.error('Ошибка при вставке:', insertError.message);
-        } else {
-            console.log('Успешно добавлено.');
-        }
-    }
-};
-
-
 
     return (
         <>
