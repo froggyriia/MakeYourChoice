@@ -6,14 +6,9 @@ import mockCourses from '../utils/fakeCoursesDB.js';
 import AddCourseModal from "../components/AddCourseModal.jsx";
 import styles from './CataloguePage.module.css';
 
-
-
-
 const CataloguePage = () => {
-    // Состояние курсов, инициализируем заглушкой
     const [courses, setCourses] = useState(mockCourses);
     const [showAddForm, setShowAddForm] = useState(false);
-    // Получаем роль пользователя из контекста
     const { role } = useAuth();
     const [newCourse, setNewCourse] = useState({
         title: '',
@@ -24,6 +19,7 @@ const CataloguePage = () => {
         type: 'tech',
         years: [],
     });
+
     const handleYearsChange = (e) => {
         const year = parseInt(e.target.value);
         setNewCourse(prev => {
@@ -41,7 +37,6 @@ const CataloguePage = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        //во здесь нудно делать POST запрос на дб -> добавлять курс там
         setCourses(prev => [...prev, { ...newCourse, id: Date.now() }]);
         setNewCourse({
             title: '',
@@ -61,21 +56,16 @@ const CataloguePage = () => {
             title: '',
             description: '',
             teacher: '',
-            language: 'ru',
-            program: 'first',
+            language: 'Rus',
+            program: 'Rus Program',
+            type: 'tech',
             years: [],
         });
     };
 
-    // В будущем здесь можно сделать useEffect для загрузки курсов с бэка
-    /*
-    useEffect(() => {
-      fetch('/api/courses')
-        .then(res => res.json())
-        .then(data => setCourses(data))
-        .catch(err => console.error('Ошибка загрузки курсов', err));
-    }, []);
-    */
+    const handleDeleteCourse = (courseId) => {
+        setCourses(courses.filter(course => course.id !== courseId));
+    };
 
     return (
         <>
@@ -104,7 +94,10 @@ const CataloguePage = () => {
 
             <div className={styles.pageWrapper}>
                 <SidebarMenu />
-                <CourseList courses={courses} />
+                <CourseList 
+                    courses={courses} 
+                    onDeleteCourse={role === 'admin' ? handleDeleteCourse : null}
+                />
             </div>
         </>
     );
