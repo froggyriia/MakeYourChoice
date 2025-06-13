@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import ExcelJS from 'exceljs';
 import SidebarMenu from '../components/SidebarMenu.jsx';
 import ElectivesForm from "../components/ElectivesForm.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -8,7 +9,38 @@ import Header from "../components/Header.jsx";
 import { fetchCourses } from '../api/functions_for_courses.js';
 
 export default function CourseFormPage() {
-    const { email, role } = useAuth();
+    const ExcelExport = async () => {
+        try {
+            const {data, error} = await supabase
+                .from("priorities")
+                .select("*");
+            if (error) throw error;
+            if (!data?.length) {
+                alert("Нет данных для экспорта");
+                return;
+            }
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("Priorities")
+
+            const headers = Object.keys(data[0])
+            worksheet.addRow(headers)
+
+            data.forEach(row => {worksheet.addRow(Object.values(row));});
+
+            const buffer = await workbook.xlsx.writeBuffer();
+            const blob = new Blob([buffer], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = 'priorities_export_' + new Date().toISOString().slice(0, 10) + '.xlsx';
+            link.click();
+            URL.revokeObjectURL(link.href);
+            } catch (error) {
+                console.error("Ошибка при экспорте:", error);
+                alert("Произошла ошибка при создании файла");
+            }
+        }
+    const { email, role } = useAuth();  // получили роль из контекста
     const [activeTab, setActiveTab] = useState('tech');
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -80,12 +112,29 @@ export default function CourseFormPage() {
     };
 
     return (
-        <>
-            <Header />
-            <div className={styles.pageWrapper}>
-                <SidebarMenu />
-                <div className={styles.content}>
-                    <div className={styles.headerContainer}>
+        <div className={styles.pageWrapper}>
+            <SidebarMenu />
+            <div className={styles.content}>
+                <div className={styles.headerContainer}>
+                    <button
+                        className={`${styles.tabButton} ${activeTab === 'hum' ? styles.active : styles.inactive}`}
+                        onClick={() => setActiveTab('hum')}
+                    >
+                        Hum
+                    </button>
+                    <h1 className={styles.title}>Course Form</h1>
+                    <button
+                        className={`${styles.tabButton} ${activeTab === 'tech' ? styles.active : styles.inactive}`}
+                        onClick={() => setActiveTab('tech')}
+                    >
+                        Tech
+                    </button>
+                </div>
+
+                {/* Кнопка для администратора */}
+
+                {role === 'admin' && (
+                    <div style={{ marginBottom: '20px', textAlign: 'center' }}>
                         <button
                             className={`${styles.tabButton} ${activeTab === 'hum' ? styles.active : styles.inactive}`}
                             onClick={() => setActiveTab('hum')}
@@ -99,6 +148,13 @@ export default function CourseFormPage() {
                         >
                             Tech
                         </button>
+                        <button
+                          onClick={ExcelExport}
+                          className={styles.resultsButton}
+                          style={{ backgroundColor: '#4CAF50' }}
+                        >
+                        Export to Excel
+                      </button>
                     </div>
 
                     {/* Кнопка для администратора */}
