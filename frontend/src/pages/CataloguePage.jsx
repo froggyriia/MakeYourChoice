@@ -2,14 +2,22 @@ import { useState, useEffect } from 'react';
 import CourseList from '../components/CourseList';
 import { useAuth } from '../context/AuthContext';
 import SidebarMenu from "../components/SidebarMenu.jsx";
-import mockCourses from '../utils/fakeCoursesDB.js';
 import AddCourseModal from "../components/AddCourseModal.jsx";
 import styles from './CataloguePage.module.css';
+import { supabase } from './supabaseClient.jsx';
+import { fetchCourses, addCourse } from '../api/functions_for_courses.js';
+import Header from '../components/Header.jsx';
 
 const CataloguePage = () => {
-    const [courses, setCourses] = useState(mockCourses);
+    // Добавляем недостающие состояния
+    const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [showAddForm, setShowAddForm] = useState(false);
-    const { role } = useAuth();
+
+    const { role, email } = useAuth();
+    console.log('user в каталоге:', role, email);
+
     const [newCourse, setNewCourse] = useState({
         title: '',
         description: '',
@@ -35,9 +43,31 @@ const CataloguePage = () => {
         setNewCourse(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setCourses(prev => [...prev, { ...newCourse, id: Date.now() }]);
+
+        try {
+            const { data, error } = await addCourse(newCourse);
+            if (error) throw error;
+
+            setCourses(prev => [...prev, data[0]]);
+            setNewCourse({
+                title: '',
+                description: '',
+                teacher: '',
+                language: 'Rus',
+                program: 'Rus Program',
+                type: 'tech',
+                years: [],
+            });
+            setShowAddForm(false);
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    const handleCancel = () => {
+        setShowAddForm(false);
         setNewCourse({
             title: '',
             description: '',
@@ -47,7 +77,6 @@ const CataloguePage = () => {
             type: 'tech',
             years: [],
         });
-        setShowAddForm(false);
     };
 
     const handleCancel = () => {
@@ -69,6 +98,7 @@ const CataloguePage = () => {
 
     return (
         <>
+            <Header />
             <div className={styles.headerContainer}>
                 <div className={styles.titleContainer}>Course Catalogue</div>
 

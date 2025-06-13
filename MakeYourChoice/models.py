@@ -5,6 +5,9 @@ class UserRole(models.Model):
     role = models.CharField(max_length=10, choices=[("student", "Student"), ("admin", "Admin")])
     verification_code = models.CharField(max_length=6, blank=True)
 
+    class Meta:
+        app_label = 'MakeYourChoice'
+
     def __str__(self):
         return f"{self.email} ({self.role})"
 #please
@@ -13,6 +16,9 @@ class EmailCode(models.Model):
     email = models.EmailField()
     code = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        app_label = 'MakeYourChoice'
 
     def __str__(self):
         return f"{self.email}: {self.code}"

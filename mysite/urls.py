@@ -23,5 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('send_code/', send_code, name='send_code'),
     path('verify_code/', verify_code, name='verify_code'),
-    path('', home, name='home'),
+    # path('', home, name='home'),
 ]
