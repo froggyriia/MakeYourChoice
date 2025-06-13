@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'MakeYourChoice',
     'Backend',
 ]
-
+#please
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
