@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ExcelJS from 'exceljs';
 import SidebarMenu from '../components/SidebarMenu.jsx';
 import ElectivesForm from "../components/ElectivesForm.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -6,12 +7,43 @@ import styles from './CourseFormPage.module.css';
 import { supabase } from './supabaseClient.jsx';
 
 export default function CourseFormPage() {
+    const ExcelExport = async () => {
+        try {
+            const {data, error} = await supabase
+                .from("priorities")
+                .select("*");
+            if (error) throw error;
+            if (!data?.length) {
+                alert("Нет данных для экспорта");
+                return;
+            }
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("Priorities")
+
+            const headers = Object.keys(data[0])
+            worksheet.addRow(headers)
+
+            data.forEach(row => {worksheet.addRow(Object.values(row));});
+
+            const buffer = await workbook.xlsx.writeBuffer();
+            const blob = new Blob([buffer], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = 'priorities_export_' + new Date().toISOString().slice(0, 10) + '.xlsx';
+            link.click();
+            URL.revokeObjectURL(link.href);
+            } catch (error) {
+                console.error("Ошибка при экспорте:", error);
+                alert("Произошла ошибка при создании файла");
+            }
+        }
     const { email, role } = useAuth();  // получили роль из контекста
     const [activeTab, setActiveTab] = useState('tech');
 
     const onSubmit = (selectedCourses) => {
         console.log("Submitted courses:", selectedCourses);
-        let student = studentsPreferences.find(s => s.email === email);
+        let student = stuxxdentsPreferences.find(s => s.email === email);
         if (!student) {
             student = { email, hum: [], tech: [] };
             studentsPreferences.push(student);
@@ -45,6 +77,7 @@ export default function CourseFormPage() {
                 </div>
 
                 {/* Кнопка для администратора */}
+
                 {role === 'admin' && (
                     <div style={{ marginBottom: '20px', textAlign: 'center' }}>
                         <button
@@ -53,6 +86,13 @@ export default function CourseFormPage() {
                         >
                             Show All Students Preferences
                         </button>
+                        <button
+                          onClick={ExcelExport}
+                          className={styles.resultsButton}
+                          style={{ backgroundColor: '#4CAF50' }}
+                        >
+                        Export to Excel
+                      </button>
                     </div>
                 )}
 
