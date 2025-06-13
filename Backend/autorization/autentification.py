@@ -1,5 +1,4 @@
-from db.supabase_client import DATABASE
-#Backend developer + DevOps/Security
+
 import json
 import random
 from django.http import JsonResponse
