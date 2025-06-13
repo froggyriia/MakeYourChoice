@@ -79,22 +79,22 @@ const CataloguePage = () => {
         });
     };
 
-    useEffect(() => {
-        const loadCourses = async () => {
-            try {
-                setLoading(true);
-                const data = await fetchCourses();
-                setCourses(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const handleCancel = () => {
+        setShowAddForm(false);
+        setNewCourse({
+            title: '',
+            description: '',
+            teacher: '',
+            language: 'Rus',
+            program: 'Rus Program',
+            type: 'tech',
+            years: [],
+        });
+    };
 
-        loadCourses();
-    }, []);
-
+    const handleDeleteCourse = (courseId) => {
+        setCourses(courses.filter(course => course.id !== courseId));
+    };
 
     return (
         <>
@@ -124,7 +124,10 @@ const CataloguePage = () => {
 
             <div className={styles.pageWrapper}>
                 <SidebarMenu />
-                <CourseList courses={courses} />
+                <CourseList 
+                    courses={courses} 
+                    onDeleteCourse={role === 'admin' ? handleDeleteCourse : null}
+                />
             </div>
         </>
     );
