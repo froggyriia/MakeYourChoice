@@ -1,11 +1,31 @@
-import React, { useState } from "react";
-import mockCourses from '../utils/fakeCoursesDB.js';
+import React, { useState, useEffect } from "react";
 import styles from './ElectivesForm.module.css';
+import { supabase } from '../pages/supabaseClient.jsx';
+import { fetchCourses } from '../api/functions_for_courses';
 
 export default function ElectivesForm({ type, onSubmit }) {
-    const filteredCourses = mockCourses.filter(course => course.type === type);
-
+    const [filteredCourses, setFilteredCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [selectedCourses, setSelectedCourses] = useState(Array(5).fill(""));
+
+    useEffect(() => {
+        const loadCourses = async () => {
+            try {
+                setLoading(true);
+                const allCourses = await fetchCourses();
+                const filtered = allCourses.filter(course => course.type === type);
+                setFilteredCourses(filtered);
+            } catch (err) {
+                setError(err.message);
+                console.error('Error loading courses:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadCourses();
+    }, [type]);
 
     const handleChange = (index, value) => {
         const updated = [...selectedCourses];
