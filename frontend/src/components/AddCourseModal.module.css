@@ -1,0 +1,143 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContainer {
+    background-color: var(--color-elem-background);
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    max-width: 600px;
+    width: 90%;
+    font-family: 'Montserrat', sans-serif;
+    color: #333;
+}
+
+h2 {
+    margin-bottom: 24px;
+    font-weight: 700;
+    font-size: 26px;
+    color: var(--color-primary);
+    user-select: none;
+}
+
+form label {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+    font-weight: 600;
+    font-size: 16px;
+    color: #444;
+}
+
+input[type="text"],
+textarea,
+select {
+    margin-top: 6px;
+    padding: 10px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: var(--color-input-field);
+    font-family: 'Montserrat', sans-serif;
+    resize: vertical;
+}
+
+textarea {
+    min-height: 80px;
+}
+
+label > div {
+    margin-top: 8px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+label > div > label {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+label > div > label input[type="checkbox"] {
+    margin-right: 6px;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+
+.buttonsContainer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+button[type="submit"],
+button[type="button"] {
+    padding: 10px 26px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+}
+
+button[type="submit"] {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+button[type="submit"]:hover {
+    background-color: #349b18;
+}
+
+button[type="button"] {
+    background-color: var(--color-inactive);
+    color: white;
+}
+
+button[type="button"]:hover {
+    background-color: #888;
+}
+
+.btnGroup {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+
+.btn {
+    padding: 8px 16px;
+    font-size: 15px;
+    border-radius: 8px;
+    border: 1.5px solid var(--color-primary);
+    background-color: transparent;
+    color: var(--color-primary);
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+.btnActive {
+    background-color: #4caf50 !important; /* ярко-зеленый фон */
+    border-color: #4caf50 !important;
+    color: white !important;
+}
