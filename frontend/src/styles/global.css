@@ -4,67 +4,46 @@
     box-sizing: border-box;
 }
 
-/* Login Page */
-.login-page {
-    background-color: #e5e5e5;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #E5E5E5;
+    margin: 0;
+    padding: 0;
+    color: #333;
 }
 
-.login-card {
-    background-color: white;
-    border-radius: 12px;
-    padding: 40px 30px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    text-align: center;
+:root {
+    --color-primary: #40BB20;    /* ярко-зеленый для активных элементов */
+    --color-inactive: #A5A5A5;   /* серый для неактивных */
+    --color-elem-background: #FFFFFF;
+    --color-input-field: #E5E5E5;
+    --color-main-background: #E5E5E5;
 }
 
-.login-title {
-    margin-bottom: 20px;
-    font-size: 24px;
-    font-weight: bold;
-}
-
-.login-input {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 10px;
-    border: none;
-    background-color: #e5e5e5;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.login-button-row {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 16px;
-}
-
-.login-button {
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-weight: bold;
-    font-size: 16px;
-    border: none;
-    width: 45%;
+button {
     cursor: pointer;
+    background-color: var(--color-inactive);
     color: white;
+    border: none;
+    border-radius: 15px;
 }
 
-.login-error {
-    color: red;
-    margin-top: 12px;
+button.active {
+    background-color: var(--color-primary);
+}
+
+/* global.css */
+.btn-sm {
+    padding: 6px 10px;
     font-size: 14px;
 }
 
-.login-continue {
-    margin-top: 16px;
-    width: 100%;
-    background-color: #333;
-    color: white;
+.btn-md {
+    padding: 10px 16px;
+    font-size: 16px;
+}
+
+.btn-lg {
+    padding: 14px 22px;
+    font-size: 18px;
 }
