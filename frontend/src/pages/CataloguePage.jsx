@@ -6,6 +6,7 @@ import AddCourseModal from "../components/AddCourseModal.jsx";
 import styles from './CataloguePage.module.css';
 import { supabase } from './supabaseClient.jsx';
 import { fetchCourses, addCourse } from '../api/functions_for_courses.js';
+import Header from '../components/Header.jsx';
 
 const CataloguePage = () => {
     // Добавляем недостающие состояния
@@ -14,7 +15,9 @@ const CataloguePage = () => {
     const [error, setError] = useState(null);
     const [showAddForm, setShowAddForm] = useState(false);
 
-    const { role } = useAuth();
+    const { role, email } = useAuth();
+    console.log('user в каталоге:', role, email);
+
     const [newCourse, setNewCourse] = useState({
         title: '',
         description: '',
@@ -76,7 +79,11 @@ const CataloguePage = () => {
         });
     };
 
-    useEffect(() => {
+    const handleDeleteCourse = (courseId) => {
+        setCourses(courses.filter(course => course.id !== courseId));
+    };
+
+useEffect(() => {
         const loadCourses = async () => {
             try {
                 setLoading(true);
@@ -95,6 +102,7 @@ const CataloguePage = () => {
 
     return (
         <>
+            <Header />
             <div className={styles.headerContainer}>
                 <div className={styles.titleContainer}>Course Catalogue</div>
 
@@ -120,7 +128,8 @@ const CataloguePage = () => {
 
             <div className={styles.pageWrapper}>
                 <SidebarMenu />
-                <CourseList courses={courses} />
+                <CourseList courses={courses}
+                 onDeleteCourse={role === 'admin' ? handleDeleteCourse : null}/>
             </div>
         </>
     );
