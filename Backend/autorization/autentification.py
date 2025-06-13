@@ -37,7 +37,7 @@ def send_code(request):
     code = "".join(random.choices("0123456789", k=6))
 
 
-    print(f"Verification code for {email}: {code}")
+    print(f"Verification code for {email}: {code}", role)
     return JsonResponse({'status': 'success', 'message': 'Code generated'})
 
 
