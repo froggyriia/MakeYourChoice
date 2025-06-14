@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import styles from './ElectivesForm.module.css';
-import { supabase } from '../pages/supabaseClient.jsx';
 import { fetchCourses } from '../api/functions_for_courses';
 
-export default function ElectivesForm({ type, onSubmit }) {
+export default function ElectivesForm({ type, onSubmit, onClear }) {
     const [filteredCourses, setFilteredCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedCourses, setSelectedCourses] = useState(Array(5).fill(""));
 
     useEffect(() => {
+        setSelectedCourses(Array(5).fill(""));
+
         const loadCourses = async () => {
             try {
                 setLoading(true);
@@ -33,22 +34,29 @@ export default function ElectivesForm({ type, onSubmit }) {
         setSelectedCourses(updated);
     };
 
+    const handleClear = () => {
+        setSelectedCourses(Array(5).fill(""));
+        if (onClear) onClear(type); // Передаем тип вкладки
+    };
+
     return (
         <div className={styles.wrapper}>
             <div className={styles.container}>
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
-                        onSubmit(selectedCourses);
+                        onSubmit(selectedCourses, type); // Передаем type как activeTab
                     }}
                     className={styles.form}
                 >
                     <h2>{type === 'tech' ? 'Technical Electives' : 'Humanities Electives'}</h2>
 
                     {[...Array(5)].map((_, i) => {
-                        const usedCoursesIDs = selectedCourses.filter((_, idx) => i !== idx);
-                        const availableCourses = filteredCourses.filter(
-                            course => !usedCoursesIDs.includes(String(course.id))
+                        const currentValue = selectedCourses[i];
+                        const usedTitles = selectedCourses.filter((_, idx) => idx !== i);
+
+                        const availableCourses = filteredCourses.filter(course =>
+                            !usedTitles.includes(course.title) || course.title === currentValue
                         );
 
                         return (
@@ -56,7 +64,7 @@ export default function ElectivesForm({ type, onSubmit }) {
                                 <label htmlFor={`priority-${i}`}>Priority {i + 1}</label>
                                 <select
                                     id={`priority-${i}`}
-                                    value={selectedCourses[i]}
+                                    value={currentValue}
                                     onChange={(e) => handleChange(i, e.target.value)}
                                     className={styles.select}
                                 >
@@ -73,7 +81,12 @@ export default function ElectivesForm({ type, onSubmit }) {
                         );
                     })}
 
-                    <button type="submit" className={styles.submitButton}>Submit</button>
+                    <div className={styles.buttonsRow}>
+                        <button type="submit" className={styles.submitButton}>Submit</button>
+                        <button type="button" className={styles.clearButton} onClick={handleClear}>
+                            Clear All
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
