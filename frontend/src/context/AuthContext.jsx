@@ -1,6 +1,8 @@
+//AuthContext.jsx
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Создаем контекст для авторизации
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {

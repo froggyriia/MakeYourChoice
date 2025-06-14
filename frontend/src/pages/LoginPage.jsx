@@ -1,59 +1,20 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx';
-import { isAdmin } from '../utils/fakeUserDB.js';
+// pages/LoginPage.jsx
+import React from "react";
+import { useLogin } from '../hooks/useLogin';
+import LoginForm from '../components/LoginForm';
 import styles from './LoginPage.module.css';
 
 export default function LoginPage() {
-    const { loginAs } = useAuth();
-    const navigate = useNavigate();
-
-    const [email, setEmail] = useState('');
-    const [error, setError] = useState('');
-
-    const isInnopolisEmail = (email) => email.endsWith('@innopolis.university');
-
-    const handleContinue = () => {
-        setError('');
-
-        if (!isInnopolisEmail(email)) {
-            setError('Email must be from innopolis.university');
-            return;
-        }
-
-
-
-        if (isAdmin(email)) {
-            loginAs('admin', email);
-        } else {
-            loginAs('student', email);
-        }
-
-        navigate('/catalogue');
-    };
+    const { email, setEmail, error, handleLogin } = useLogin();
 
     return (
         <div className={styles.wrapper}>
-            <div className={styles.container}>
-                <h2 className={styles.title}>Welcome!</h2>
-
-                <input
-                    className={styles.input}
-                    type="email"
-                    placeholder="email@innopolis.university"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-
-                <button
-                    onClick={handleContinue}
-                    className={styles.continueButton}
-                >
-                    Continue
-                </button>
-
-                {error && <div className={styles.error}>{error}</div>}
-            </div>
+            <LoginForm
+                email={email}
+                setEmail={setEmail}
+                error={error}
+                onSubmit={handleLogin}
+            />
         </div>
     );
 }
