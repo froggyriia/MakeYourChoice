@@ -9,7 +9,6 @@ import { fetchCourses, addCourse } from '../api/functions_for_courses.js';
 import Header from '../components/Header.jsx';
 
 const CataloguePage = () => {
-    // Добавляем недостающие состояния
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
