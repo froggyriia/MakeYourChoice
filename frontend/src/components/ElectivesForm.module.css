@@ -1,10 +1,13 @@
+/* ElectivesForm.module.css */
 .wrapper {
-    height: 100vh; /* весь экран */
+    width: 80%;
     display: flex;
     justify-content: center;
-    align-items: center;
-    background-color: var(--color-main-background, #f5f5f5);
+    /* Убери height: 100vh и align-items: center */
+    background-color: transparent; /* если фон не нужен */
+    padding: 20px 0; /* можно добавить отступ сверху/снизу */
 }
+
 
 .container {
     display: flex;
