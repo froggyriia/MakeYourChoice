@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { addUser, getUsers, userExists, isAdmin } from '../utils/fakeUserDB.js';
+import { isAdmin } from '../utils/fakeUserDB.js';
 import styles from './LoginPage.module.css';
 
 export default function LoginPage() {
@@ -21,11 +21,7 @@ export default function LoginPage() {
             return;
         }
 
-        const exists = userExists(email);
 
-        if (!exists) {
-            addUser({ email });
-        }
 
         if (isAdmin(email)) {
             loginAs('admin', email);
