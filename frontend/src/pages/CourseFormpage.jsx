@@ -5,6 +5,7 @@ import ElectivesForm from "../components/ElectivesForm.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import styles from './CourseFormPage.module.css';
 import { supabase } from './supabaseClient.jsx';
+import Header from "../components/Header.jsx";
 
 export default function CourseFormPage() {
     const [isExported, setIsExported] = useState(false);
@@ -60,48 +61,53 @@ export default function CourseFormPage() {
     };
 
     return (
-        <div className={styles.pageWrapper}>
-            <SidebarMenu />
-            <div className={styles.content}>
-                <div className={styles.headerContainer}>
-                    <button
-                        className={`${styles.tabButton} ${activeTab === 'hum' ? styles.active : styles.inactive}`}
-                        onClick={() => setActiveTab('hum')}
-                    >
-                        Hum
-                    </button>
-                    <h1 className={styles.title}>Course Form</h1>
-                    <button
-                        className={`${styles.tabButton} ${activeTab === 'tech' ? styles.active : styles.inactive}`}
-                        onClick={() => setActiveTab('tech')}
-                    >
-                        Tech
-                    </button>
-                </div>
+        <>
+            <Header />
+            <div className={styles.pageWrapper}>
 
-                {/* Кнопка для администратора */}
-
-                {role === 'admin' && (
-                    <div style={{ marginBottom: '20px', textAlign: 'center' }}>
+                <SidebarMenu />
+                <div className={styles.content}>
+                    <div className={styles.headerContainer}>
                         <button
-                            onClick={handleAdminClick}
-                            className={styles.resultsButton}
+                            className={`${styles.tabButton} ${activeTab === 'hum' ? styles.active : styles.inactive}`}
+                            onClick={() => setActiveTab('hum')}
                         >
-                            Show All Students Preferences
+                            Hum
                         </button>
+                        <h1 className={styles.title}>Course Form</h1>
                         <button
-                          onClick={ExcelExport}
-                          className={styles.resultsButton}
-                          style={{ marginLeft: '20px', backgroundColor: isExported ? '#4CAF50' : '#2196F3', transition: 'background-color 0.3s ease' }}
+                            className={`${styles.tabButton} ${activeTab === 'tech' ? styles.active : styles.inactive}`}
+                            onClick={() => setActiveTab('tech')}
                         >
-                        {isExported ? 'Exported!' : 'Export to Excel'}
-                        {/*Export to Excel*/}
-                      </button>
+                            Tech
+                        </button>
                     </div>
-                )}
 
-                <ElectivesForm type={activeTab} onSubmit={onSubmit} />
+                    {/* Кнопка для администратора */}
+
+                    {role === 'admin' && (
+                        <div style={{ marginBottom: '20px', textAlign: 'center' }}>
+                            <button
+                                onClick={handleAdminClick}
+                                className={styles.resultsButton}
+                            >
+                                Show All Students Preferences
+                            </button>
+                            <button
+                                onClick={ExcelExport}
+                                className={styles.resultsButton}
+                                style={{ marginLeft: '20px', backgroundColor: isExported ? '#4CAF50' : '#2196F3', transition: 'background-color 0.3s ease' }}
+                            >
+                                {isExported ? 'Exported!' : 'Export to Excel'}
+                                {/*Export to Excel*/}
+                            </button>
+                        </div>
+                    )}
+
+                    <ElectivesForm type={activeTab} onSubmit={onSubmit} />
+                </div>
             </div>
-        </div>
+        </>
+
     );
 }

@@ -17,7 +17,7 @@ const Header = () => {
 
     return (
         <div className={styles.header}>
-            <span>{email}</span>
+            <span className={styles.email}>{email}</span>
             <button onClick={handleLogout} className={styles.logoutButton}>
                 Log out
             </button>
