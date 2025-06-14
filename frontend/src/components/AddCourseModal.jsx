@@ -8,7 +8,6 @@ const AddCourseModal = ({ newCourse, onChange, onYearsChange, onSubmit, onCancel
         onChange({ target: { name: field, value } });
     };
 
-    // Годы — переключение в массиве
     const toggleYear = (year) => {
         onYearsChange({ target: { value: year } });
     };
