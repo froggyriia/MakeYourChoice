@@ -64,7 +64,7 @@ export default function ElectivesForm({ type, onSubmit }) {
                                         Select course
                                     </option>
                                     {availableCourses.map(course => (
-                                        <option key={course.id} value={course.id}>
+                                        <option key={course.id} value={course.title}>
                                             {course.title}
                                         </option>
                                     ))}

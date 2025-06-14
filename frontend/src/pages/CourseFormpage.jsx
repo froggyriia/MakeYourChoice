@@ -9,6 +9,10 @@ import Header from "../components/Header.jsx";
 
 export default function CourseFormPage() {
     const [isExported, setIsExported] = useState(false);
+    const [studentsPreferences, setStudentsPreferences] = useState([]); // Инициализация состояния
+    const { email, role } = useAuth();
+    const [activeTab, setActiveTab] = useState('tech');
+
     const ExcelExport = async () => {
         try {
             const {data, error} = await supabase
@@ -42,18 +46,71 @@ export default function CourseFormPage() {
                 alert("Произошла ошибка при создании файла");
             }
         }
-    const { email, role } = useAuth();  // получили роль из контекста
-    const [activeTab, setActiveTab] = useState('tech');
 
-    const onSubmit = (selectedCourses) => {
-        console.log("Submitted courses:", selectedCourses);
-        let student = stuxxdentsPreferences.find(s => s.email === email);
-        if (!student) {
-            student = { email, hum: [], tech: [] };
-            studentsPreferences.push(student);
+    const onSubmit = async (selectedCourses) => {
+        // Проверка выбора 5 курсов
+        if (selectedCourses.some(c => !c)) {
+            alert("Пожалуйста, выберите 5 курсов");
+            return;
         }
-        student[activeTab] = selectedCourses;
-        console.log("Updated studentsPreferences:", studentsPreferences);
+
+        // Создаем или обновляем данные пользователя
+        const currentStudent = studentsPreferences.find(s => s.email === email) || {
+            email,
+            hum: Array(5).fill(""),
+            tech: Array(5).fill("")
+        };
+
+        const updatedStudent = {
+            ...currentStudent,
+            [activeTab]: selectedCourses
+        };
+
+        // Обновляем состояние
+        setStudentsPreferences(prev => {
+            const others = prev.filter(s => s.email !== email);
+            return [...others, updatedStudent];
+        });
+
+        // Формируем данные для Supabase
+        const updateFields = {};
+        ["hum", "tech"].forEach(tab => {
+            const courses = updatedStudent[tab] || Array(5).fill("");
+            courses.forEach((course, i) => {
+                updateFields[`${tab}${i + 1}`] = course || "";
+            });
+        });
+
+        try {
+            // Проверяем существование записи
+            const { data: existing, error: selectError } = await supabase
+                .from('priorities')
+                .select('*')
+                .eq('email', email)
+                .single();
+
+            // PGRST116 = "No rows found" ошибка
+            if (selectError && selectError.code !== 'PGRST116') throw selectError;
+
+            // Обновляем или вставляем данные
+            if (existing) {
+                const { error: updateError } = await supabase
+                    .from('priorities')
+                    .update(updateFields)
+                    .eq('email', email);
+                if (updateError) throw updateError;
+                alert("Данные успешно обновлены!");
+            } else {
+                const { error: insertError } = await supabase
+                    .from('priorities')
+                    .insert([{ email, ...updateFields }]);
+                if (insertError) throw insertError;
+                alert("Данные успешно сохранены!");
+            }
+        } catch (error) {
+            console.error("Ошибка Supabase:", error);
+            alert("Ошибка при сохранении данных");
+        }
     };
 
     const handleAdminClick = () => {
@@ -64,7 +121,6 @@ export default function CourseFormPage() {
         <>
             <Header />
             <div className={styles.pageWrapper}>
-
                 <SidebarMenu />
                 <div className={styles.content}>
                     <div className={styles.headerContainer}>
@@ -83,8 +139,6 @@ export default function CourseFormPage() {
                         </button>
                     </div>
 
-                    {/* Кнопка для администратора */}
-
                     {role === 'admin' && (
                         <div style={{ marginBottom: '20px', textAlign: 'center' }}>
                             <button
@@ -100,6 +154,5 @@ export default function CourseFormPage() {
                 </div>
             </div>
         </>
-
     );
 }
