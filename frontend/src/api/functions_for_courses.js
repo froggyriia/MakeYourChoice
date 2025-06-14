@@ -7,11 +7,16 @@ export const fetchCourses = async () => {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return data;
+    if (error) {
+      console.error('Supabase error:', error);
+      return [];
+    }
+
+    return Array.isArray(data) ? data : [];
+
   } catch (error) {
-    console.error('Error fetching courses:', error.message);
-    throw error;
+    console.error('Unexpected error fetching courses:', error);
+    return [];
   }
 };
 
@@ -23,7 +28,7 @@ export const addCourse = async (courseData) => {
       .select();
 
     if (error) throw error;
-    return data;
+    return { data, error };
   } catch (error) {
     console.error('Error adding course:', error.message);
     throw error;
