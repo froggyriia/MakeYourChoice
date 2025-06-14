@@ -1,7 +1,8 @@
+//CourseItem.jsx
+
 import { useState } from 'react';
 import styles from './CourseItem.module.css';
 import { supabase } from '../pages/supabaseClient.jsx';
-
 
 const CourseItem = ({ course, onDelete }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -24,10 +25,14 @@ const CourseItem = ({ course, onDelete }) => {
             <h2 className={styles.title}>{course.title}</h2>
             <p className={styles.info}>Teacher: {course.teacher}</p>
             <p className={styles.info}>Language: {course.language}</p>
-            <p className={styles.info}>Program: {course.program}</p>
             <p className={styles.info}>
-                Years: {Array.isArray(course.years) ? course.years.join(', ') : 'No data'}
+                Program: {Array.isArray(course.program) ? course.program.join(', ') : course.program}
             </p>
+
+            <p className={styles.info}>
+                Years: {Array.isArray(course.years) ? course.years.sort().join(', ') : 'No data'}
+            </p>
+            <p className={styles.info}>Type: {course.type}</p>
 
             {isOpen && <div className={styles.description}>{course.description}</div>}
 

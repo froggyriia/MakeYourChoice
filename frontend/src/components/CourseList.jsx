@@ -1,3 +1,5 @@
+//CourseList.jsx
+
 import CourseItem from './CourseItem';
 
 const CourseList = ({ courses, onDeleteCourse }) => {

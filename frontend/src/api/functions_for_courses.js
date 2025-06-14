@@ -1,3 +1,5 @@
+//functions_for_courses.js
+
 import { supabase } from '../pages/supabaseClient.jsx';
 
 export const fetchCourses = async () => {
