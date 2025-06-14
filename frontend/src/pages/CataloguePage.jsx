@@ -83,21 +83,21 @@ const CataloguePage = () => {
     };
 
 useEffect(() => {
-        const loadCourses = async () => {
-            try {
-                setLoading(true);
-                const data = await fetchCourses();
-                setCourses(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+  const loadCourses = async () => {
+    try {
+      setLoading(true);
+      const coursesData = await fetchCourses();
+      setCourses(coursesData);
+    } catch (err) {
+      console.error('Load courses error:', err);
+      setCourses([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        loadCourses();
-    }, []);
-
+  loadCourses();
+}, []);
 
     return (
         <>
