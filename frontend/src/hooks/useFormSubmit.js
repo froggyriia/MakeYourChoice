@@ -1,0 +1,66 @@
+import { useState } from 'react';
+import { supabase } from '../pages/supabaseClient';
+
+export function useFormSubmit(email) {
+    const [studentsPreferences, setStudentsPreferences] = useState([]);
+
+    const onSubmit = async (selectedCourses, activeTab) => {
+        if (selectedCourses.some(c => !c)) {
+            alert("Please, choose 5 courses");
+            return;
+        }
+
+        const currentStudent = studentsPreferences.find(s => s.email === email) || {
+            email,
+            hum: Array(5).fill(""),
+            tech: Array(5).fill("")
+        };
+
+        // Обновляем только активную вкладку
+        const updatedStudent = {
+            ...currentStudent,
+            [activeTab]: selectedCourses
+        };
+
+        setStudentsPreferences(prev => {
+            const others = prev.filter(s => s.email !== email);
+            return [...others, updatedStudent];
+        });
+
+        // Формируем поля только для активной вкладки
+        const updateFields = {};
+        selectedCourses.forEach((course, i) => {
+            updateFields[`${activeTab}${i + 1}`] = course || "";
+        });
+
+        try {
+            const { data: existing, error: selectError } = await supabase
+                .from('priorities')
+                .select('*')
+                .eq('email', email)
+                .single();
+
+            if (selectError && selectError.code !== 'PGRST116') throw selectError;
+
+            if (existing) {
+                const { error: updateError } = await supabase
+                    .from('priorities')
+                    .update(updateFields)
+                    .eq('email', email);
+                if (updateError) throw updateError;
+                alert("Data was successfully submitted");
+            } else {
+                const { error: insertError } = await supabase
+                    .from('priorities')
+                    .insert([{ email, ...updateFields }]);
+                if (insertError) throw insertError;
+                alert("Data was successfully submitted");
+            }
+        } catch (error) {
+            console.error("Ошибка Supabase:", error);
+            alert("Error while submitting");
+        }
+    };
+
+    return { studentsPreferences, onSubmit };
+}
