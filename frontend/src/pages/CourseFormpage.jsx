@@ -88,18 +88,10 @@ export default function CourseFormPage() {
                     {role === 'admin' && (
                         <div style={{ marginBottom: '20px', textAlign: 'center' }}>
                             <button
-                                onClick={handleAdminClick}
-                                className={styles.resultsButton}
-                            >
-                                Show All Students Preferences
-                            </button>
-                            <button
                                 onClick={ExcelExport}
                                 className={styles.resultsButton}
-                                style={{ marginLeft: '20px', backgroundColor: isExported ? '#4CAF50' : '#2196F3', transition: 'background-color 0.3s ease' }}
                             >
                                 {isExported ? 'Exported!' : 'Export to Excel'}
-                                {/*Export to Excel*/}
                             </button>
                         </div>
                     )}
