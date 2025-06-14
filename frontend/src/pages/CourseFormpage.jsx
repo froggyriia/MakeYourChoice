@@ -7,6 +7,7 @@ import styles from './CourseFormPage.module.css';
 import { supabase } from './supabaseClient.jsx';
 
 export default function CourseFormPage() {
+    const [isExported, setIsExported] = useState(false);
     const ExcelExport = async () => {
         try {
             const {data, error} = await supabase
@@ -33,6 +34,8 @@ export default function CourseFormPage() {
             link.download = 'priorities_export_' + new Date().toISOString().slice(0, 10) + '.xlsx';
             link.click();
             URL.revokeObjectURL(link.href);
+
+            setIsExported(true);
             } catch (error) {
                 console.error("Ошибка при экспорте:", error);
                 alert("Произошла ошибка при создании файла");
@@ -89,9 +92,10 @@ export default function CourseFormPage() {
                         <button
                           onClick={ExcelExport}
                           className={styles.resultsButton}
-                          style={{ backgroundColor: '#4CAF50' }}
+                          style={{ marginLeft: '20px', backgroundColor: isExported ? '#4CAF50' : '#2196F3', transition: 'background-color 0.3s ease' }}
                         >
-                        Export to Excel
+                        {isExported ? 'Exported!' : 'Export to Excel'}
+                        {/*Export to Excel*/}
                       </button>
                     </div>
                 )}
