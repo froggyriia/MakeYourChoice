@@ -2,7 +2,7 @@ import { useState } from 'react';
 import SidebarMenu from '../components/SidebarMenu.jsx';
 import ElectivesForm from "../components/ElectivesForm.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
-import styles from './CourseFormPage.module.css';
+import styles from './CourseFormpage.module.css';
 import Header from "../components/Header.jsx";
 
 import { useExcelExport } from '../hooks/useExcelExport';
