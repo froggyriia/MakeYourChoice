@@ -10,7 +10,7 @@ console.log('[DEBUG] Supabase Key:', supabaseKey ? '***' : 'MISSING');
 
 if (!supabaseUrl || !supabaseKey) {
   throw new Error(
-    'Supabase credentials missing! Check your .env file and restart the server.'
+    'Supabase credentials missing! Check your APIs file and restart the server.'
   );
 }
 
