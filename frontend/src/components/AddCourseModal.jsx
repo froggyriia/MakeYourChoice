@@ -86,7 +86,7 @@ const AddCourseModal = ({
                                     className={`${styles.btn} ${course.language === lang ? styles.btnActive : ''}`}
                                     onClick={() => handleButtonChange('language', lang)}
                                 >
-                                    {lang === 'Rus' ? 'Russian' : 'Language'}
+                                    {lang === 'Rus' ? 'Russian' : 'English'}
                                 </button>
                             ))}
                         </div>
