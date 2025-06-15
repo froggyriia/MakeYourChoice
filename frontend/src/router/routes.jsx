@@ -2,7 +2,7 @@ import LoginPage from '../pages/LoginPage.jsx';
 import CataloguePage from '../pages/CataloguePage.jsx';
 import { Navigate } from 'react-router-dom';
 import ProtectedRoute from "../components/ProtectedRoute.jsx";
-import CourseFormPage from '../pages/CourseFormPage.jsx';
+import CourseFormPage from '../pages/CourseFormpage.jsx';
 
 
 // Определяем маршруты приложения
