@@ -1,13 +1,10 @@
-/* ElectivesForm.module.css */
 .wrapper {
     width: 80%;
     display: flex;
     justify-content: center;
-    /* Убери height: 100vh и align-items: center */
-    background-color: transparent; /* если фон не нужен */
-    padding: 20px 0; /* можно добавить отступ сверху/снизу */
+    background-color: transparent;
+    padding: 20px 0;
 }
-
 
 .container {
     display: flex;
@@ -47,7 +44,6 @@
 .clearButton:hover {
     background-color: #ddd;
 }
-
 
 h2 {
     margin-bottom: 24px;
@@ -102,4 +98,30 @@ select:focus {
 
 .submitButton:hover {
     background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .wrapper {
+        width: 95%;
+        padding: 10px 0;
+    }
+    
+    .container {
+        padding: 20px;
+        width: 100%;
+    }
+    
+    h2 {
+        font-size: 22px;
+    }
+    
+    select {
+        font-size: 14px;
+        padding: 8px 10px;
+    }
+    
+    .submitButton {
+        font-size: 16px;
+        padding: 10px 0;
+    }
 }
