@@ -54,3 +54,36 @@
 .addCourseButton:hover {
     background-color: #0056b3;
 }
+
+@media (max-width: 768px) {
+    .pageWrapper {
+        flex-direction: column;
+        gap: 20px;
+        padding: 10px;
+    }
+    
+    .pageWrapper > div:first-child,
+    .pageWrapper > div:last-child {
+        width: 100%;
+        margin-left: 0;
+        max-width: 100%;
+    }
+    
+    .headerContainer {
+        margin-left: 0;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .titleContainer {
+        margin-top: 10px;
+        font-size: 20px;
+        padding: 8px 12px;
+    }
+    
+    .addCourseButton {
+        margin-top: 10px;
+        padding: 10px 15px;
+        font-size: 16px;
+    }
+}

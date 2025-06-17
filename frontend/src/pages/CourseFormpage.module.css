@@ -1,42 +1,37 @@
 .pageWrapper {
     display: flex;
-    gap: 40px; /* расстояние между меню и контентом */
+    gap: 40px;
     padding: 20px;
     min-height: 80vh;
     align-items: flex-start;
 }
 
-/* SidebarMenu фиксированной ширины и с отступом сверху, как в каталоге */
 .pageWrapper > div:first-child {
     width: 220px;
     flex-shrink: 0;
-    margin-top: 60px; /* сдвигаем меню вниз */
+    margin-top: 60px;
 }
 
-
-/* Контент справа от меню */
 .content {
     flex-grow: 1;
-    max-width: 1000px; /* увеличили ширину */
-    margin-left: 40px; /* отступ от меню */
+    max-width: 1000px;
+    margin-left: 40px;
     display: flex;
     flex-direction: column;
-    align-items: center; /* центрируем по горизонтали */
+    align-items: center;
     width: 100%;
 }
 
-/* Хедер с заголовком и кнопками по бокам */
 .headerContainer {
     display: flex;
     align-items: center;
     gap: 30px;
     margin-bottom: 24px;
     width: 100%;
-    max-width: 700px; /* чуть шире, чтобы поместились кнопки и заголовок */
-    justify-content: center; /* центрируем контент внутри */
+    max-width: 700px;
+    justify-content: center;
 }
 
-/* Заголовок */
 .title {
     font-weight: 700;
     font-size: 28px;
@@ -45,7 +40,6 @@
     margin: 0;
 }
 
-/* Кнопки переключения */
 .tabButton {
     padding: 10px 24px;
     font-size: 18px;
@@ -85,8 +79,39 @@
     background-color: #aaa;
 }
 
-/* Расширяем форму ElectivesForm */
 .content form {
     width: 100%;
-    max-width: 900px; /* ширина формы */
+    max-width: 900px;
+}
+
+@media (max-width: 768px) {
+    .pageWrapper {
+        flex-direction: column;
+        gap: 20px;
+        padding: 10px;
+    }
+    
+    .pageWrapper > div:first-child {
+        width: 100%;
+        margin-top: 20px;
+    }
+    
+    .content {
+        margin-left: 0;
+        max-width: 100%;
+    }
+    
+    .headerContainer {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .title {
+        font-size: 22px;
+    }
+    
+    .tabButton, .resultsButton {
+        padding: 8px 16px;
+        font-size: 16px;
+    }
 }

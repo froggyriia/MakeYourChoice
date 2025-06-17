@@ -1,7 +1,15 @@
 .wrapper {
-    height: 100vh; /* занимает весь экран */
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--color-main-background); /* фон страницы */
+    background-color: var(--color-main-background);
+}
+
+@media (max-width: 768px) {
+    .wrapper {
+        padding: 10px;
+        align-items: flex-start;
+        padding-top: 38.5vh;
+    }
 }
