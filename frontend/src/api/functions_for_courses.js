@@ -22,6 +22,7 @@ export const fetchCourses = async () => {
   }
 };
 
+// функция принимает словарь полей
 export const addCourse = async (courseData) => {
   try {
     const { data, error } = await supabase
@@ -33,6 +34,41 @@ export const addCourse = async (courseData) => {
     return { data, error };
   } catch (error) {
     console.error('Error adding course:', error.message);
+    throw error;
+  }
+};
+
+// функция принимает строку - название курса
+// функция возвращает одну запись (информацию о курсе) (словарь)
+export const getCourseInfo = async (courseTitle) => {
+  try {
+    const { data, error } = await supabase
+    .from('catalogue')
+    .select('*')
+    .eq('title', courseTitle)
+    .single()
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error fetching course:', error.message);
+    throw error;
+  }
+};
+
+// функция принимает словарь полей курса (id важен!!!!!!!!!!)
+export const editCourseInfo = async (courseNewData) => {
+  try {
+    const { id, ...updateData } = courseNewData;
+
+    const { data, error } = await supabase
+    .from('catalogue')
+    .update(updateData)
+    .eq('id', id)
+    .select();
+    if (error) throw error;
+    return data[0];
+  } catch (error) {
+    console.error('Error updating course:', error.message);
     throw error;
   }
 };
