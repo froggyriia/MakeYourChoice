@@ -44,18 +44,22 @@ export const addCourse = async (courseData) => {
  * @returns {Promise<string[]>} An array of academic program names.
  * @throws Will log and rethrow any Supabase fetch error.
  */
- export const uniquePrograms = async () => {
+export const uniquePrograms = async () => {
     try {
-    const { data, error } = await supabase
-        .from('groups_electives')
-        .select('student_group');
+        const { data, error } = await supabase
+            .from('groups_electives')
+            .select('student_group');
 
         if (error) throw error;
 
-        const programList = data.map(item => item.group)
+        // Убираем дубликаты и пустые строки
+        const programList = Array.from(
+            new Set(data.map(item => item.student_group).filter(Boolean))
+        );
+
         return programList;
     } catch (error) {
         console.error("Couldn't return programs", error.message);
         throw error;
     }
-}
+};
