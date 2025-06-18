@@ -1,5 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import styles from './AddCourseModal.module.css';
+import {uniquePrograms} from "../api/functions_for_courses.js";
+import Select from 'react-select';
 
 const AddCourseModal = ({
     course,
@@ -10,6 +12,7 @@ const AddCourseModal = ({
 }) => {
     const modalRef = useRef(null);
     const scrollPosition = useRef(0);
+    const [programs, setPrograms] = useState([]);
 
     // Блокировка прокрутки при открытии
     useEffect(() => {
@@ -37,6 +40,18 @@ const AddCourseModal = ({
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onCancel]);
+
+    useEffect(() => {
+        const loadStudentPrograms = async () => {
+            try {
+                const data = await uniquePrograms();
+                setPrograms(data || []);
+            } catch (error) {
+                console.error("Error loading programs", error);
+            }
+        };
+        loadStudentPrograms();
+    }, []);
 
     // Блокировка прокрутки колесиком мыши
     const handleWheel = (e) => {
@@ -128,25 +143,19 @@ const AddCourseModal = ({
 
                     <label>
                         Program:
-                        <div className={styles.btnGroup}>
-                            {['Rus Program', 'Eng Program'].map((prog) => (
-                                <button
-                                    key={prog}
-                                    type="button"
-                                    className={`${styles.btn} ${course.program.includes(prog) ? styles.btnActive : ''}`}
-                                    onClick={() =>
-                                        onChange({
-                                            name: 'program',
-                                            value: course.program.includes(prog)
-                                                ? course.program.filter(p => p !== prog)
-                                                : [...course.program, prog]
-                                        })
-                                    }
-                                >
-                                    {prog}
-                                </button>
-                            ))}
-                        </div>
+                        <Select
+                            isMulti
+                            name="program"
+                            options={programs.map(prog => ({ value: prog, label: prog }))}
+                            value={(course.program || []).map(p => ({ value: p, label: p }))}
+                            onChange={(selected) => {
+                                const values = selected.map(item => item.value);
+                                onChange({ name: 'program', value: values });
+                            }}
+                            placeholder="Select programs..."
+                            className={styles.reactSelect}
+                            classNamePrefix="select"
+                        />
                     </label>
 
                     <label>

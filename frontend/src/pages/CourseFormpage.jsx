@@ -21,6 +21,7 @@ export default function CourseFormPage() {
             <div className={styles.pageWrapper}>
                 <SidebarMenu />
                 <div className={styles.content}>
+
                     <div className={styles.headerContainer}>
                         <button
                             className={`${styles.tabButton} ${activeTab === 'hum' ? styles.active : styles.inactive}`}
@@ -47,9 +48,9 @@ export default function CourseFormPage() {
                             </button>
                         </div>
                     )}
-
-                    <ElectivesForm type={activeTab} onSubmit={(selectedCourses) => onSubmit(selectedCourses, activeTab)}  />
-                </div>
+                    {role !== 'admin' && (<ElectivesForm type={activeTab} onSubmit={(selectedCourses) => onSubmit(selectedCourses, activeTab)}  />
+                    )}
+                    </div>
             </div>
         </>
     );

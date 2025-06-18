@@ -1,20 +1,38 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../pages/supabaseClient';
 import { getUserProgram, getPrioritiesNumber } from '../api/functions_for_users';
 
 export function useFormSubmit(email) {
     const [studentsPreferences, setStudentsPreferences] = useState([]);
+    const [limits, setLimits] = useState({tech : 5, hum : 5});
+
+    useEffect(() => {
+        async function fetchLimits() {
+            const program = await getUserProgram(email)
+
+            if (!program) return;
+
+            const limits = await getPrioritiesNumber(program);
+            setLimits(limits);
+        }
+
+        if (email) {
+            fetchLimits();
+        }
+    }, [email]);
 
     const onSubmit = async (selectedCourses, activeTab) => {
-        if (selectedCourses.some(c => !c)) {
-            alert("Please, choose 5 courses");
+        const expectedCount = limits[activeTab];
+
+        if (selectedCourses.length != expectedCount || selectedCourses.some(c => !c)) {
+            alert('Please, fill all priority fields');
             return;
         }
 
         const currentStudent = studentsPreferences.find(s => s.email === email) || {
             email,
-            hum: Array(5).fill(""),
-            tech: Array(5).fill("")
+            hum: Array(limits.hum).fill(""),
+            tech: Array(limits.tech).fill("")
         };
 
         // Обновляем только активную вкладку
@@ -63,5 +81,5 @@ export function useFormSubmit(email) {
         }
     };
 
-    return { studentsPreferences, onSubmit };
+    return { studentsPreferences, onSubmit, limits };
 }

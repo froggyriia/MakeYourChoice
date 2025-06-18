@@ -17,7 +17,7 @@ export default function SidebarMenu() {
             >
                 Course Catalogue
             </NavLink>
-            {role !== 'admin' && (
+
                 <NavLink
                     to="/form"
                     className={({ isActive }) =>
@@ -26,7 +26,7 @@ export default function SidebarMenu() {
                 >
                     Course Form
                 </NavLink>
-            )}
+
         </div>
     );
 }
