@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from 'react';
 import styles from './AddCourseModal.module.css';
+import Select from 'react-select';
 
 const AddStudentsProgramModal = ({
                                      programData,
@@ -10,7 +11,6 @@ const AddStudentsProgramModal = ({
     const modalRef = useRef(null);
     const scrollPosition = useRef(0);
 
-    // Блокировка прокрутки
     useEffect(() => {
         scrollPosition.current = window.scrollY;
         document.body.style.overflow = 'hidden';
@@ -26,39 +26,28 @@ const AddStudentsProgramModal = ({
         };
     }, []);
 
-    // Закрытие по ESC
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (e.key === 'Escape') {
-                onCancel();
-            }
+            if (e.key === 'Escape') onCancel();
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onCancel]);
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        onChange({ name, value });
+        onChange({ name: e.target.name, value: e.target.value });
     };
 
-    const handleDegreeChange = (value) => {
-        onChange({ name: 'degree', value });
+    const handleButtonChange = (name, value) => {
+        onChange({ name, value });
     };
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
-
-        const { degree, year, name } = programData;
-        if (!degree || !year || !name) {
-            alert("Please fill in all required fields.");
+        if (!programData.stage || !programData.year || !programData.shortName) {
+            alert('Please fill all required fields');
             return;
         }
-
-        // Формируем код: B24-DSAI
-        const programCode = `${degree[0]}${String(year).slice(-2)}-${name}`;
-        onChange({ name: 'programCode', value: programCode });
-
         onSubmit();
     };
 
@@ -69,66 +58,64 @@ const AddStudentsProgramModal = ({
                     <h2>Add Student Program</h2>
 
                     <label>
-                        Degree:
+                        Stage:
                         <div className={styles.btnGroup}>
-                            {['Bachelor', 'Master', 'PhD'].map((deg) => (
+                            {['B', 'M', 'P'].map((s) => (
                                 <button
-                                    key={deg}
                                     type="button"
-                                    className={`${styles.btn} ${programData.degree === deg ? styles.btnActive : ''}`}
-                                    onClick={() => handleDegreeChange(deg)}
+                                    key={s}
+                                    className={`${styles.btn} ${programData.stage === s ? styles.btnActive : ''}`}
+                                    onClick={() => handleButtonChange('stage', s)}
                                 >
-                                    {deg}
+                                    {s === 'B' ? 'Bachelor' : s === 'M' ? 'Master' : 'PhD'}
                                 </button>
                             ))}
                         </div>
                     </label>
 
                     <label>
-                        Admission Year:
+                        Year of Entry:
                         <input
                             type="number"
                             name="year"
-                            value={programData.year || ''}
-                            onChange={handleInputChange}
                             min="2000"
                             max="2100"
+                            value={programData.year}
+                            onChange={handleInputChange}
                             required
                         />
                     </label>
 
                     <label>
-                        Program Name (e.g., DSAI, CSE):
+                        Program Short Name (e.g. DSAI):
                         <input
                             type="text"
-                            name="name"
-                            value={programData.name || ''}
+                            name="shortName"
+                            value={programData.shortName}
                             onChange={handleInputChange}
                             required
                         />
                     </label>
 
                     <label>
-                        Tech Elective Priorities:
+                        Tech Elective Priority Count:
                         <input
                             type="number"
-                            name="techPriorities"
-                            value={programData.techPriorities || ''}
-                            onChange={handleInputChange}
+                            name="techCount"
                             min="0"
-                            required
+                            value={programData.techCount}
+                            onChange={handleInputChange}
                         />
                     </label>
 
                     <label>
-                        Hum Elective Priorities:
+                        Humanities Elective Priority Count:
                         <input
                             type="number"
-                            name="humPriorities"
-                            value={programData.humPriorities || ''}
-                            onChange={handleInputChange}
+                            name="humCount"
                             min="0"
-                            required
+                            value={programData.humCount}
+                            onChange={handleInputChange}
                         />
                     </label>
 
@@ -137,11 +124,10 @@ const AddStudentsProgramModal = ({
                         <input
                             type="datetime-local"
                             name="deadline"
-                            value={programData.deadline || ''}
+                            value={programData.deadline}
                             onChange={handleInputChange}
                             required
                         />
-                        <small>Will be saved as timestamp (UTC)</small>
                     </label>
 
                     <div className={styles.buttonsContainer}>
