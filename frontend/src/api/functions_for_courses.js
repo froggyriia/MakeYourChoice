@@ -2,6 +2,10 @@
 
 import { supabase } from '../pages/supabaseClient.jsx';
 
+/**
+ * Получает список всех курсов из базы данных, отсортированных по дате создания (новые сначала)
+ * @returns {Promise<Array>} - Возвращает массив курсов или пустой массив в случае ошибки
+ */
 export const fetchCourses = async () => {
   try {
     const { data, error } = await supabase
@@ -22,7 +26,12 @@ export const fetchCourses = async () => {
   }
 };
 
-// функция принимает словарь полей
+/**
+ * Добавляет новый курс в базу данных
+ * @param {Object} courseData - Объект с данными нового курса
+ * @returns {Promise<Object>} - Возвращает объект с данными добавленного курса и информацией об ошибке
+ * @throws {Error} - Если произошла ошибка при добавлении курса
+ */
 export const addCourse = async (courseData) => {
   try {
     const { data, error } = await supabase
@@ -38,8 +47,12 @@ export const addCourse = async (courseData) => {
   }
 };
 
-// функция принимает строку - название курса
-// функция возвращает одну запись (информацию о курсе) (словарь)
+/**
+ * Получает информацию о курсе по его названию
+ * @param {string} courseTitle - Название курса для поиска
+ * @returns {Promise<Object>} - Возвращает объект с информацией о курсе
+ * @throws {Error} - Если курс не найден или произошла ошибка запроса
+ */
 export const getCourseInfo = async (courseTitle) => {
   try {
     const { data, error } = await supabase
@@ -55,7 +68,14 @@ export const getCourseInfo = async (courseTitle) => {
   }
 };
 
-// функция принимает словарь полей курса (id важен!!!!!!!!!!)
+/**
+ * Обновляет информацию о курсе в базе данных
+ * @param {Object} courseNewData - Объект с новыми данными курса
+ * @param {number} courseNewData.id - ID курса для обновления (обязательное поле)
+ * @param {Object} courseNewData... - Другие поля курса для обновления
+ * @returns {Promise<Object>} - Возвращает обновленный объект курса
+ * @throws {Error} - Если произошла ошибка обновления
+ */
 export const editCourseInfo = async (courseNewData) => {
   try {
     const { id, ...updateData } = courseNewData;
@@ -95,3 +115,18 @@ export const editCourseInfo = async (courseNewData) => {
         throw error;
     }
 }
+
+export const addProgram = async (programData) => {
+  try {
+    const { data, error } = await supabase
+      .from('groups_electives')
+      .insert(programData)
+      .select();
+
+    if (error) throw error;
+    return { data, error };
+  } catch (error) {
+    console.error('Error adding program:', error.message);
+    throw error;
+  }
+};
