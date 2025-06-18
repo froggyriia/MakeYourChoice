@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import styles from './CourseItem.module.css';
 import { supabase } from '../pages/supabaseClient.jsx';
+import { deleteCourse } from '../api/functions_for_courses.js'
 
 const CourseItem = ({ course, onDelete }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -11,10 +12,7 @@ const CourseItem = ({ course, onDelete }) => {
     const handleDelete = async () => {
         if (window.confirm(`Are you sure you want to delete "${course.title}"?`)) {
             setIsDeleting(true);
-            const { error } = await supabase
-      .from('catalogue') // Название вашей таблицы
-      .delete()
-      .eq('id', course.id);
+            const { error } = await deleteCourse(course.title);
             setTimeout(() => onDelete(course.id), 300);
         }
     };
