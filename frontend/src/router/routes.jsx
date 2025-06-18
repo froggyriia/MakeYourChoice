@@ -1,3 +1,5 @@
+//routes.jsx
+
 import LoginPage from '../pages/LoginPage.jsx';
 import CataloguePage from '../pages/CataloguePage.jsx';
 import { Navigate } from 'react-router-dom';
