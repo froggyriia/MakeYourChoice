@@ -1,13 +1,48 @@
-// components/AddCourseModal.jsx
+import React, { useEffect, useRef } from "react";
 import styles from './AddCourseModal.module.css';
 
 const AddCourseModal = ({
-                            course,
-                            onChange,
-                            onToggleYear,
-                            onSubmit,
-                            onCancel,
-                        }) => {
+    course,
+    onChange,
+    onToggleYear,
+    onSubmit,
+    onCancel,
+}) => {
+    const modalRef = useRef(null);
+    const scrollPosition = useRef(0);
+
+    // Блокировка прокрутки при открытии
+    useEffect(() => {
+        scrollPosition.current = window.scrollY;
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollPosition.current}px`;
+        document.body.style.width = '100%';
+
+        return () => {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.top = '';
+            window.scrollTo(0, scrollPosition.current);
+        };
+    }, []);
+
+    // Закрытие по ESC
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                onCancel();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [onCancel]);
+
+    // Блокировка прокрутки колесиком мыши
+    const handleWheel = (e) => {
+        e.stopPropagation();
+    };
+
     const handleInputChange = (e) => {
         onChange({ name: e.target.name, value: e.target.value });
     };
@@ -16,30 +51,29 @@ const AddCourseModal = ({
         onChange({ name: field, value });
     };
 
-    // 🔍 Вынесенная функция для валидации и отправки
     const handleFormSubmit = (e) => {
         e.preventDefault();
-
         if (!course.language) {
             alert("Please select a language.");
             return;
         }
-
         if (!course.program || course.program.length === 0) {
             alert("Please select at least one program.");
             return;
         }
-
         if (!course.years || course.years.length === 0) {
             alert("Please select at least one year.");
             return;
         }
-
         onSubmit();
     };
 
     return (
-        <div className={styles.modalOverlay}>
+        <div 
+            className={styles.modalOverlay}
+            ref={modalRef}
+            onWheel={handleWheel}
+        >
             <div className={styles.modalContainer}>
                 <form onSubmit={handleFormSubmit} className={styles.form}>
                     <h2>Add Course</h2>
