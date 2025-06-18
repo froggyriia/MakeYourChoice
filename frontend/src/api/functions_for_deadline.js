@@ -1,5 +1,6 @@
 import { supabase } from '../pages/supabaseClient.jsx';
 
+// принимает название программы и дедлайн (тип timestamptz - дата и время)
 export const setDeadline = async (programTitle, deadline) => {
   try {
     const { data, error } = await supabase
