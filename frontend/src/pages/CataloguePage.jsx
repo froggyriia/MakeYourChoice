@@ -1,5 +1,4 @@
-//CataloguePage.jsx
-
+import { useState, useRef } from 'react';
 import Header from '../components/Header';
 import SidebarMenu from '../components/SidebarMenu';
 import CourseList from '../components/CourseList';
@@ -10,6 +9,7 @@ import { useCatalogue } from '../hooks/useCatalogue';
 
 const CataloguePage = () => {
     const { role } = useAuth();
+    const scrollPosition = useRef(0);
     const {
         courses,
         loading,
@@ -24,6 +24,16 @@ const CataloguePage = () => {
         handleDeleteCourse
     } = useCatalogue();
 
+    const handleAddCourseClick = () => {
+        scrollPosition.current = window.scrollY;
+        setShowAddForm(true);
+    };
+
+    const handleModalCancel = () => {
+        handleCancel();
+        window.scrollTo(0, scrollPosition.current);
+    };
+
     return (
         <>
             <Header />
@@ -32,7 +42,7 @@ const CataloguePage = () => {
                 {role === 'admin' && (
                     <button
                         className={styles.addCourseButton}
-                        onClick={() => setShowAddForm(true)}
+                        onClick={handleAddCourseClick}
                     >
                         Add course
                     </button>
@@ -45,10 +55,9 @@ const CataloguePage = () => {
                     onChange={handleChange}
                     onToggleYear={handleYearsChange}
                     onSubmit={handleSubmit}
-                    onCancel={handleCancel}
+                    onCancel={handleModalCancel}
                 />
             )}
-
 
             <div className={styles.pageWrapper}>
                 <SidebarMenu />
