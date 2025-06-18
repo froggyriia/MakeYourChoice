@@ -22,6 +22,7 @@ export const useCatalogue = () => {
 
     const [newCourse, setNewCourse] = useState(initialCourse);
 
+
     useEffect(() => {
         const loadCourses = async () => {
             try {

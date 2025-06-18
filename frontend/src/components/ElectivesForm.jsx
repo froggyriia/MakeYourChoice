@@ -62,6 +62,7 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
                             !usedTitles.includes(course.title) || course.title === currentValue
                         );
 
+
                         return (
                             <div key={i} className={styles.field}>
                                 <label htmlFor={`priority-${i}`}>Priority {i + 1}</label>

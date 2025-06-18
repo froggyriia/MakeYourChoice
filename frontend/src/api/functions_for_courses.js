@@ -16,6 +16,7 @@ export async function fetchCourses(email = null, allCourses = false) {
       .select('*')
       .order('created_at', { ascending: false });
 
+
     if (!allCourses && email) {
       const userProgram = await getUserProgram(email);
       if (!userProgram) {
