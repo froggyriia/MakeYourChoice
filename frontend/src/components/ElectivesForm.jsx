@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from './ElectivesForm.module.css';
 import { fetchCourses } from '../api/functions_for_courses';
+import { useAuth } from '../context/AuthContext'
 
 export default function ElectivesForm({ type, onSubmit, onClear }) {
     const [filteredCourses, setFilteredCourses] = useState([]);
@@ -8,13 +9,15 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
     const [error, setError] = useState(null);
     const [selectedCourses, setSelectedCourses] = useState(Array(5).fill(""));
 
+    const { email } = useAuth();
+
     useEffect(() => {
         setSelectedCourses(Array(5).fill(""));
 
         const loadCourses = async () => {
             try {
                 setLoading(true);
-                const allCourses = await fetchCourses();
+                const allCourses = await fetchCourses(email);
                 const filtered = allCourses.filter(course => course.type === type);
                 setFilteredCourses(filtered);
             } catch (err) {

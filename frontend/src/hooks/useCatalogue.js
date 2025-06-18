@@ -1,12 +1,14 @@
 // hooks/useCatalogue.js
 import { useState, useEffect } from 'react';
 import { fetchCourses, addCourse } from '../api/functions_for_courses.js';
+import { useAuth } from '../context/AuthContext.jsx'
 
 export const useCatalogue = () => {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [showAddForm, setShowAddForm] = useState(false);
+    const { email } = useAuth();
 
     const initialCourse = {
         title: '',
@@ -24,7 +26,7 @@ export const useCatalogue = () => {
         const loadCourses = async () => {
             try {
                 setLoading(true);
-                const data = await fetchCourses();
+                const data = await fetchCourses(email);
                 console.log("Fetched courses:", data);
                 setCourses(data);
             } catch (err) {

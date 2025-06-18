@@ -1,26 +1,41 @@
 //functions_for_courses.js
 
 import { supabase } from '../pages/supabaseClient.jsx';
+import { getUserProgram } from './functions_for_users.js';
 
-export const fetchCourses = async () => {
+/**
+ * Получает элективы/курсы, доступные для программы пользователя
+ * @param {string} email - Email пользователя (опционально, если нужно фильтровать по программе)
+ * @param {boolean} [allCourses=false] - Если true, вернет все курсы без фильтрации по программе
+ * @returns {Promise<Array>} - Массив курсов
+ */
+export async function fetchCourses(email = null, allCourses = false) {
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from('catalogue')
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Supabase error:', error);
-      return [];
+    if (!allCourses && email) {
+      const userProgram = await getUserProgram(email);
+      if (!userProgram) {
+        console.warn(`Программа не найдена для пользователя ${email}`);
+        return [];
+      }
+      query = query.contains('program', [userProgram]);
     }
+
+    const { data, error } = await query;
+
+    if (error) throw error;
 
     return Array.isArray(data) ? data : [];
 
   } catch (error) {
-    console.error('Unexpected error fetching courses:', error);
+    console.error('Ошибка при получении курсов:', error);
     return [];
   }
-};
+}
 
 export const addCourse = async (courseData) => {
   try {
