@@ -1,57 +1,12 @@
-.wrapper {
-    width: 80%;
-    display: flex;
-    justify-content: center;
-    background-color: transparent;
-    padding: 20px 0;
-}
-
 .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 50px;
-    max-width: 1000px;
-    width: 90%;
-    margin: 0 auto;
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    font-family: 'Montserrat', sans-serif;
+    width: 100%;
+    padding: 20px;
 }
 
 .form {
     width: 100%;
-}
-
-.buttonsRow {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.clearButton {
-    background-color: #eee;
-    color: #333;
-    border: 1px solid #ccc;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.clearButton:hover {
-    background-color: #ddd;
-}
-
-h2 {
-    margin-bottom: 24px;
-    font-weight: 700;
-    font-size: 26px;
-    color: var(--color-primary, #007BFF);
-    user-select: none;
-    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .field {
@@ -60,68 +15,98 @@ h2 {
     margin-bottom: 20px;
 }
 
-label {
+.field label {
     font-weight: 600;
-    font-size: 16px;
+    margin-bottom: 8px;
     color: #444;
-    margin-bottom: 6px;
 }
 
-select {
+.select {
     padding: 10px 12px;
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    background-color: var(--color-input-field, #fefefe);
+    background-color: var(--color-input-field);
     font-family: 'Montserrat', sans-serif;
-    cursor: pointer;
     transition: border-color 0.3s ease;
+    width: 100%;
 }
 
-select:focus {
+.select:focus {
     outline: none;
-    border-color: var(--color-primary, #007BFF);
+    border-color: var(--color-primary);
+}
+
+.buttonsRow {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
 }
 
 .submitButton {
-    width: 100%;
+    flex: 1;
     padding: 12px 0;
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 600;
     color: white;
-    background-color: var(--color-primary, #007BFF);
+    background-color: var(--color-primary);
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 .submitButton:hover {
-    background-color: #0056b3;
+    background-color: #349918;
+}
+
+.clearButton {
+    flex: 1;
+    padding: 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #eee;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.clearButton:hover {
+    background-color: #ddd;
+}
+
+.loading,
+.error {
+    text-align: center;
+    padding: 20px;
+    font-size: 18px;
+}
+
+.error {
+    color: #d00;
 }
 
 @media (max-width: 768px) {
-    .wrapper {
-        width: 95%;
-        padding: 10px 0;
-    }
-    
     .container {
-        padding: 20px;
-        width: 100%;
+        padding: 15px;
     }
     
-    h2 {
-        font-size: 22px;
-    }
-    
-    select {
+    .select {
         font-size: 14px;
         padding: 8px 10px;
     }
     
-    .submitButton {
-        font-size: 16px;
+    .buttonsRow {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .submitButton,
+    .clearButton {
+        width: 100%;
+        font-size: 15px;
         padding: 10px 0;
     }
 }
