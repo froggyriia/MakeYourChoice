@@ -121,6 +121,11 @@ label > div > label input[type="checkbox"] {
     margin-top: 16px; /* Уменьшено с 20px */
 }
 
+.reactSelect {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
 button[type="submit"],
 button[type="button"] {
     padding: 6px 16px; /* Уменьшено с 8px 20px */

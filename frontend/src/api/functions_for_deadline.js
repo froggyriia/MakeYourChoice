@@ -5,7 +5,7 @@ export const setDeadline = async (programTitle, deadline) => {
   try {
     const { data, error } = await supabase
     .from('groups_electives')
-    .update(deadlines: deadline)
+    .update({ deadlines: deadline })
     .eq('student_group', programTitle)
     .select()
     .single();

@@ -13,7 +13,7 @@ export const useCatalogue = () => {
         description: '',
         teacher: '',
         language: 'Rus',
-        program: ['Rus Program'],
+        program: [],
         type: 'tech',
         years: [],
     };

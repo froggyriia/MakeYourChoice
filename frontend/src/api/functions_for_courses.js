@@ -77,21 +77,49 @@ export const getCourseInfo = async (courseTitle) => {
  * @throws {Error} - Если произошла ошибка обновления
  */
 export const editCourseInfo = async (courseNewData) => {
-  try {
-    const { id, ...updateData } = courseNewData;
+    try {
+        const { id, ...updateData } = courseNewData;
 
-    const { data, error } = await supabase
-    .from('catalogue')
-    .update(updateData)
-    .eq('id', id)
-    .select();
-    if (error) throw error;
-    return data[0];
-  } catch (error) {
-    console.error('Error updating course:', error.message);
-    throw error;
-  }
+        const { data, error } = await supabase
+            .from('catalogue')
+            .update(updateData)
+            .eq('id', id)
+            .select();
+        if (error) throw error;
+        return data[0];
+    } catch (error) {
+        console.error('Error updating course:', error.message);
+        throw error;
+    }
 };
+/**
+ * Retrieves a list of all unique academic program names from the database.
+ *
+ * @async
+ * @returns {Promise<string[]>} An array of academic program names.
+ * @throws Will log and rethrow any Supabase fetch error.
+ */
+export const uniquePrograms = async () => {
+    try {
+        const { data, error } = await supabase
+            .from('groups_electives')
+            .select('student_group');
+
+        if (error) throw error;
+
+        // Убираем дубликаты и пустые строки
+        const programList = Array.from(
+            new Set(data.map(item => item.student_group).filter(Boolean))
+        );
+
+        return programList;
+    } catch (error) {
+        console.error("Couldn't return programs", error.message);
+        throw error;
+    }
+};
+
+
 
 /**
  * Удаляет курс из таблицы catalogue по названию
