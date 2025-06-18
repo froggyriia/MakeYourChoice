@@ -94,39 +94,20 @@ export const editCourseInfo = async (courseNewData) => {
 };
 
 /**
- * Retrieves a list of all unique academic program names from the database.
- *
- * @async
- * @returns {Promise<string[]>} An array of academic program names.
- * @throws Will log and rethrow any Supabase fetch error.
+ * Удаляет курс из таблицы catalogue по названию
+ * @param {string} courseTitle - название курса для удаления
+ * @returns {Promise<{error: Error|null}>} - Объект с ошибкой (если возникла)
  */
- export const uniquePrograms = async () => {
-    try {
-    const { data, error } = await supabase
-        .from('groups_electives')
-        .select('student_group');
-
-        if (error) throw error;
-
-        const programList = data.map(item => item.group)
-        return programList;
-    } catch (error) {
-        console.error("Couldn't return programs", error.message);
-        throw error;
-    }
-}
-
-export const addProgram = async (programData) => {
+export const deleteCourse = async (courseTitle) => {
   try {
-    const { data, error } = await supabase
-      .from('groups_electives')
-      .insert(programData)
-      .select();
+    const { error } = await supabase
+      .from('catalogue')
+      .delete()
+      .eq('title', courseTitle);
 
-    if (error) throw error;
-    return { data, error };
+    return { error };
   } catch (error) {
-    console.error('Error adding program:', error.message);
-    throw error;
+    console.error('Error deleting course:', error);
+    return { error };
   }
 };
