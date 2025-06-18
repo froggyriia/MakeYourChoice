@@ -43,6 +43,7 @@ export const addCourse = async (courseData) => {
 export const getCourseInfo = async (courseTitle) => {
   try {
     const { data, error } = await supabase
+    .from('catalogue')
     .select('*')
     .eq('title', courseTitle)
     .single()
@@ -53,3 +54,23 @@ export const getCourseInfo = async (courseTitle) => {
     throw error;
   }
 };
+
+// функция принимает словарь полей курса (id важен!!!!!!!!!!)
+export const editCourseInfo = async (courseNewData) => {
+  try {
+    const { id, ...updateData } = courseNewData;
+
+    const { data, error } = await supabase
+    .from('catalogue')
+    .update(updateData)
+    .eq('id', id)
+    .select();
+    if (error) throw error;
+    return data[0];
+  } catch (error) {
+    console.error('Error updating course:', error.message);
+    throw error;
+  }
+};
+
+
