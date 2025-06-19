@@ -94,18 +94,28 @@ export const editCourseInfo = async (courseNewData) => {
     try {
         const { id, ...updateData } = courseNewData;
 
+        // Очистка и нормализация данных
+        const cleanedData = {
+            ...updateData,
+            years: Array.from(new Set((updateData.years || []).map(Number))),
+            program: Array.from(new Set((updateData.program || []).map(String))),
+        };
+
         const { data, error } = await supabase
             .from('catalogue')
-            .update(updateData)
+            .update(cleanedData)
             .eq('id', id)
             .select();
+
         if (error) throw error;
+
         return data[0];
     } catch (error) {
         console.error('Error updating course:', error.message);
         throw error;
     }
 };
+
 /**
  * Retrieves a list of all unique academic program names from the database.
  *
