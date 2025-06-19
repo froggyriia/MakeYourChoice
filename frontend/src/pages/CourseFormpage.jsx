@@ -8,6 +8,9 @@ import Header from "../components/Header.jsx";
 import { useExcelExport } from '../hooks/useExcelExport';
 import { useFormSubmit } from '../hooks/useFormSubmit';
 
+import {getUserProgram} from "../api/functions_for_users.js";
+import {getProgramInfo} from "../api/functions_for_programs.js";
+
 export default function CourseFormPage() {
     const { email, role } = useAuth();
     const [activeTab, setActiveTab] = useState('tech');
@@ -48,7 +51,12 @@ export default function CourseFormPage() {
                             </button>
                         </div>
                     )}
-                    {role !== 'admin' && (<ElectivesForm type={activeTab} onSubmit={(selectedCourses) => onSubmit(selectedCourses, activeTab)}  />
+                    {role !== 'admin' && (
+                        <ElectivesForm
+                            type={activeTab}
+                            onSubmit={(selectedCourses) => onSubmit(selectedCourses, activeTab)}
+                            programTitle={getProgramInfo(email)}
+                        />
                     )}
                     </div>
             </div>

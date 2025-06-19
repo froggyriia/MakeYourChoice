@@ -2,7 +2,7 @@ import { supabase } from '../pages/supabaseClient.jsx';
 
 /**
  * Получает информацию о программе по ее названию
- * @param {string} courseTitle - Название программы для поиска
+ * @param {string} programTitle - Название программы для поиска
  * @returns {Promise<Object>} - Возвращает объект с информацией о программе
  * @throws {Error} - Если программа не найдена или произошла ошибка запроса
  */

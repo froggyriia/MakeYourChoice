@@ -2,7 +2,7 @@
 
 import CourseItem from './CourseItem';
 
-const CourseList = ({ courses, onDeleteCourse }) => {
+const CourseList = ({ courses, onDeleteCourse, onEditCourse }) => {
     return (
         <div>
             {courses.length ? (
@@ -11,6 +11,7 @@ const CourseList = ({ courses, onDeleteCourse }) => {
                         key={course.id}
                         course={course}
                         onDelete={onDeleteCourse}
+                        onEdit={onEditCourse}
                     />
                 ))
             ) : (

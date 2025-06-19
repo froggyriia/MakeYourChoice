@@ -1,4 +1,13 @@
 .container {
+.wrapper {
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    background-color: transparent;
+    padding: 20px 0;
+}
+
+
     width: 100%;
     padding: 20px;
 }
@@ -102,7 +111,7 @@
         flex-direction: column;
         gap: 10px;
     }
-    
+
     .submitButton,
     .clearButton {
         width: 100%;
