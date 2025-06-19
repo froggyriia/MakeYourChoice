@@ -110,3 +110,23 @@ export const deleteProgram = async (programTitle) => {
     return { error };
   }
 };
+
+export async function getDeadlineForGroup(programName) {
+  try {
+    const { data, error } = await supabase
+        .from('groups_electives')
+        .select('deadline')
+        .eq('student_group', programName)
+        .single();
+
+    if (error || !data) {
+      console.error('Error fetching deadline:', error);
+      return null;
+    }
+
+    return data.deadline; // вернётся строка в формате timestamptz
+  } catch (err) {
+    console.error('Unexpected error in getDeadlineForGroup:', err);
+    return null;
+  }
+}
