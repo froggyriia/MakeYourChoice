@@ -10,7 +10,7 @@ import { getUserProgram } from './functions_for_users.js';
  * @param {boolean} [allCourses=false] - Если true, вернет все курсы без фильтрации по программе
  * @returns {Promise<Array>} - Массив курсов
  */
-export async function fetchCourses(email = null, allCourses = false) {
+export async function fetchCourses(email, allCourses = false) {
   try {
     let query = supabase
       .from('catalogue')
