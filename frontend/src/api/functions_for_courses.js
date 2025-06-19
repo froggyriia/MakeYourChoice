@@ -47,9 +47,10 @@ export async function fetchCourses(email, allCourses = false) {
  */
 export const addCourse = async (courseData) => {
   try {
+    const { id, ...dataWithoutId } = courseData;
     const { data, error } = await supabase
       .from('catalogue')
-      .insert(courseData)
+      .insert(dataWithoutId)
       .select();
 
     if (error) throw error;
