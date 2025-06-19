@@ -1,4 +1,5 @@
 import { supabase } from '../pages/supabaseClient.jsx';
+import { getUserProgram } from './functions_for_users.js'
 
 /**
  * Получает информацию о программе по ее названию
@@ -6,21 +7,41 @@ import { supabase } from '../pages/supabaseClient.jsx';
  * @returns {Promise<Object>} - Возвращает объект с информацией о программе
  * @throws {Error} - Если программа не найдена или произошла ошибка запроса
  */
-export const getProgramInfo = async (programTitle) => {
+export const getProgramInfo = async (email) => {
+  if (!email) {
+    throw new Error('Email is required');
+  }
+
   try {
+    // 1. Получаем программу пользователя по email
+    const programTitle = await getUserProgram(email);
+
+    if (!programTitle) {
+      console.warn(`No program found for email: ${email}`);
+      return null;
+    }
+
+    // 2. Получаем информацию об элективах по программе
     const { data, error } = await supabase
-    .from('groups_electives')
-    .select('*')
-    .eq('student_group', programTitle)
-    .single()
+      .from('groups_electives')
+      .select('*')
+      .eq('student_group', programTitle)
+      .maybeSingle();
+
     if (error) throw error;
+
+    if (!data) {
+      console.warn(`No electives found for program: ${programTitle}`);
+      return null;
+    }
+
     return data;
+
   } catch (error) {
-    console.error('Error fetching program:', error.message);
+    console.error('Error in getProgramInfo:', error.message);
     throw error;
   }
 };
-
 export const addProgram = async (programData) => {
   try {
     const { data, error } = await supabase
