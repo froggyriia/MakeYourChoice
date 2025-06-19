@@ -1,15 +1,17 @@
 import { useState, useRef } from 'react';
 import Header from '../components/Header';
 import CourseList from '../components/CourseList';
+import ProgramList from '../components/ProgramList';
 import AddCourseModal from '../components/AddCourseModal';
 import { useAuth } from '../context/AuthContext';
 import styles from './CataloguePage.module.css';
 import { useCatalogue } from '../hooks/useCatalogue';
-import { usePrograms} from "../hooks/usePrograms.js";
+import { usePrograms } from "../hooks/usePrograms.js";
 import AddStudentsProgramModal from "../components/AddStudentProgramModal.jsx";
 import ElectivesForm from '../components/ElectivesForm';
 import { useExcelExport } from '../hooks/useExcelExport';
 import { useFormSubmit } from '../hooks/useFormSubmit';
+
 
 const CataloguePage = () => {
     const { role, email } = useAuth();
@@ -37,12 +39,16 @@ const CataloguePage = () => {
 
     // Данные и функции по программам студентов из usePrograms
     const {
+        programs,
         programData,
         showModal: showProgramModal,
         setShowModal: setShowProgramModal,
         handleChange: handleProgramChange,
         handleSubmit: handleProgramSubmit,
         handleCancel: handleProgramCancel,
+        handleDeleteProgram,
+        startEditingProgram,
+
         error: programError,
     } = usePrograms();
 
@@ -118,6 +124,19 @@ const CataloguePage = () => {
                         onEditCourse={role === 'admin' ? startEditingCourse : null}
                     />
                 </div>
+                {role === 'admin' && (
+                    <div className={styles.leftSection}>
+                        <h3>Student Programs</h3>
+                        <ProgramList
+                            programs={programs}
+                            onDeleteProgram={handleDeleteProgram}
+                            onEditProgram={(groupTitle) => {
+                                startEditingProgram(groupTitle);
+                                console.log('Edit program:', groupTitle);
+                            }}
+                        />
+                    </div>
+                )}
 
                 {role !== 'admin' && (
                     <div className={styles.rightSection}>
