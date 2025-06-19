@@ -1,15 +1,17 @@
-.container {
 .wrapper {
-    width: 80%;
+    width: 100%;
     display: flex;
     justify-content: center;
     background-color: transparent;
     padding: 20px 0;
 }
 
-
+.container {
     width: 100%;
-    padding: 20px;
+    padding: 24px;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .form {
@@ -18,104 +20,123 @@
     margin: 0 auto;
 }
 
+.form h2 {
+    font-size: 22px;
+    margin-bottom: 24px;
+    color: var(--color-primary);
+    text-align: center;
+    font-weight: 600;
+}
+
 .field {
     display: flex;
     flex-direction: column;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .field label {
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     color: #444;
+    font-size: 15px;
 }
 
 .select {
-    padding: 10px 12px;
+    padding: 12px 16px;
     font-size: 16px;
-    border: 1px solid #ccc;
+    border: 2px solid #e9ecef;
     border-radius: 8px;
     background-color: var(--color-input-field);
     font-family: 'Montserrat', sans-serif;
-    transition: border-color 0.3s ease;
+    transition: all 0.3s ease;
     width: 100%;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
 }
 
 .select:focus {
     outline: none;
     border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
 }
 
 .buttonsRow {
     display: flex;
-    gap: 15px;
-    margin-top: 25px;
+    gap: 16px;
+    margin-top: 32px;
 }
 
 .submitButton {
     flex: 1;
-    padding: 12px 0;
+    padding: 14px 0;
     font-size: 16px;
     font-weight: 600;
     color: white;
-    background-color: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary), #4CAF50);
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
 }
 
 .submitButton:hover {
-    background-color: #349918;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
 .clearButton {
     flex: 1;
-    padding: 12px 0;
+    padding: 14px 0;
     font-size: 16px;
     font-weight: 600;
-    background-color: #eee;
+    background: #f8f9fa;
     color: #333;
-    border: 1px solid #ccc;
+    border: 2px solid #e9ecef;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .clearButton:hover {
-    background-color: #ddd;
+    background: #e9ecef;
 }
 
-.loading,
-.error {
+.noCoursesMessage {
     text-align: center;
+    color: #666;
+    font-size: 16px;
     padding: 20px;
-    font-size: 18px;
-}
-
-.error {
-    color: #d00;
 }
 
 @media (max-width: 768px) {
     .container {
-        padding: 15px;
+        padding: 18px;
+    }
+    
+    .form h2 {
+        font-size: 20px;
+        margin-bottom: 20px;
     }
     
     .select {
         font-size: 14px;
-        padding: 8px 10px;
+        padding: 10px 14px;
     }
     
     .buttonsRow {
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
+        margin-top: 24px;
     }
 
     .submitButton,
     .clearButton {
         width: 100%;
         font-size: 15px;
-        padding: 10px 0;
+        padding: 12px 0;
     }
 }

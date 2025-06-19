@@ -1,31 +1,53 @@
 .header {
     display: flex;
     justify-content: space-between;
-
-    /* Увеличен padding сверху */
-    padding: 1rem 1rem 1rem 1rem;
-
+    align-items: center;
+    padding: 1rem 2rem;
     background-color: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
 }
 
-
-
 .logoutButton {
-    padding: 8px 16px 8px 16px;
+    padding: 8px 20px;
     font-size: 15px;
     border-radius: 8px;
-
-    background-color: #d00;
+    background: linear-gradient(135deg, #ff4444, #d00);
     color: white;
     font-weight: 600;
     cursor: pointer;
     user-select: none;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(255, 68, 68, 0.2);
+    border: none;
+}
+
+.logoutButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
 }
 
 .email {
-    margin-top: 4px; /* можно варьировать, например 4–6px */
+    font-weight: 500;
+    color: #555;
+    font-size: 15px;
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 0.8rem 1rem;
+    }
+    
+    .logoutButton {
+        padding: 6px 14px;
+        font-size: 14px;
+    }
+    
+    .email {
+        font-size: 14px;
+    }
 }
