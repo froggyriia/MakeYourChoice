@@ -8,6 +8,8 @@ import {
     getCourseInfo,
 } from '../api/functions_for_courses.js';
 
+import { isAdmin} from "../utils/validation.js";
+
 export const useCatalogue = () => {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -34,7 +36,7 @@ export const useCatalogue = () => {
         const loadCourses = async () => {
             try {
                 setLoading(true);
-                const data = await fetchCourses(email);
+                const data = await fetchCourses(email, isAdmin(email));
                 console.log("Fetched courses:", data);
                 setCourses(data);
             } catch (err) {
@@ -49,23 +51,28 @@ export const useCatalogue = () => {
 
     // Для редактирования: загружаем данные курса из массива или из API (если нужно)
     const startEditingCourse = async (courseId) => {
-        // Попытка найти курс в стейте
         let course = courses.find((c) => c.id === courseId);
 
-        // Если не нашли, загрузим из API (на всякий случай)
         if (!course) {
             try {
-                course = await getCourseInfoById(courseId); // если есть такая функция, или getCourseInfo(title)
+                course = await getCourseInfo(courseId); // исправила название
             } catch (e) {
                 setError('Failed to load course for editing');
                 return;
             }
         }
 
-        // Заполняем форму курсом для редактирования
-        setCurrentCourse(course);
+        // 🧹 Приводим поля к нужному типу
+        const normalizedCourse = {
+            ...course,
+            years: (course.years || []).map(Number),
+            program: (course.program || []).map(String),
+        };
+
+        setCurrentCourse(normalizedCourse);
         setShowAddForm(true);
     };
+
 
     // Для создания нового курса (очистка формы)
     const startAddingCourse = () => {
@@ -74,13 +81,17 @@ export const useCatalogue = () => {
     };
 
     const handleYearsChange = (year) => {
+        const yearInt = Number(year);
         setCurrentCourse((prev) => {
-            const years = prev.years.includes(year)
-                ? prev.years.filter((y) => y !== year)
-                : [...prev.years, year];
+            const prevYears = prev.years.map(Number); // 💡 преобразуем всё в числа
+            const years = prevYears.includes(yearInt)
+                ? prevYears.filter((y) => y !== yearInt)
+                : [...prevYears, yearInt];
+            console.log('Old years:', prevYears, 'New years:', years);
             return { ...prev, years };
         });
     };
+
 
     const handleChange = ({ name, value }) => {
         setCurrentCourse((prev) => ({ ...prev, [name]: value }));
@@ -89,18 +100,23 @@ export const useCatalogue = () => {
     // Отправка формы: создаем или обновляем
     const handleSubmit = async () => {
         try {
-            if (currentCourse.id) {
-                // Редактирование существующего курса
-                const updatedCourse = await editCourseInfo(currentCourse);
+            const cleanedCourse = {
+                ...currentCourse,
+                years: (currentCourse.years || []).map(Number),
+                program: (currentCourse.program || []).map(String),
+            };
+
+            if (cleanedCourse.id) {
+                const updatedCourse = await editCourseInfo(cleanedCourse);
                 setCourses((prev) =>
                     prev.map((c) => (c.id === updatedCourse.id ? updatedCourse : c))
                 );
             } else {
-                // Добавление нового курса
-                const { data, error } = await addCourse(currentCourse);
+                const { data, error } = await addCourse(cleanedCourse);
                 if (error) throw error;
                 setCourses((prev) => [...prev, data[0]]);
             }
+
             setCurrentCourse(initialCourse);
             setShowAddForm(false);
             setError(null);
@@ -108,6 +124,7 @@ export const useCatalogue = () => {
             setError(err.message);
         }
     };
+
 
     const handleCancel = () => {
         setCurrentCourse(initialCourse);
