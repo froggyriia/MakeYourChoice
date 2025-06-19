@@ -56,7 +56,6 @@
                             <ElectivesForm
                                 type={activeTab}
                                 onSubmit={(selectedCourses) => onSubmit(selectedCourses, activeTab)}
-                                email={email}
                             />
                         )}
                         </div>

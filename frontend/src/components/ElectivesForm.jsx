@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import styles from './ElectivesForm.module.css';
 import { fetchCourses } from '../api/functions_for_courses';
 import {getProgramInfo} from "../api/functions_for_programs.js";
+import {useAuth} from '../context/AuthContext.jsx'
 
-export default function ElectivesForm({ type, onSubmit, onClear, email }) {
+export default function ElectivesForm({ type, onSubmit, onClear }) {
     const [filteredCourses, setFilteredCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedCourses, setSelectedCourses] = useState(Array(5).fill(""));
     const [priorityCount, setPriorityCount] = useState(0);
+    const { email, role } = useAuth();
 
     useEffect(() => {
         const initialize = async () => {
