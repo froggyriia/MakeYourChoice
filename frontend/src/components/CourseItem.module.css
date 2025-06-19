@@ -4,7 +4,6 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-bottom: 20px;
-    margin-left: 55px;
     max-width: 600px;
     width: 100%;
     font-family: 'Montserrat', sans-serif;
@@ -66,7 +65,7 @@
     width: 100%;
     border: none;
     border-radius: 8px;
-    background-color: #d00;
+    background-color: #ff4444;
     color: white;
     font-size: 18px;
     cursor: pointer;

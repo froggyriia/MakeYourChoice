@@ -126,7 +126,8 @@ const CataloguePage = () => {
                 </div>
                 {role === 'admin' && (
                     <div className={styles.leftSection}>
-                        <h3>Student Programs</h3>
+                        <p><b>Student Programs</b></p>
+                        <br />
                         <ProgramList
                             programs={programs}
                             onDeleteProgram={handleDeleteProgram}
