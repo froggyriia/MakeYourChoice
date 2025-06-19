@@ -3,7 +3,7 @@ import styles from './ElectivesForm.module.css';
 import { fetchCourses } from '../api/functions_for_courses';
 import {getProgramInfo} from "../api/functions_for_programs.js";
 
-export default function ElectivesForm({ type, onSubmit, onClear, programTitle }) {
+export default function ElectivesForm({ type, onSubmit, onClear, email }) {
     const [filteredCourses, setFilteredCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -16,9 +16,11 @@ export default function ElectivesForm({ type, onSubmit, onClear, programTitle })
                 setLoading(true);
 
                 const [courses, program] = await Promise.all([
-                    fetchCourses(),
-                    getProgramInfo(programTitle)
+                    fetchCourses(email),
+                    getProgramInfo(email)
                 ]);
+
+                console.log("Courses in elective form", courses);
 
                 // Отфильтровали курсы по типу
                 const filtered = courses.filter(course => course.type === type);
@@ -37,7 +39,7 @@ export default function ElectivesForm({ type, onSubmit, onClear, programTitle })
         };
 
         initialize();
-    }, [type, programTitle]);
+    }, [type, email]);
 
     const handleChange = (index, value) => {
         const updated = [...selectedCourses];
