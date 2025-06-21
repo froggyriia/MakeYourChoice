@@ -1,7 +1,7 @@
 // hooks/usePrograms.js
 import {useEffect, useState} from 'react';
 import {supabase} from "../utils/supabaseClient.js";
-import { addProgram, getProgramInfo, deleteProgram, uniquePrograms, editProgramInfo } from '../api/functions_for_programs';
+import { addProgram, getProgramInfo, deleteProgram,  editProgramInfo } from '../api/functions_for_programs';
 
 export const usePrograms = () => {
     const initialProgram = {

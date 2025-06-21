@@ -1,8 +1,31 @@
+/**
+ * AddCourseModal Component
+ *
+ * This component provides a modal interface for adding or editing a course.
+ * It allows users to input course details such as title, description, teacher,
+ * language, academic programs, type, and applicable study years.
+ *
+ * Used in: CataloguePage.jsx.
+ */
+
 import React, {useEffect, useRef, useState} from "react";
 import styles from './AddCourseModal.module.css';
 import {uniquePrograms} from "../api/functions_for_courses.js";
 import Select from 'react-select';
 
+
+/**
+ * Modal component for adding or editing a course.
+ *
+ * @component
+ * @param {Object} props - Component props.
+ * @param {Object} props.course - Course state object.
+ * @param {Function} props.onChange - Handler for updating course field values.
+ * @param {Function} props.onToggleYear - Handler for toggling year selection.
+ * @param {Function} props.onSubmit - Callback when submitting the form.
+ * @param {Function} props.onCancel - Callback when canceling the modal.
+ * @returns {JSX.Element} A modal form for adding a course.
+ */
 const AddCourseModal = ({
     course,
     onChange,
@@ -13,6 +36,11 @@ const AddCourseModal = ({
     const modalRef = useRef(null);
     const scrollPosition = useRef(0);
     const [programs, setPrograms] = useState([]);
+
+    /**
+     * Disables page scroll and stores scroll position when modal opens.
+     * Restores scroll on unmount.
+     */
 
     useEffect(() => {
         scrollPosition.current = window.scrollY;
@@ -29,6 +57,9 @@ const AddCourseModal = ({
         };
     }, []);
 
+    /**
+     * Adds event listener to close modal when Escape key is pressed.
+     */
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === 'Escape') {
@@ -39,6 +70,9 @@ const AddCourseModal = ({
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onCancel]);
 
+    /**
+     * Loads unique academic programs from the backend on mount.
+     */
     useEffect(() => {
         const loadStudentPrograms = async () => {
             try {
@@ -51,33 +85,57 @@ const AddCourseModal = ({
         loadStudentPrograms();
     }, []);
 
+    /**
+     * Prevents wheel scrolling from propagating outside the modal.
+     */
     const handleWheel = (e) => {
         e.stopPropagation();
     };
 
+    /**
+     * Handles basic text input changes.
+     *
+     * @param {Event} e - Input change event.
+     */
     const handleInputChange = (e) => {
         onChange({ name: e.target.name, value: e.target.value });
     };
 
+    /**
+     * Handles language/type button selections.
+     *
+     * @param {string} field - The field to change (e.g., 'language').
+     * @param {string} value - The new value.
+     */
     const handleButtonChange = (field, value) => {
         onChange({ name: field, value });
     };
 
+    /**
+     * Validates form and triggers submit handler.
+     *
+     * @param {Event} e - Form submit event.
+     */
     const handleFormSubmit = (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Prevent default page reload
+
+        // Validate language
         if (!course.language) {
             alert("Please select a language.");
             return;
         }
+        // Validate at least one program
         if (!course.program || course.program.length === 0) {
             alert("Please select at least one program.");
             return;
         }
+        // Validate at least one year
         if (!course.years || course.years.length === 0) {
             alert("Please select at least one year.");
             return;
         }
-        onSubmit();
+
+        onSubmit(); // Call submit handler after all validations
     };
 
     return (
