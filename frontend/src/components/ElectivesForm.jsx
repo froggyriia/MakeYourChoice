@@ -24,11 +24,9 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
 
                 console.log("Courses in elective form", courses);
 
-                // Отфильтровали курсы по типу
                 const filtered = courses.filter(course => course.type === type);
                 setFilteredCourses(filtered);
 
-                // Установили количество приоритетов из поля `tech` или `hum`
                 const count = type === 'tech' ? program.tech : program.hum;
                 setPriorityCount(count);
                 setSelectedCourses(Array(count).fill(""));
@@ -51,7 +49,7 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
 
     const handleClear = () => {
         setSelectedCourses(Array(5).fill(""));
-        if (onClear) onClear(type); // Передаем тип вкладки
+        if (onClear) onClear(type);
     };
 
     return (

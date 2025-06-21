@@ -48,7 +48,7 @@ const CourseItem = ({ course, onDelete, onEdit }) => {
                 {onEdit && (
                     <button
                         onClick={handleEdit}
-                        className={styles.toggleButton}  // Добавь стиль в css, если нужно
+                        className={styles.toggleButton}
                     >
                         Edit
                     </button>

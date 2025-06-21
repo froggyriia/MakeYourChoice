@@ -37,7 +37,6 @@ const CataloguePage = () => {
     const { isExported, exportToExcel } = useExcelExport();
     const { onSubmit } = useFormSubmit(email);
 
-    // Данные и функции по программам студентов из usePrograms
     const {
         programs,
         programData,
@@ -110,7 +109,7 @@ const CataloguePage = () => {
             {showProgramModal && (
                 <AddStudentsProgramModal
                     programData={programData}
-                    onChange={handleProgramChange}     // <--- вот здесь onChange
+                    onChange={handleProgramChange}
                     onSubmit={handleProgramSubmit}
                     onCancel={handleProgramModalCancel}
                 />

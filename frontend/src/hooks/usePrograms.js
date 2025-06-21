@@ -60,13 +60,11 @@ export const usePrograms = () => {
             };
 
             if (programData.id) {
-                // 🔧 Режим редактирования
                 const updated = await editProgramInfo({ ...payload, id: programData.id });
                 setPrograms((prev) =>
                     prev.map((p) => (p.id === updated.id ? updated : p))
                 );
             } else {
-                // ➕ Новый
                 const { data, error } = await addProgram(payload);
                 if (error) throw error;
                 setPrograms((prev) => [...prev, data[0]]);

@@ -17,7 +17,6 @@ export const useCatalogue = () => {
     const [showAddForm, setShowAddForm] = useState(false);
     const { email } = useAuth();
 
-    // Хранит либо новый курс, либо редактируемый курс
     const initialCourse = {
         id: null,
         title: '',
@@ -49,20 +48,18 @@ export const useCatalogue = () => {
         loadCourses();
     }, []);
 
-    // Для редактирования: загружаем данные курса из массива или из API (если нужно)
     const startEditingCourse = async (courseId) => {
         let course = courses.find((c) => c.id === courseId);
 
         if (!course) {
             try {
-                course = await getCourseInfo(courseId); // исправила название
+                course = await getCourseInfo(courseId);
             } catch (e) {
                 setError('Failed to load course for editing');
                 return;
             }
         }
 
-        // 🧹 Приводим поля к нужному типу
         const normalizedCourse = {
             ...course,
             years: (course.years || []).map(Number),
@@ -74,7 +71,6 @@ export const useCatalogue = () => {
     };
 
 
-    // Для создания нового курса (очистка формы)
     const startAddingCourse = () => {
         setCurrentCourse(initialCourse);
         setShowAddForm(true);
@@ -83,7 +79,7 @@ export const useCatalogue = () => {
     const handleYearsChange = (year) => {
         const yearInt = Number(year);
         setCurrentCourse((prev) => {
-            const prevYears = prev.years.map(Number); // 💡 преобразуем всё в числа
+            const prevYears = prev.years.map(Number);
             const years = prevYears.includes(yearInt)
                 ? prevYears.filter((y) => y !== yearInt)
                 : [...prevYears, yearInt];
@@ -97,7 +93,6 @@ export const useCatalogue = () => {
         setCurrentCourse((prev) => ({ ...prev, [name]: value }));
     };
 
-    // Отправка формы: создаем или обновляем
     const handleSubmit = async () => {
         try {
             const cleanedCourse = {
@@ -124,7 +119,6 @@ export const useCatalogue = () => {
             setError(err.message);
         }
     };
-
 
     const handleCancel = () => {
         setCurrentCourse(initialCourse);

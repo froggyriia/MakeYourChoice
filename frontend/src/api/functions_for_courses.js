@@ -4,10 +4,10 @@ import { supabase } from '../pages/supabaseClient.jsx';
 import { getUserProgram } from './functions_for_users.js';
 
 /**
- * Получает элективы/курсы, доступные для программы пользователя
- * @param {string} email - Email пользователя (опционально, если нужно фильтровать по программе)
- * @param {boolean} [allCourses=false] - Если true, вернет все курсы без фильтрации по программе
- * @returns {Promise<Array>} - Массив курсов
+ * Fetches electives/courses available for the user's program
+ * @param {string} email - User email (optional, if filtering by program is needed)
+ * @param {boolean} [allCourses=false] - If true, returns all courses without program filtering
+ * @returns {Promise<Array>} - Array of courses
  */
 export async function fetchCourses(email, allCourses = false) {
   try {
@@ -19,7 +19,7 @@ export async function fetchCourses(email, allCourses = false) {
     if (!allCourses && email) {
       const userProgram = await getUserProgram(email);
       if (!userProgram) {
-        console.warn(`Программа не найдена для пользователя ${email}`);
+        console.warn(`Program not found for user ${email}`);
         return [];
       }
       query = query.contains('program', [userProgram]);
@@ -32,16 +32,16 @@ export async function fetchCourses(email, allCourses = false) {
     return Array.isArray(data) ? data : [];
 
   } catch (error) {
-    console.error('Ошибка при получении курсов:', error);
+    console.error('Error fetching courses:', error);
     return [];
   }
 }
 
 /**
- * Добавляет новый курс в базу данных
- * @param {Object} courseData - Объект с данными нового курса
- * @returns {Promise<Object>} - Возвращает объект с данными добавленного курса и информацией об ошибке
- * @throws {Error} - Если произошла ошибка при добавлении курса
+ * Adds a new course to the database
+ * @param {Object} courseData - Object with new course data
+ * @returns {Promise<Object>} - Returns object with added course data and error info
+ * @throws {Error} - If course addition fails
  */
 export const addCourse = async (courseData) => {
   try {
@@ -60,10 +60,10 @@ export const addCourse = async (courseData) => {
 };
 
 /**
- * Получает информацию о курсе по его названию
- * @param {string} courseTitle - Название курса для поиска
- * @returns {Promise<Object>} - Возвращает объект с информацией о курсе
- * @throws {Error} - Если курс не найден или произошла ошибка запроса
+ * Gets course information by its title
+ * @param {string} courseTitle - Course title to search for
+ * @returns {Promise<Object>} - Returns object with course information
+ * @throws {Error} - If course not found or request error occurs
  */
 export const getCourseInfo = async (courseTitle) => {
   try {
@@ -81,18 +81,17 @@ export const getCourseInfo = async (courseTitle) => {
 };
 
 /**
- * Обновляет информацию о курсе в базе данных
- * @param {Object} courseNewData - Объект с новыми данными курса
- * @param {number} courseNewData.id - ID курса для обновления (обязательное поле)
- * @param {Object} courseNewData... - Другие поля курса для обновления
- * @returns {Promise<Object>} - Возвращает обновленный объект курса
- * @throws {Error} - Если произошла ошибка обновления
+ * Updates course information in the database
+ * @param {Object} courseNewData - Object with new course data
+ * @param {number} courseNewData.id - Course ID to update (required field)
+ * @param {Object} courseNewData... - Other course fields to update
+ * @returns {Promise<Object>} - Returns updated course object
+ * @throws {Error} - If update error occurs
  */
 export const editCourseInfo = async (courseNewData) => {
     try {
         const { id, ...updateData } = courseNewData;
 
-        // Очистка и нормализация данных
         const cleanedData = {
             ...updateData,
             years: Array.from(new Set((updateData.years || []).map(Number))),
@@ -129,7 +128,6 @@ export const uniquePrograms = async () => {
 
         if (error) throw error;
 
-        // Убираем дубликаты и пустые строки
         const programList = Array.from(
             new Set(data.map(item => item.student_group).filter(Boolean))
         );
@@ -142,9 +140,9 @@ export const uniquePrograms = async () => {
 };
 
 /**
- * Удаляет курс из таблицы catalogue по названию
- * @param {string} courseTitle - название курса для удаления
- * @returns {Promise<{error: Error|null}>} - Объект с ошибкой (если возникла)
+ * Deletes a course from the catalogue table by title
+ * @param {string} courseTitle - Course title to delete
+ * @returns {Promise<{error: Error|null}>} - Object with error (if occurred)
  */
 export const deleteCourse = async (courseTitle) => {
   try {
@@ -160,6 +158,15 @@ export const deleteCourse = async (courseTitle) => {
   }
 };
 
+/**
+ * Filters courses based on provided criteria
+ * @param {Object} [filters={}] - Filter criteria object
+ * @param {Array} [filters.types] - Course types to filter by
+ * @param {Array} [filters.programs] - Programs to filter by
+ * @param {Array} [filters.languages] - Languages to filter by
+ * @param {boolean} [filters.isArchived] - Archive status to filter by
+ * @returns {Promise<Array>} - Filtered list of courses
+ */
 async function filterCourses(filters = {}) {
   let query = supabase
     .from('catalogue')
@@ -189,4 +196,4 @@ async function filterCourses(filters = {}) {
   }
 
   return data
-}
+}}

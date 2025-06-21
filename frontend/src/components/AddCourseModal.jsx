@@ -14,7 +14,6 @@ const AddCourseModal = ({
     const scrollPosition = useRef(0);
     const [programs, setPrograms] = useState([]);
 
-    // Блокировка прокрутки при открытии
     useEffect(() => {
         scrollPosition.current = window.scrollY;
         document.body.style.overflow = 'hidden';
@@ -30,7 +29,6 @@ const AddCourseModal = ({
         };
     }, []);
 
-    // Закрытие по ESC
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === 'Escape') {
@@ -53,7 +51,6 @@ const AddCourseModal = ({
         loadStudentPrograms();
     }, []);
 
-    // Блокировка прокрутки колесиком мыши
     const handleWheel = (e) => {
         e.stopPropagation();
     };

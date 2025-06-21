@@ -40,7 +40,7 @@ const Header = () => {
         fetchDeadline();
     }, [email]);
 
-    if (!email) return null; // Не показывать, если не залогинен
+    if (!email) return null;
 
     return (
         <div className={styles.header}>

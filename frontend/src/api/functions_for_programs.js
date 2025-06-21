@@ -2,10 +2,10 @@ import { supabase } from '../pages/supabaseClient.jsx';
 import { getUserProgram } from './functions_for_users.js'
 
 /**
- * Получает информацию о программе по ее названию
- * @param {string} programTitle - Название программы для поиска
- * @returns {Promise<Object>} - Возвращает объект с информацией о программе
- * @throws {Error} - Если программа не найдена или произошла ошибка запроса
+ * Gets program info based on its title
+ * @param {string} programTitle - program title
+ * @returns {Promise<Object>} - an object with info about the program (all the columns from the db)
+ * @throws {Error} - If an error occurs
  */
 export const getProgramInfo = async (email) => {
   if (!email) {
@@ -13,7 +13,6 @@ export const getProgramInfo = async (email) => {
   }
 
   try {
-    // 1. Получаем программу пользователя по email
     const programTitle = await getUserProgram(email);
 
     if (!programTitle) {
@@ -21,7 +20,6 @@ export const getProgramInfo = async (email) => {
       return null;
     }
 
-    // 2. Получаем информацию об элективах по программе
     const { data, error } = await supabase
       .from('groups_electives')
       .select('*')
@@ -42,6 +40,13 @@ export const getProgramInfo = async (email) => {
     throw error;
   }
 };
+
+/**
+ * Add a new program to the db
+ * @param {Object} programData - an object of program type (with specific columns)
+ * @returns {Promise<Object>} - an object of program type
+ * @throws {Error} - If an error occurs
+ */
 export const addProgram = async (programData) => {
   try {
     const { data, error } = await supabase
@@ -57,6 +62,13 @@ export const addProgram = async (programData) => {
   }
 };
 
+
+/**
+ * Edits columns of program type object in db
+ * @param {Object} programNewData - updated data about the program
+ * @returns {Promise<Object>} - an updated object
+ * @throws {Error} - if an error occurs
+ */
 export const editProgramInfo = async (programNewData) => {
   try {
     const { id, ...updateData } = programNewData;
@@ -97,6 +109,12 @@ export const editProgramInfo = async (programNewData) => {
     }
 }
 
+/**
+ * Deletes a program based on its title
+ * @param {string} programTitle - title of the program
+ * @returns {Promise<Object>} - an object of program data type
+ * @throws {Error} - if an error occurs
+ */
 export const deleteProgram = async (programTitle) => {
   try {
     const { error } = await supabase
@@ -111,12 +129,18 @@ export const deleteProgram = async (programTitle) => {
   }
 };
 
-export async function getDeadlineForGroup(programName) {
+/**
+ * Simply gets the deadline for the program from the db
+ * @param {string} programTitle - program title
+ * @returns {timestamptz} - deadline of the program
+ * @throws {Error} - If an error occurs
+ */
+export async function getDeadlineForGroup(programTitle) {
   try {
     const { data, error } = await supabase
         .from('groups_electives')
         .select('deadline')
-        .eq('student_group', programName)
+        .eq('student_group', programTitle)
         .single();
 
     if (error || !data) {
@@ -124,7 +148,7 @@ export async function getDeadlineForGroup(programName) {
       return null;
     }
 
-    return data.deadline; // вернётся строка в формате timestamptz
+    return data.deadline;
   } catch (err) {
     console.error('Unexpected error in getDeadlineForGroup:', err);
     return null;

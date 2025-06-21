@@ -35,7 +35,6 @@ export function useFormSubmit(email) {
             tech: Array(limits.tech).fill("")
         };
 
-        // Обновляем только активную вкладку
         const updatedStudent = {
             ...currentStudent,
             [activeTab]: selectedCourses
@@ -46,7 +45,6 @@ export function useFormSubmit(email) {
             return [...others, updatedStudent];
         });
 
-        // Формируем поля только для активной вкладки
         const updateFields = {};
         selectedCourses.forEach((course, i) => {
             updateFields[`${activeTab}${i + 1}`] = course || "";

@@ -1,7 +1,7 @@
 // components/ProgramItem.jsx
 
 import { useState } from 'react';
-import styles from './CourseItem.module.css'; // можно переиспользовать стили
+import styles from './CourseItem.module.css';
 import { deleteProgram } from '../api/functions_for_programs.js';
 
 const ProgramItem = ({ program, onDelete, onEdit }) => {
