@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../pages/supabaseClient';
+import { supabase } from '../pages/supabaseClient.jsx';
 import { getUserProgram, getPrioritiesNumber } from '../api/functions_for_users';
 
 export function useFormSubmit(email) {

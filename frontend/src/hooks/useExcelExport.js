@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import ExcelJS from 'exceljs';
-import { supabase } from '../pages/supabaseClient';
+import { supabase } from '../pages/supabaseClient.jsx';
 
 export function useExcelExport() {
     const [isExported, setIsExported] = useState(false);

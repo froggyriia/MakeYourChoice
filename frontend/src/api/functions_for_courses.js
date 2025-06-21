@@ -4,7 +4,6 @@ import { supabase } from '../pages/supabaseClient.jsx';
 import { getUserProgram } from './functions_for_users.js';
 
 /**
-<<<<<<< frontend/src/api/functions_for_courses.js
  * Получает элективы/курсы, доступные для программы пользователя
  * @param {string} email - Email пользователя (опционально, если нужно фильтровать по программе)
  * @param {boolean} [allCourses=false] - Если true, вернет все курсы без фильтрации по программе
@@ -14,8 +13,7 @@ export async function fetchCourses(email, allCourses = false) {
   try {
     let query = supabase
       .from('catalogue')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('*');
 
 
     if (!allCourses && email) {
@@ -143,8 +141,6 @@ export const uniquePrograms = async () => {
     }
 };
 
-
-
 /**
  * Удаляет курс из таблицы catalogue по названию
  * @param {string} courseTitle - название курса для удаления
@@ -163,3 +159,34 @@ export const deleteCourse = async (courseTitle) => {
     return { error };
   }
 };
+
+async function filterCourses(filters = {}) {
+  let query = supabase
+    .from('catalogue')
+    .select('*')
+
+  if (filters.types?.length) {
+    query = query.eq('type', filters.types)
+  }
+
+  if (filters.programs?.length) {
+    query = query.overlaps('program', filters.programs)
+  }
+
+  if (filters.languages?.length) {
+    query = query.eq('language', filters.languages)
+  }
+
+  if (typeof filters.isArchived === 'boolean') {
+    query = query.eq('archived', filters.isArchived)
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    console.error('Error while loading courses:', error)
+    return []
+  }
+
+  return data
+}
