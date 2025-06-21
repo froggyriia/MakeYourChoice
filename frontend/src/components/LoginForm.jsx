@@ -2,8 +2,13 @@
 import styles from './LoginForm.module.css';
 
 export default function LoginForm({ email, setEmail, error, onSubmit }) {
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit();
+    };
+
     return (
-        <div className={styles.container}>
+        <form onSubmit={handleSubmit} className={styles.container}>
             <h2 className={styles.title}>Welcome!</h2>
 
             <input
@@ -14,11 +19,11 @@ export default function LoginForm({ email, setEmail, error, onSubmit }) {
                 onChange={(e) => setEmail(e.target.value)}
             />
 
-            <button onClick={onSubmit} className={styles.continueButton}>
+            <button type="submit" className={styles.continueButton}>
                 Continue
             </button>
 
             {error && <div className={styles.error}>{error}</div>}
-        </div>
+        </form>
     );
 }
