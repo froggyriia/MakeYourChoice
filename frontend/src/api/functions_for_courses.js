@@ -196,4 +196,4 @@ async function filterCourses(filters = {}) {
   }
 
   return data
-}}
+}
