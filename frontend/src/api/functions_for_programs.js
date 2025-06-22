@@ -86,28 +86,6 @@ export const editProgramInfo = async (programNewData) => {
   }
 };
 
-/**
- * Retrieves a list of all unique academic program names from the database.
- *
- * @async
- * @returns {Promise<string[]>} An array of academic program names.
- * @throws Will log and rethrow any Supabase fetch error.
- */
- export const uniquePrograms = async () => {
-    try {
-    const { data, error } = await supabase
-        .from('groups_electives')
-        .select('student_group');
-
-        if (error) throw error;
-
-        const programList = data.map(item => item.group)
-        return programList;
-    } catch (error) {
-        console.error("Couldn't return programs", error.message);
-        throw error;
-    }
-}
 
 /**
  * Deletes a program based on its title
