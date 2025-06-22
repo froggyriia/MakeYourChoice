@@ -8,26 +8,42 @@
  * Used in: CataloguePage.jsx.
  */
 
-import React, {useEffect, useRef, useState} from "react"
-import styles from './AddCourseModal.module.css'
-import {uniquePrograms} from "../api/functions_for_courses.js"
-import Select from 'react-select'
+import React, { useEffect, useRef, useState } from "react";
+import styles from './AddCourseModal.module.css';
+import { uniquePrograms } from "../api/functions_for_courses.js";
+import Select from 'react-select';
 
+/**
+ * AddCourseModal Component
+ *
+ * This component provides a modal interface for adding or editing a course.
+ * It includes input fields for the course title, description, teacher, language,
+ * type, academic programs, and applicable study years.
+ *
+ * Used in: CataloguePage.jsx
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.course - The course object containing form values
+ * @param {Function} props.onChange - Handler to update individual course fields
+ * @param {Function} props.onToggleYear - Handler to toggle selected study years
+ * @param {Function} props.onSubmit - Called when the form is submitted
+ * @param {Function} props.onCancel - Called to cancel and close the modal
+ */
 const AddCourseModal = ({
-    course,
-    onChange,
-    onToggleYear,
-    onSubmit,
-    onCancel,
-}) => {
-    const modalRef = useRef(null)
-    const textareaRef = useRef(null)
-    const scrollPosition = useRef(0)
-    const [programs, setPrograms] = useState([])
+                            course,
+                            onChange,
+                            onToggleYear,
+                            onSubmit,
+                            onCancel,
+                        }) => {
+    const modalRef = useRef(null);               // Reference to modal DOM node
+    const textareaRef = useRef(null);            // Reference to description textarea for dynamic resizing
+    const scrollPosition = useRef(0);            // Stores scroll position before modal opens
+    const [programs, setPrograms] = useState([]); // List of unique academic programs
 
     /**
-     * Disables page scroll and stores scroll position when modal opens.
-     * Restores scroll on unmount.
+     * Prevents background scroll when modal is open and restores scroll position when closed.
      */
     useEffect(() => {
         scrollPosition.current = window.scrollY
@@ -45,7 +61,7 @@ const AddCourseModal = ({
     }, [])
 
     /**
-     * Adds event listener to close modal when Escape key is pressed.
+     * Closes the modal when the Escape key is pressed.
      */
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -58,7 +74,7 @@ const AddCourseModal = ({
     }, [onCancel])
 
     /**
-     * Loads unique academic programs from the backend on mount.
+     * Loads the unique academic programs from the backend on mount.
      */
     useEffect(() => {
         const loadStudentPrograms = async () => {
@@ -73,51 +89,58 @@ const AddCourseModal = ({
     }, [])
 
     /**
-     * Auto-resize textarea on mount and when description changes
+     * Automatically resizes the description textarea based on its content.
      */
     useEffect(() => {
         if (textareaRef.current) {
-            textareaRef.current.style.height = 'auto'
-            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
         }
-    }, [course.description])
+    }, [course.description]);
 
     /**
-     * Prevents wheel scrolling from propagating outside the modal.
+     * Prevents wheel events from bubbling up and scrolling the background.
+     * @param {WheelEvent} e
      */
     const handleWheel = (e) => {
         e.stopPropagation()
     }
 
     /**
-     * Handles basic text input changes.
+     * Handles basic text input changes (title, teacher).
+     * @param {React.ChangeEvent} e
      */
     const handleInputChange = (e) => {
         onChange({ name: e.target.name, value: e.target.value })
     }
 
     /**
-     * Handles textarea changes with auto-resizing
+     * Handles description textarea changes and adjusts height dynamically.
+     * @param {React.ChangeEvent} e
      */
     const handleTextareaChange = (e) => {
-        handleInputChange(e)
-        e.target.style.height = 'auto'
-        e.target.style.height = `${e.target.scrollHeight}px`
-    }
+        handleInputChange(e);
+        e.target.style.height = 'auto';
+        e.target.style.height = `${e.target.scrollHeight}px`;
+    };
 
     /**
-     * Handles language/type button selections.
+     * Handles button-based field changes (language, type).
+     * @param {string} field - The field name (e.g. 'language', 'type')
+     * @param {string} value - The value to set
      */
     const handleButtonChange = (field, value) => {
         onChange({ name: field, value })
     }
 
     /**
-     * Validates form and triggers submit handler.
+     * Validates the form before submission.
+     * @param {React.FormEvent} e
      */
     const handleFormSubmit = (e) => {
-        e.preventDefault()
+        e.preventDefault();
 
+        // Validation rules
         if (!course.language) {
             alert("Please select a language.")
             return
@@ -131,19 +154,16 @@ const AddCourseModal = ({
             return
         }
 
-        onSubmit()
-    }
+        onSubmit();
+    };
 
     return (
-        <div 
-            className={styles.modalOverlay}
-            ref={modalRef}
-            onWheel={handleWheel}
-        >
+        <div className={styles.modalOverlay} ref={modalRef} onWheel={handleWheel}>
             <div className={styles.modalContainer}>
                 <form onSubmit={handleFormSubmit} className={styles.form}>
                     <h2>Add Course</h2>
 
+                    {/* Course Title */}
                     <label>
                         Title:
                         <input
@@ -155,6 +175,7 @@ const AddCourseModal = ({
                         />
                     </label>
 
+                    {/* Course Description */}
                     <label>
                         Description:
                         <textarea
@@ -166,6 +187,7 @@ const AddCourseModal = ({
                         />
                     </label>
 
+                    {/* Teacher Name */}
                     <label>
                         Teacher:
                         <input
@@ -177,6 +199,7 @@ const AddCourseModal = ({
                         />
                     </label>
 
+                    {/* Language Selection */}
                     <label>
                         Language:
                         <div className={styles.btnGroup}>
@@ -193,6 +216,7 @@ const AddCourseModal = ({
                         </div>
                     </label>
 
+                    {/* Academic Program Selection */}
                     <label>
                         Program:
                         <Select
@@ -210,6 +234,7 @@ const AddCourseModal = ({
                         />
                     </label>
 
+                    {/* Course Type Selection */}
                     <label>
                         Course type:
                         <div className={styles.btnGroup}>
@@ -226,6 +251,7 @@ const AddCourseModal = ({
                         </div>
                     </label>
 
+                    {/* Study Years Selection */}
                     <label>
                         Years:
                         <div className={styles.btnGroup}>
@@ -242,6 +268,7 @@ const AddCourseModal = ({
                         </div>
                     </label>
 
+                    {/* Submit and Cancel Buttons */}
                     <div className={styles.buttonsContainer}>
                         <button type="submit">Submit</button>
                         <button type="button" onClick={onCancel}>Cancel</button>
@@ -252,4 +279,4 @@ const AddCourseModal = ({
     )
 }
 
-export default AddCourseModal
+export default AddCourseModal;

@@ -1,32 +1,30 @@
 .pageWrapper {
     display: flex;
     gap: 32px;
-    padding: 32px;
-    min-height: 80vh;
-    align-items: flex-start;
+    padding: 80px 32px 32px 32px;
+    min-height: 100vh; /* fill entire viewport height */
     max-width: 1400px;
     margin: 0 auto;
-}
+    align-items: flex-start;
+    overflow: visible;
 
-.leftSection {
-    flex: 1;
-    max-width: 60%;
-    background-color: white;
+}
+.leftSection,
+.rightSection {
+    flex: 1 1 0;          /* equal flex grow and shrink */
+    max-width: 50%;       /* each max half the wrapper */
+    /*background-color: white;*/
     padding: 32px;
     border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
+    max-height: 100vh;
+    overflow-y: auto;
+    scrollbar-width: none;
 }
 
 .rightSection {
-    flex: 1;
-    max-width: 80%;
-    background-color: white;
-    padding: 32px;
-    margin-left: 100px;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    position: sticky;
-    top: 100px;
+    margin-left: 0;
+    position: static;
 }
 
 .headerContainer {
@@ -129,55 +127,66 @@
         flex-direction: column;
         gap: 24px;
     }
-    
+
     .leftSection, .rightSection {
         max-width: 100%;
         width: 100%;
+        max-height: none; /* remove fixed height on smaller screens */
+        overflow-y: visible; /* remove scroll */
     }
-    
+
     .rightSection {
         position: static;
+        margin-left: 0;
     }
 }
 
 @media (max-width: 768px) {
     .pageWrapper {
-        padding: 16px;
-        gap: 16px;
+        flex-direction: column;
+        gap: 24px;
+        padding: 32px;
+        min-height: auto;
+        overflow: visible;
     }
-    
-    .leftSection, .rightSection {
-        padding: 20px;
+
+    .leftSection,
+    .rightSection {
+        max-width: 100%;
+        width: 100%;
+        max-height: none;
+        overflow-y: visible;
+        margin-left: 0;
     }
-    
+
     .headerContainer {
         flex-direction: column;
         gap: 16px;
         padding: 0 16px;
         margin: 24px auto;
     }
-    
+
     .titleContainer {
         font-size: 24px;
         padding: 10px 20px;
     }
-    
+
     .adminActions {
         flex-direction: column;
         width: 100%;
         gap: 12px;
     }
-    
+
     .addCourseButton, .exportButton {
         width: 100%;
         font-size: 16px;
         padding: 12px;
     }
-    
+
     .tabs {
         flex-direction: column;
     }
-    
+
     .tabButton {
         width: 100%;
     }
