@@ -46,19 +46,19 @@ const AddCourseModal = ({
      * Prevents background scroll when modal is open and restores scroll position when closed.
      */
     useEffect(() => {
-        scrollPosition.current = window.scrollY;
-        document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.top = `-${scrollPosition.current}px`;
-        document.body.style.width = '100%';
+        scrollPosition.current = window.scrollY
+        document.body.style.overflow = 'hidden'
+        document.body.style.position = 'fixed'
+        document.body.style.top = `-${scrollPosition.current}px`
+        document.body.style.width = '100%'
 
         return () => {
-            document.body.style.overflow = '';
-            document.body.style.position = '';
-            document.body.style.top = '';
-            window.scrollTo(0, scrollPosition.current);
-        };
-    }, []);
+            document.body.style.overflow = ''
+            document.body.style.position = ''
+            document.body.style.top = ''
+            window.scrollTo(0, scrollPosition.current)
+        }
+    }, [])
 
     /**
      * Closes the modal when the Escape key is pressed.
@@ -66,12 +66,12 @@ const AddCourseModal = ({
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === 'Escape') {
-                onCancel();
+                onCancel()
             }
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [onCancel]);
+        }
+        window.addEventListener('keydown', handleKeyDown)
+        return () => window.removeEventListener('keydown', handleKeyDown)
+    }, [onCancel])
 
     /**
      * Loads the unique academic programs from the backend on mount.
@@ -79,14 +79,14 @@ const AddCourseModal = ({
     useEffect(() => {
         const loadStudentPrograms = async () => {
             try {
-                const data = await uniquePrograms();
-                setPrograms(data || []);
+                const data = await uniquePrograms()
+                setPrograms(data || [])
             } catch (error) {
-                console.error("Error loading programs", error);
+                console.error("Error loading programs", error)
             }
-        };
-        loadStudentPrograms();
-    }, []);
+        }
+        loadStudentPrograms()
+    }, [])
 
     /**
      * Automatically resizes the description textarea based on its content.
@@ -103,16 +103,16 @@ const AddCourseModal = ({
      * @param {WheelEvent} e
      */
     const handleWheel = (e) => {
-        e.stopPropagation();
-    };
+        e.stopPropagation()
+    }
 
     /**
      * Handles basic text input changes (title, teacher).
      * @param {React.ChangeEvent} e
      */
     const handleInputChange = (e) => {
-        onChange({ name: e.target.name, value: e.target.value });
-    };
+        onChange({ name: e.target.name, value: e.target.value })
+    }
 
     /**
      * Handles description textarea changes and adjusts height dynamically.
@@ -130,8 +130,8 @@ const AddCourseModal = ({
      * @param {string} value - The value to set
      */
     const handleButtonChange = (field, value) => {
-        onChange({ name: field, value });
-    };
+        onChange({ name: field, value })
+    }
 
     /**
      * Validates the form before submission.
@@ -142,16 +142,16 @@ const AddCourseModal = ({
 
         // Validation rules
         if (!course.language) {
-            alert("Please select a language.");
-            return;
+            alert("Please select a language.")
+            return
         }
         if (!course.program || course.program.length === 0) {
-            alert("Please select at least one program.");
-            return;
+            alert("Please select at least one program.")
+            return
         }
         if (!course.years || course.years.length === 0) {
-            alert("Please select at least one year.");
-            return;
+            alert("Please select at least one year.")
+            return
         }
 
         onSubmit();
@@ -225,8 +225,8 @@ const AddCourseModal = ({
                             options={programs.map(prog => ({ value: prog, label: prog }))}
                             value={(course.program || []).map(p => ({ value: p, label: p }))}
                             onChange={(selected) => {
-                                const values = selected.map(item => item.value);
-                                onChange({ name: 'program', value: values });
+                                const values = selected.map(item => item.value)
+                                onChange({ name: 'program', value: values })
                             }}
                             placeholder="Select programs..."
                             className={styles.reactSelect}
@@ -276,7 +276,7 @@ const AddCourseModal = ({
                 </form>
             </div>
         </div>
-    );
-};
+    )
+}
 
 export default AddCourseModal;
