@@ -1,3 +1,27 @@
+/**
+ * CataloguePage.jsx
+ *
+ * This is the main page for course and program management.
+ * It supports two types of users:
+ * - Admins: can add/edit/delete courses and student programs.
+ * - Students: can view courses and select electives.
+ *
+ * This file connects UI components with business logic and state
+ * provided via contexts and custom hooks:
+ *
+ * Contexts & Hooks Used:
+ * - AuthContext: provides current user (email, role)
+ * - CatalogueContext: shared state and handlers for catalogue, programs, and exports
+ * - useFormSubmit: handles student elective form submission
+ *
+ * Components Rendered:
+ * - Header: shows email, deadline, and admin actions
+ * - CourseList: shows list of courses
+ * - ProgramList: admin-only, shows programs
+ * - ElectivesForm: student-only, form to choose electives
+ * - AddCourseModal & AddStudentsProgramModal: popups for managing data
+ */
+
 import { useState, useRef } from 'react';
 import Header from '../components/Header';
 import CourseList from '../components/CourseList';
@@ -5,28 +29,37 @@ import ProgramList from '../components/ProgramList';
 import AddCourseModal from '../components/AddCourseModal';
 import { useAuth } from '../context/AuthContext';
 import styles from './CataloguePage.module.css';
-import { useCatalogueContext } from '../context/CatalogueContext.jsx'; // <-- use context here
+import { useCatalogueContext } from '../context/CatalogueContext.jsx';
 import AddStudentsProgramModal from '../components/AddStudentProgramModal.jsx';
 import ElectivesForm from '../components/ElectivesForm';
 import { useFormSubmit } from '../hooks/useFormSubmit';
 
+/**
+ * CataloguePage component
+ *
+ * The main page for both students and admins:
+ * - Admins: manage courses and programs.
+ * - Students: select electives.
+ *
+ * @returns {JSX.Element} Rendered catalogue dashboard.
+ */
 const CataloguePage = () => {
-    // Get current user's role and email from Auth context
+    // Get current user's role and email from AuthContext
     const { role, email } = useAuth();
 
-    // Get shared state and handlers from CatalogueContext
+    // Access shared state and handlers from CatalogueContext
     const { catalogue, programs, excelExport } = useCatalogueContext();
 
-    // Student form submission hook (depends on email)
+    // Get the student form submission handler using email
     const { onSubmit } = useFormSubmit(email);
 
-    // Local state to track active tab for electives form (technical/humanities)
+    // Track selected tab in the electives form (technical/humanities)
     const [activeTab, setActiveTab] = useState('tech');
 
-    // Store scroll position for restoring after modals close
+    // Store scroll position to restore after closing modals
     const scrollPosition = useRef(0);
 
-    // Destructure catalogue state and handlers
+    // Destructure course-related state and handlers
     const {
         courses,
         currentCourse,
@@ -40,7 +73,7 @@ const CataloguePage = () => {
         startAddingCourse,
     } = catalogue;
 
-    // Destructure programs state and handlers
+    // Destructure program-related state and handlers
     const {
         programs: programList,
         programData,
@@ -53,20 +86,22 @@ const CataloguePage = () => {
         startEditingProgram,
     } = programs;
 
-    // Destructure excel export
+    // Destructure Excel export handlers
     const { isExported, exportToExcel } = excelExport;
 
-    // Handlers to save scroll position and open modals
+    // Open course modal and save scroll position
     const handleAddCourseClick = () => {
         scrollPosition.current = window.scrollY;
         startAddingCourse();
     };
 
+    // Close course modal and restore scroll position
     const handleModalCancel = () => {
         handleCancel();
         window.scrollTo(0, scrollPosition.current);
     };
 
+    // Close program modal and restore scroll position
     const handleProgramModalCancel = () => {
         handleProgramCancel();
         window.scrollTo(0, scrollPosition.current);
@@ -74,9 +109,10 @@ const CataloguePage = () => {
 
     return (
         <>
+            {/* Top bar: user info, admin controls */}
             <Header />
 
-            {/* Add/Edit Course Modal */}
+            {/* Admin: Add/Edit Course Modal */}
             {showAddForm && (
                 <AddCourseModal
                     course={currentCourse}
@@ -87,7 +123,7 @@ const CataloguePage = () => {
                 />
             )}
 
-            {/* Add/Edit Student Program Modal */}
+            {/* Admin: Add/Edit Student Program Modal */}
             {showProgramModal && (
                 <AddStudentsProgramModal
                     programData={programData}
@@ -97,9 +133,9 @@ const CataloguePage = () => {
                 />
             )}
 
-            {/* Main page content layout */}
+            {/* Main layout: left = courses, right = programs/form */}
             <div className={styles.pageWrapper}>
-                {/* Left side: course list, available for all users */}
+                {/* All users see the course list */}
                 <div className={styles.leftSection}>
                     <CourseList
                         courses={courses}
@@ -108,7 +144,7 @@ const CataloguePage = () => {
                     />
                 </div>
 
-                {/* Right side for admins: manage student programs */}
+                {/* Admin-only: student programs management */}
                 {role === 'admin' && (
                     <div className={styles.rightSection}>
                         <p><b>Student Programs</b></p>
@@ -117,17 +153,17 @@ const CataloguePage = () => {
                             programs={programList}
                             onDeleteProgram={handleDeleteProgram}
                             onEditProgram={(groupTitle) => {
-                                startEditingProgram(groupTitle);
+                                startEditingProgram(groupTitle); // Load selected program into modal
                                 console.log('Edit program:', groupTitle);
                             }}
                         />
                     </div>
                 )}
 
-                {/* Right side for students: elective course selection form */}
+                {/* Student-only: elective course selection */}
                 {role !== 'admin' && (
                     <div className={styles.rightSection}>
-                        {/* Tabs to switch between technical and humanities electives */}
+                        {/* Tab buttons for selecting electives type */}
                         <div className={styles.tabs}>
                             <button
                                 className={`${styles.tabButton} ${activeTab === 'tech' ? styles.active : ''}`}
@@ -143,7 +179,7 @@ const CataloguePage = () => {
                             </button>
                         </div>
 
-                        {/* Electives selection form with submit handler */}
+                        {/* Elective form submission logic handled via useFormSubmit */}
                         <ElectivesForm
                             type={activeTab}
                             onSubmit={(selectedCourses) => onSubmit(selectedCourses, activeTab)}
