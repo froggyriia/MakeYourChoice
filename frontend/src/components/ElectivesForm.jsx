@@ -1,8 +1,28 @@
+/**
+ * ElectivesForm.jsx
+ *
+ * This component displays a form allowing students to choose and submit elective courses
+ * (either technical or humanities) with a defined priority. The number of priority selections
+ * and available electives are fetched dynamically based on the student's program.
+ */
+
 import React, { useState, useEffect } from "react";
 import styles from './ElectivesForm.module.css';
 import { fetchCourses } from '../api/functions_for_courses';
 import {getProgramInfo} from "../api/functions_for_programs.js";
 import {useAuth} from '../context/AuthContext.jsx'
+
+/**
+ * Renders a dynamic elective course selection form.
+ * Displays a dropdown for each priority level based on program data.
+ *
+ * @component
+ * @param {Object} props
+ * @param {'tech'|'hum'} props.type - Type of elective courses to display.
+ * @param {Function} props.onSubmit - Callback fired on form submission with selected course titles.
+ * @param {Function} props.onClear - Optional callback fired when the form is cleared.
+ * @returns {JSX.Element}
+ */
 
 export default function ElectivesForm({ type, onSubmit, onClear }) {
     const [filteredCourses, setFilteredCourses] = useState([]);
@@ -13,22 +33,26 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
     const { email, role } = useAuth();
 
     useEffect(() => {
+        // Initializes the form by fetching elective courses and program info
         const initialize = async () => {
             try {
                 setLoading(true);
 
+                // Fetch both the course list and user's program info in parallel
                 const [courses, program] = await Promise.all([
                     fetchCourses(email),
                     getProgramInfo(email)
                 ]);
 
                 console.log("Courses in elective form", courses);
-
+                // Filter courses by type (tech or hum)
                 const filtered = courses.filter(course => course.type === type);
                 setFilteredCourses(filtered);
 
+                // Set number of electives based on program info
                 const count = type === 'tech' ? program.tech : program.hum;
                 setPriorityCount(count);
+                // Reset course selections
                 setSelectedCourses(Array(count).fill(""));
             } catch (err) {
                 console.error('Error initializing form:', err);
@@ -41,12 +65,18 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
         initialize();
     }, [type, email]);
 
+    /**
+     * Handles a change in selected course at a given priority index.
+     */
     const handleChange = (index, value) => {
         const updated = [...selectedCourses];
         updated[index] = value;
         setSelectedCourses(updated);
     };
 
+    /**
+     * Clears all course selections and notifies the parent component.
+     */
     const handleClear = () => {
         setSelectedCourses(Array(5).fill(""));
         if (onClear) onClear(type);

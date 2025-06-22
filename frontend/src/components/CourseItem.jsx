@@ -1,14 +1,34 @@
-//CourseItem.jsx
-
+/**
+ * CourseItem.jsx
+ *
+ * This component displays a single course's information in a card-style UI block.
+ * It allows toggling detailed view, editing, and deleting the course.
+ * Used in: CataloguePage.jsx
+ */
 import { useState } from 'react';
 import styles from './CourseItem.module.css';
-import { supabase } from '../pages/supabaseClient.jsx';
 import { deleteCourse } from '../api/functions_for_courses.js'
 
+/**
+ * Renders a course item with title, instructor, language, programs, years, and type.
+ * Includes edit, delete, and show/hide description functionality.
+ *
+ * @component
+ * @param {Object} props
+ * @param {Object} props.course - The course object to display.
+ * @param {Function} props.onDelete - Callback to invoke after a course is deleted.
+ * @param {Function} props.onEdit - Callback to invoke when editing is triggered.
+ * @returns {JSX.Element}
+ */
 const CourseItem = ({ course, onDelete, onEdit }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
+    /**
+     * Handles the deletion of a course.
+     * Prompts user for confirmation, deletes the course via API,
+     * and then triggers the `onDelete` callback.
+     */
     const handleDelete = async () => {
         if (window.confirm(`Are you sure you want to delete "${course.title}"?`)) {
             setIsDeleting(true);
@@ -17,6 +37,9 @@ const CourseItem = ({ course, onDelete, onEdit }) => {
         }
     };
 
+    /**
+     * Handles the edit button click by invoking the parent `onEdit` callback.
+     */
     const handleEdit = () => {
         if (onEdit) onEdit(course.id);
     };

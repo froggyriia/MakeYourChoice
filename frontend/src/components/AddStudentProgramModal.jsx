@@ -1,7 +1,28 @@
+/**
+ * AddStudentsProgramModal Component
+ *
+ * This modal allows administrators to create or edit a student academic program.
+ * It collects data such as stage (Bachelor/Master/PhD), year of entry, short program name,
+ * elective priority counts, and deadline.
+ *
+ * Used in: CoursePage.jsx.
+ */
+
 import React, { useEffect, useRef } from 'react';
 import styles from './AddCourseModal.module.css';
 import Select from 'react-select';
 
+/**
+ * Modal component to add or edit a student program.
+ *
+ * @component
+ * @param {Object} props - Component props.
+ * @param {Object} props.programData - The state object for the program form.
+ * @param {Function} props.onChange - Handler to update form values.
+ * @param {Function} props.onSubmit - Callback triggered when submitting the form.
+ * @param {Function} props.onCancel - Callback triggered when cancelling the modal.
+ * @returns {JSX.Element} Modal form for managing student programs.
+ */
 const AddStudentsProgramModal = ({
                                      programData,
                                      onChange,
@@ -11,6 +32,10 @@ const AddStudentsProgramModal = ({
     const modalRef = useRef(null);
     const scrollPosition = useRef(0);
 
+    /**
+     * Disables background scroll and stores scroll position on mount.
+     * Restores scroll on unmount.
+     */
     useEffect(() => {
         scrollPosition.current = window.scrollY;
         document.body.style.overflow = 'hidden';
@@ -26,6 +51,9 @@ const AddStudentsProgramModal = ({
         };
     }, []);
 
+    /**
+     * Closes modal when Escape key is pressed.
+     */
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === 'Escape') onCancel();
@@ -34,21 +62,38 @@ const AddStudentsProgramModal = ({
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onCancel]);
 
+    /**
+     * Handles changes to text and number input fields.
+     *
+     * @param {Event} e - Input change event.
+     */
     const handleInputChange = (e) => {
         onChange({ name: e.target.name, value: e.target.value });
     };
 
+    /**
+     * Handles updates to button-style inputs (stage: Bachelor, Master, PhD).
+     *
+     * @param {string} name - Field name to update.
+     * @param {string|number} value - New value to set.
+     */
     const handleButtonChange = (name, value) => {
         onChange({ name, value });
     };
 
+    /**
+     * Validates required fields and triggers form submission.
+     *
+     * @param {Event} e - Form submission event.
+     */
     const handleFormSubmit = (e) => {
         e.preventDefault();
+        // Validate that key fields are filled
         if (!programData.stage || !programData.year || !programData.shortName) {
             alert('Please fill all required fields');
             return;
         }
-        onSubmit();
+        onSubmit(); // Trigger form submission after validation
     };
 
     return (
