@@ -1,5 +1,3 @@
-// components/Header.jsx
-
 import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -44,9 +42,11 @@ const Header = () => {
 
     return (
         <div className={styles.header}>
-            <div >
+            <div className={styles.headerContent}>
                 <span className={styles.email}>{email}</span>
-                {deadline && !isAdmin(email) && <span className={styles.email}> Deadline to fill the form: {deadline}</span>}
+                {deadline && !isAdmin(email) && (
+                    <span className={styles.deadline}>⏰ Deadline: {deadline}</span>
+                )}
             </div>
             <button onClick={handleLogout} className={styles.logoutButton}>
                 Log out

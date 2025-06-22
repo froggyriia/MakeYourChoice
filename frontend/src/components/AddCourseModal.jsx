@@ -8,24 +8,11 @@
  * Used in: CataloguePage.jsx.
  */
 
-import React, {useEffect, useRef, useState} from "react";
-import styles from './AddCourseModal.module.css';
-import {uniquePrograms} from "../api/functions_for_courses.js";
-import Select from 'react-select';
+import React, {useEffect, useRef, useState} from "react"
+import styles from './AddCourseModal.module.css'
+import {uniquePrograms} from "../api/functions_for_courses.js"
+import Select from 'react-select'
 
-
-/**
- * Modal component for adding or editing a course.
- *
- * @component
- * @param {Object} props - Component props.
- * @param {Object} props.course - Course state object.
- * @param {Function} props.onChange - Handler for updating course field values.
- * @param {Function} props.onToggleYear - Handler for toggling year selection.
- * @param {Function} props.onSubmit - Callback when submitting the form.
- * @param {Function} props.onCancel - Callback when canceling the modal.
- * @returns {JSX.Element} A modal form for adding a course.
- */
 const AddCourseModal = ({
     course,
     onChange,
@@ -33,29 +20,29 @@ const AddCourseModal = ({
     onSubmit,
     onCancel,
 }) => {
-    const modalRef = useRef(null);
-    const scrollPosition = useRef(0);
-    const [programs, setPrograms] = useState([]);
+    const modalRef = useRef(null)
+    const textareaRef = useRef(null)
+    const scrollPosition = useRef(0)
+    const [programs, setPrograms] = useState([])
 
     /**
      * Disables page scroll and stores scroll position when modal opens.
      * Restores scroll on unmount.
      */
-
     useEffect(() => {
-        scrollPosition.current = window.scrollY;
-        document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.top = `-${scrollPosition.current}px`;
-        document.body.style.width = '100%';
+        scrollPosition.current = window.scrollY
+        document.body.style.overflow = 'hidden'
+        document.body.style.position = 'fixed'
+        document.body.style.top = `-${scrollPosition.current}px`
+        document.body.style.width = '100%'
 
         return () => {
-            document.body.style.overflow = '';
-            document.body.style.position = '';
-            document.body.style.top = '';
-            window.scrollTo(0, scrollPosition.current);
-        };
-    }, []);
+            document.body.style.overflow = ''
+            document.body.style.position = ''
+            document.body.style.top = ''
+            window.scrollTo(0, scrollPosition.current)
+        }
+    }, [])
 
     /**
      * Adds event listener to close modal when Escape key is pressed.
@@ -63,12 +50,12 @@ const AddCourseModal = ({
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === 'Escape') {
-                onCancel();
+                onCancel()
             }
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [onCancel]);
+        }
+        window.addEventListener('keydown', handleKeyDown)
+        return () => window.removeEventListener('keydown', handleKeyDown)
+    }, [onCancel])
 
     /**
      * Loads unique academic programs from the backend on mount.
@@ -76,67 +63,76 @@ const AddCourseModal = ({
     useEffect(() => {
         const loadStudentPrograms = async () => {
             try {
-                const data = await uniquePrograms();
-                setPrograms(data || []);
+                const data = await uniquePrograms()
+                setPrograms(data || [])
             } catch (error) {
-                console.error("Error loading programs", error);
+                console.error("Error loading programs", error)
             }
-        };
-        loadStudentPrograms();
-    }, []);
+        }
+        loadStudentPrograms()
+    }, [])
+
+    /**
+     * Auto-resize textarea on mount and when description changes
+     */
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto'
+            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+        }
+    }, [course.description])
 
     /**
      * Prevents wheel scrolling from propagating outside the modal.
      */
     const handleWheel = (e) => {
-        e.stopPropagation();
-    };
+        e.stopPropagation()
+    }
 
     /**
      * Handles basic text input changes.
-     *
-     * @param {Event} e - Input change event.
      */
     const handleInputChange = (e) => {
-        onChange({ name: e.target.name, value: e.target.value });
-    };
+        onChange({ name: e.target.name, value: e.target.value })
+    }
+
+    /**
+     * Handles textarea changes with auto-resizing
+     */
+    const handleTextareaChange = (e) => {
+        handleInputChange(e)
+        e.target.style.height = 'auto'
+        e.target.style.height = `${e.target.scrollHeight}px`
+    }
 
     /**
      * Handles language/type button selections.
-     *
-     * @param {string} field - The field to change (e.g., 'language').
-     * @param {string} value - The new value.
      */
     const handleButtonChange = (field, value) => {
-        onChange({ name: field, value });
-    };
+        onChange({ name: field, value })
+    }
 
     /**
      * Validates form and triggers submit handler.
-     *
-     * @param {Event} e - Form submit event.
      */
     const handleFormSubmit = (e) => {
-        e.preventDefault(); // Prevent default page reload
+        e.preventDefault()
 
-        // Validate language
         if (!course.language) {
-            alert("Please select a language.");
-            return;
+            alert("Please select a language.")
+            return
         }
-        // Validate at least one program
         if (!course.program || course.program.length === 0) {
-            alert("Please select at least one program.");
-            return;
+            alert("Please select at least one program.")
+            return
         }
-        // Validate at least one year
         if (!course.years || course.years.length === 0) {
-            alert("Please select at least one year.");
-            return;
+            alert("Please select at least one year.")
+            return
         }
 
-        onSubmit(); // Call submit handler after all validations
-    };
+        onSubmit()
+    }
 
     return (
         <div 
@@ -162,9 +158,10 @@ const AddCourseModal = ({
                     <label>
                         Description:
                         <textarea
+                            ref={textareaRef}
                             name="description"
                             value={course.description}
-                            onChange={handleInputChange}
+                            onChange={handleTextareaChange}
                             required
                         />
                     </label>
@@ -204,8 +201,8 @@ const AddCourseModal = ({
                             options={programs.map(prog => ({ value: prog, label: prog }))}
                             value={(course.program || []).map(p => ({ value: p, label: p }))}
                             onChange={(selected) => {
-                                const values = selected.map(item => item.value);
-                                onChange({ name: 'program', value: values });
+                                const values = selected.map(item => item.value)
+                                onChange({ name: 'program', value: values })
                             }}
                             placeholder="Select programs..."
                             className={styles.reactSelect}
@@ -252,7 +249,7 @@ const AddCourseModal = ({
                 </form>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default AddCourseModal;
+export default AddCourseModal

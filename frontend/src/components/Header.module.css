@@ -15,6 +15,30 @@
     box-sizing: border-box;
 }
 
+.headerContent {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.deadline {
+    font-weight: 600;
+    color: #d00;
+    font-size: 16px;
+    background-color: #fff2f2;
+    padding: 6px 12px;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(208, 0, 0, 0.1);
+}
+
+.email {
+    font-weight: 500;
+    color: #555;
+    font-size: 15px;
+}
+
 .logoutButton {
     padding: 8px 20px;
     font-size: 15px;
@@ -34,15 +58,18 @@
     box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
 }
 
-.email {
-    font-weight: 500;
-    color: #555;
-    font-size: 15px;
-}
-
 @media (max-width: 768px) {
     .header {
         padding: 0.8rem calc(1rem + 15px) 0.8rem 1rem;
+    }
+    
+    .headerContent {
+        gap: 1rem;
+    }
+    
+    .deadline {
+        font-size: 14px;
+        padding: 4px 8px;
     }
     
     .logoutButton {
