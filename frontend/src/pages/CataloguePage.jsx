@@ -163,7 +163,7 @@ const CataloguePage = () => {
 
                 {/* === ADMIN-ONLY RIGHT SIDE: PROGRAM LIST === */}
                 {role === 'admin' && (
-                    <div className={styles.leftSection}>
+                    <div className={styles.rightSection}>
                         <p><b>Student Programs</b></p>
                         <br />
                         <ProgramList
