@@ -33,7 +33,7 @@ import { useCatalogueContext } from '../context/CatalogueContext.jsx'; // Contex
 const Header = () => {
     // Get shared catalogue state and admin action handlers
     const { catalogue, programs, excelExport } = useCatalogueContext();
-
+    const { courseTypeFilter, setCourseTypeFilter } = catalogue;
     const navigate = useNavigate(); // Navigation hook
     const { logout, email, role } = useAuth(); // Destructure user info and logout method
     const [deadline, setDeadline] = useState(null); // Local state to hold formatted deadline
@@ -120,6 +120,23 @@ const Header = () => {
                         className={styles.exportButton}
                     >
                         {excelExport.isExported ? 'Exported!' : 'Export to Excel'}
+                    </button>
+                </div>
+            )}
+
+            {role === 'student' && (
+                <div className={styles.tabs}>
+                    <button
+                        className={`${styles.tabButton} ${courseTypeFilter === 'tech' ? styles.active : ''}`}
+                        onClick={() => setCourseTypeFilter('tech')}
+                    >
+                        Technical
+                    </button>
+                    <button
+                        className={`${styles.tabButton} ${courseTypeFilter === 'hum' ? styles.active : ''}`}
+                        onClick={() => setCourseTypeFilter('hum')}
+                    >
+                        Humanities
                     </button>
                 </div>
             )}

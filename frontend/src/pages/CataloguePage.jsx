@@ -54,7 +54,7 @@ const CataloguePage = () => {
     const { onSubmit } = useFormSubmit(email);
 
     // Track selected tab in the electives form (technical/humanities)
-    const [activeTab, setActiveTab] = useState('tech');
+    const { courseTypeFilter } = catalogue;
 
     // Store scroll position to restore after closing modals
     const scrollPosition = useRef(0);
@@ -86,14 +86,6 @@ const CataloguePage = () => {
         startEditingProgram,
     } = programs;
 
-    // Destructure Excel export handlers
-    const { isExported, exportToExcel } = excelExport;
-
-    // Open course modal and save scroll position
-    const handleAddCourseClick = () => {
-        scrollPosition.current = window.scrollY;
-        startAddingCourse();
-    };
 
     // Close course modal and restore scroll position
     const handleModalCancel = () => {
@@ -164,25 +156,11 @@ const CataloguePage = () => {
                 {role !== 'admin' && (
                     <div className={styles.rightSection}>
                         {/* Tab buttons for selecting electives type */}
-                        <div className={styles.tabs}>
-                            <button
-                                className={`${styles.tabButton} ${activeTab === 'tech' ? styles.active : ''}`}
-                                onClick={() => setActiveTab('tech')}
-                            >
-                                Technical
-                            </button>
-                            <button
-                                className={`${styles.tabButton} ${activeTab === 'hum' ? styles.active : ''}`}
-                                onClick={() => setActiveTab('hum')}
-                            >
-                                Humanities
-                            </button>
-                        </div>
 
                         {/* Elective form submission logic handled via useFormSubmit */}
                         <ElectivesForm
-                            type={activeTab}
-                            onSubmit={(selectedCourses) => onSubmit(selectedCourses, activeTab)}
+                            type={courseTypeFilter}
+                            onSubmit={(selectedCourses) => onSubmit(selectedCourses, courseTypeFilter)}
                         />
                     </div>
                 )}

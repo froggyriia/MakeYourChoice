@@ -82,6 +82,33 @@
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    justify-content: center;
+}
+
+.tabButton {
+    padding: 12px 24px;
+    background-color: var(--color-inactive);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tabButton.active {
+    background: linear-gradient(135deg, var(--color-primary), #4CAF50);
+}
+
+.tabButton:hover:not(.active) {
+    background-color: #aaa;
+}
+
 .exportButton {
     margin-right: 0;
     padding: 12px 24px;

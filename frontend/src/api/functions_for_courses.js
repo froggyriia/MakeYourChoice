@@ -167,8 +167,8 @@ export const deleteCourse = async (courseTitle) => {
  * @param {boolean} [filters.isArchived] - Archive status to filter by
  * @returns {Promise<Array>} - Filtered list of courses
  */
-async function filterCourses(filters = {}) {
-  let query = supabase
+export async function filterCourses(filters = {}) {
+    let query = supabase
     .from('catalogue')
     .select('*')
 
