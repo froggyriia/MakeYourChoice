@@ -13,6 +13,7 @@ import {
     addCourse,
     editCourseInfo,
     getCourseInfo,
+    filterCourses
 } from '../api/functions_for_courses.js';
 
 import { isAdmin} from "../utils/validation.js";
@@ -28,6 +29,7 @@ export const useCatalogue = () => {
     const [showAddForm, setShowAddForm] = useState(false);
     // Get current user's email from Auth context
     const { email } = useAuth();
+
     // Template for a new course with default values
     const initialCourse = {
         id: null,
@@ -39,6 +41,22 @@ export const useCatalogue = () => {
         type: 'tech',
         years: [],
     };
+
+    // Filter state 'tech' | 'hum' | null
+    const [courseTypeFilter, setCourseTypeFilter] = useState(null);
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            const filters = {};
+            if (courseTypeFilter) filters.types = [courseTypeFilter]; // 'tech' or 'hum'
+            const result = await filterCourses(filters); // use your provided filterCourses()
+            setCourses(result);
+        };
+
+        fetchCourses();
+    }, [courseTypeFilter]);
+
+
     // State for currently editing or adding course
     const [currentCourse, setCurrentCourse] = useState(initialCourse);
 
@@ -202,5 +220,7 @@ export const useCatalogue = () => {
         handleDeleteCourse,
         startEditingCourse,
         startAddingCourse,
+        courseTypeFilter,
+        setCourseTypeFilter,
     };
 };
