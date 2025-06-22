@@ -1,172 +1,172 @@
-/* Добавляем в начало файла */
+/* Prevent page scrolling and fix layout when modal is open */
 body.modal-open {
     overflow: hidden;
     position: fixed;
-    width: 100%;
-    height: 100%;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
 }
 
+/* Overlay that darkens the background and centers the modal */
 .modalOverlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0,0,0,0.3);
+    background-color: rgba(0, 0, 0, 0.3); /* semi-transparent black */
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 1000; /* ensure modal is above everything */
     overflow-y: auto;
     padding: 20px 0;
 }
 
+/* Main modal container block */
 .modalContainer {
-    background-color: var(--color-elem-background);
+    background-color: var(--color-elem-background); /* custom background from theme */
     padding: 16px 24px;
     border-radius: 10px;
-    box-shadow: 0 0 12px rgba(0,0,0,0.2);
-    max-width: 450px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.2); /* soft outer shadow */
+    max-width: 700px; /* allow wider modals */
     width: 90%;
-    max-height: 90vh;
+    max-height: 90vh; /* restrict height to viewport */
     overflow-y: auto;
     font-family: 'Montserrat', sans-serif;
-    color: #333;
+    color: #333; /* dark text */
 }
 
-.modalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0,0,0,0.3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modalContainer {
-    background-color: var(--color-elem-background);
-    padding: 16px 24px; /* Еще уменьшено */
-    border-radius: 10px; /* Уменьшено с 12px */
-    box-shadow: 0 0 12px rgba(0,0,0,0.2); /* Уменьшено с 15px */
-    max-width: 450px; /* Уменьшено с 500px */
-    width: 90%;
-    font-family: 'Montserrat', sans-serif;
-    color: #333;
-}
-
+/* Modal title styles */
 h2 {
-    margin-bottom: 16px; /* Уменьшено с 20px */
+    margin-bottom: 16px;
     font-weight: 700;
-    font-size: 20px; /* Уменьшено с 22px */
-    color: var(--color-primary);
-    user-select: none;
+    font-size: 20px;
+    color: var(--color-primary); /* theme primary color */
+    user-select: none; /* prevent accidental text selection */
 }
 
+/* Label styles inside form */
 form label {
     display: flex;
     flex-direction: column;
-    margin-bottom: 12px; /* Уменьшено с 16px */
+    margin-bottom: 12px;
     font-weight: 600;
-    font-size: 14px; /* Уменьшено с 15px */
+    font-size: 14px;
     color: #444;
 }
 
+/* Styles for inputs, selects, and textareas */
 input[type="text"],
 textarea,
 select {
-    margin-top: 4px; /* Уменьшено с 5px */
-    padding: 6px 8px; /* Уменьшено с 8px 10px */
-    font-size: 14px; /* Уменьшено с 15px */
+    margin-top: 4px;
+    padding: 6px 8px;
+    font-size: 14px;
     border: 1px solid #ccc;
-    border-radius: 6px; /* Уменьшено с 8px */
-    background-color: var(--color-input-field);
+    border-radius: 6px;
+    background-color: var(--color-input-field); /* from theme */
     font-family: 'Montserrat', sans-serif;
     resize: vertical;
 }
 
+/* Extended styling for textareas */
 textarea {
-    min-height: 60px; /* Уменьшено с 70px */
+    min-height: 60px;
+    resize: none;
+    overflow-y: hidden;
+    transition: height 0.2s ease;
+    line-height: 1.5;
 }
 
+/* Container for grouped checkboxes or toggle buttons */
 label > div {
-    margin-top: 4px; /* Уменьшено с 6px */
+    margin-top: 4px;
     display: flex;
-    gap: 8px; /* Уменьшено с 10px */
+    gap: 8px;
     flex-wrap: wrap;
 }
 
+/* Individual checkbox label */
 label > div > label {
     display: flex;
     align-items: center;
     font-weight: 500;
-    font-size: 13px; /* Уменьшено с 14px */
+    font-size: 13px;
     cursor: pointer;
 }
 
+/* Styling the actual checkbox */
 label > div > label input[type="checkbox"] {
-    margin-right: 4px; /* Уменьшено с 5px */
+    margin-right: 4px;
     cursor: pointer;
-    width: 14px; /* Уменьшено с 16px */
-    height: 14px; /* Уменьшено с 16px */
+    width: 14px;
+    height: 14px;
 }
 
+/* Container for submit and cancel buttons */
 .buttonsContainer {
     display: flex;
     justify-content: flex-end;
-    gap: 12px; /* Уменьшено с 14px */
-    margin-top: 16px; /* Уменьшено с 20px */
+    gap: 12px;
+    margin-top: 16px;
 }
 
+/* Custom select (react-select wrapper) */
 .reactSelect {
     margin-top: 0.5rem;
     font-size: 0.9rem;
 }
 
+/* Base styles for action buttons */
 button[type="submit"],
 button[type="button"] {
-    padding: 6px 16px; /* Уменьшено с 8px 20px */
-    font-size: 14px; /* Уменьшено с 15px */
+    padding: 6px 16px;
+    font-size: 14px;
     font-weight: 600;
-    border-radius: 6px; /* Уменьшено с 8px */
+    border-radius: 6px;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease;
     font-family: 'Montserrat', sans-serif;
 }
 
+/* Primary (submit) button */
 button[type="submit"] {
     background-color: var(--color-primary);
     color: white;
 }
 
+/* Hover effect for submit button */
 button[type="submit"]:hover {
     background-color: #349b18;
 }
 
+/* Secondary (cancel) button */
 button[type="button"] {
     background-color: var(--color-inactive);
     color: white;
 }
 
+/* Hover effect for cancel button */
 button[type="button"]:hover {
     background-color: #888;
 }
 
+/* Group of toggleable buttons (used for tags, categories etc.) */
 .btnGroup {
     display: flex;
-    gap: 8px; /* Уменьшено с 10px */
+    gap: 8px;
     flex-wrap: wrap;
-    margin-top: 4px; /* Уменьшено с 5px */
+    margin-top: 4px;
 }
 
+/* Individual toggleable button */
 .btn {
-    padding: 5px 10px; /* Уменьшено с 6px 12px */
-    font-size: 13px; /* Уменьшено с 14px */
-    border-radius: 6px; /* Уменьшено с 8px */
+    padding: 5px 10px;
+    font-size: 13px;
+    border-radius: 6px;
     border: 1.5px solid var(--color-primary);
     background-color: transparent;
     color: var(--color-primary);
@@ -176,39 +176,41 @@ button[type="button"]:hover {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Active state for toggleable buttons */
 .btnActive {
     background-color: #4caf50 !important;
     border-color: #4caf50 !important;
     color: white !important;
 }
 
+/* Responsive styles for smaller screens (e.g., mobile) */
 @media (max-width: 768px) {
     .modalContainer {
-        padding: 12px; /* Уменьшено с 15px */
+        padding: 12px;
         width: 95%;
     }
-    
+
     h2 {
-        font-size: 18px; /* Уменьшено с 20px */
-        margin-bottom: 12px; /* Уменьшено с 14px */
+        font-size: 18px;
+        margin-bottom: 12px;
     }
-    
+
     input[type="text"],
     textarea,
     select {
-        font-size: 12px; /* Уменьшено с 13px */
-        padding: 5px 7px; /* Уменьшено с 7px 9px */
+        font-size: 12px;
+        padding: 5px 7px;
     }
-    
+
     .buttonsContainer {
         flex-direction: column;
-        gap: 6px; /* Уменьшено с 8px */
+        gap: 6px;
     }
-    
+
     button[type="submit"],
     button[type="button"] {
-        padding: 5px 12px; /* Уменьшено с 7px 14px */
-        font-size: 12px; /* Уменьшено с 13px */
+        padding: 5px 12px;
+        font-size: 12px;
         width: 100%;
     }
 }

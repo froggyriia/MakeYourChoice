@@ -6,7 +6,8 @@
     margin-right: -15px;
     background-color: white;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    position: sticky;
+    position: fixed;
+    height: 64px;
     top: 0;
     z-index: 100;
     border-bottom-left-radius: 8px;
@@ -14,6 +15,31 @@
     width: 100%;
     box-sizing: border-box;
 }
+
+.headerContent {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.deadline {
+    font-weight: 600;
+    color: #d00;
+    font-size: 16px;
+    background-color: #fff2f2;
+    padding: 6px 12px;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(208, 0, 0, 0.1);
+}
+
+.email {
+    font-weight: 500;
+    color: #555;
+    font-size: 15px;
+}
+
 
 .logoutButton {
     padding: 8px 20px;
@@ -33,18 +59,63 @@
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
 }
+.adminActions {
+    display: flex;
+    gap: 16px;
+    margin-top: 0;
+    align-items: center;
+}
+.addCourseButton {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--color-primary), #4CAF50);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+}
 
-.email {
-    font-weight: 500;
-    color: #555;
-    font-size: 15px;
+.addCourseButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+.exportButton {
+    margin-right: 0;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #40BB20, #2E8B57);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(64, 187, 32, 0.2);
+}
+
+.exportButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(64, 187, 32, 0.3);
 }
 
 @media (max-width: 768px) {
     .header {
         padding: 0.8rem calc(1rem + 15px) 0.8rem 1rem;
     }
-    
+
+    .headerContent {
+        gap: 1rem;
+    }
+
+    .deadline {
+        font-size: 14px;
+        padding: 4px 8px;
+    }
+
+
     .logoutButton {
         padding: 6px 14px;
         font-size: 14px;

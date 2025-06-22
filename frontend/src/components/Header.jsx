@@ -7,12 +7,16 @@ import styles from './Header.module.css';
 import {getUserProgram} from "../api/functions_for_users.js";
 import { getDeadlineForGroup } from '../api/functions_for_programs.js';
 import {isAdmin} from "../utils/validation.js";
+import {useExcelExport} from "../hooks/useExcelExport.js";
+import { useCatalogueContext } from '../context/CatalogueContext.jsx';
 
 const Header = () => {
+    const { catalogue, programs, excelExport } = useCatalogueContext();
     const navigate = useNavigate();
-    const { logout, email } = useAuth();
+    const { logout, email, role} = useAuth();
     const [deadline, setDeadline] = useState(null);
-
+    // useExcelExport handles exporting priorities table to .xlsx
+    // const { isExported, exportToExcel } = useExcelExport();
     const handleLogout = () => {
         logout();
         navigate('/');
@@ -44,15 +48,31 @@ const Header = () => {
 
     return (
         <div className={styles.header}>
-            <div >
+            <div className={styles.headerContent}>
                 <span className={styles.email}>{email}</span>
-                {deadline && !isAdmin(email) && <span className={styles.email}> Deadline to fill the form: {deadline}</span>}
+                {deadline && !isAdmin(email) && (
+                    <span className={styles.deadline}>⏰ Deadline: {deadline}</span>
+                )}
             </div>
+            {role === 'admin' && (
+                <div className={styles.adminActions}>
+                    <button className={styles.addCourseButton} onClick={catalogue.startAddingCourse}>
+                        Add course
+                    </button>
+                    <button className={styles.addCourseButton} onClick={() => programs.setShowModal(true)}>
+                        Add Student Program
+                    </button>
+                    <button onClick={excelExport.exportToExcel} className={styles.exportButton}>
+                        {excelExport.isExported ? 'Exported!' : 'Export to Excel'}
+                    </button>
+                </div>
+            )}
             <button onClick={handleLogout} className={styles.logoutButton}>
                 Log out
             </button>
         </div>
     );
+
 };
 
 export default Header;
