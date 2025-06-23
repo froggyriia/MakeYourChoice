@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://gitlab.pg.innopolis.university/makeyourchoice-team-17/makeyourchoice/compare/v0.0.5...v0.0.6) (2025-06-23)
+
+
+### Features
+
+* **course page:** course lists is filtered accordingly to active tab 'tech' | 'hum' ([0e514da](https://gitlab.pg.innopolis.university/makeyourchoice-team-17/makeyourchoice/commit/0e514daf98fb530b8a337e02df3a274d882c4142))
+
 ### [0.0.5](https://gitlab.pg.innopolis.university/makeyourchoice-team-17/makeyourchoice/compare/v0.0.4...v0.0.5) (2025-06-22)
 
 
