@@ -25,7 +25,7 @@ export default function LoginForm({ email, setEmail, error, onSubmit }) {
      */
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit();
+        onSubmit(e);
     };
 
     return (
