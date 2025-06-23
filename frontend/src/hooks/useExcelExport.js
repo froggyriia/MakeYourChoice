@@ -59,8 +59,8 @@ export function useExcelExport() {
             // Mark export as complete
             setIsExported(true);
         } catch (error) {
-            console.error("Ошибка при экспорте:", error);
-            alert("Произошла ошибка при создании файла");
+            console.error("Error while exporting...", error);
+            alert("Error occurred when the file was creating");
         }
     };
     // Return the export trigger function and state flag
