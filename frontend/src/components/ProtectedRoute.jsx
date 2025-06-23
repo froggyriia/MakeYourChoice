@@ -25,9 +25,10 @@ const ProtectedRoute = ({ element, requireAdmin = false }) => {
         return <Navigate to="/" />;
     }
     // If admin access is required but user is not an admin, redirect to catalogue
-    if (requireAdmin && role !== 'admin') {
-        return <Navigate to="/catalogue" />;
+    if (requireAdmin && role == 'admin') {
+        return <Navigate to="/admin-catalogue" />;
     }
+
     // If access is allowed, render the given element
     return element;
 };
