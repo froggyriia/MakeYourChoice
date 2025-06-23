@@ -15,7 +15,6 @@ export async function fetchCourses(email, allCourses = false) {
       .from('catalogue')
       .select('*');
 
-
     if (!allCourses && email) {
       const userProgram = await getUserProgram(email);
       if (!userProgram) {
