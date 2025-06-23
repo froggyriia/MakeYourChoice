@@ -15,19 +15,32 @@ export async function fetchCourses(email, allCourses = false) {
       .from('catalogue')
       .select('*');
 
-
     if (!allCourses && email) {
       const userProgram = await getUserProgram(email);
       if (!userProgram) {
         console.warn(`Program not found for user ${email}`);
         return [];
       }
-      query = query.contains('program', [userProgram]);
+      query = query
+       .contains("program", [userProgram])
+       .eq("archived", false);
+//      query = query.contains('program', [userProgram]);
     }
 
     const { data, error } = await query;
 
     if (error) throw error;
+
+    const filteredData = Array.isArray(data) ? data : [];
+    if (!allCourses) {
+      return filteredData.filter(course => course.archived === false);
+    }
+
+    if (allCourses) {
+      return [...(Array.isArray(data) ? data : [])].sort((a, b) =>
+        a.archived === b.archived ? 0 : a.archived ? 1 : -1
+      );
+    }
 
     return Array.isArray(data) ? data : [];
 
@@ -197,3 +210,27 @@ export async function filterCourses(filters = {}) {
 
   return data
 }
+/**
+* function to toggle the status of the course (archived/unarchived)
+* @param {number} courseId - course ID, that need to be archived/unarchived
+* @param {boolean} currentStatus - current archivation status (true - archived, false - unarchived)
+* @returns {Promise<Object>} - returns updated course information
+* @throws {Error} - if error occurred
+*/
+export async function archivedCourses(courseId, currentStatus) {
+    try {
+        const {data, error} = await supabase
+         .from("catalogue")
+         .update({archived: !currentStatus})
+         .eq("id", courseId);
+
+        if (error) throw error;
+
+        return data;
+    } catch (error){
+        console.error("Error occurred");
+
+        return null;
+    }
+}
+
