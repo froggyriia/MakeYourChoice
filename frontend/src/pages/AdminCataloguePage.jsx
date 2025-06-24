@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import Header from '../components/Header';
+import HeaderLayout from '../components/HeaderLayout';
 import CourseList from '../components/CourseList';
 import ProgramList from '../components/ProgramList';
 import AddCourseModal from '../components/AddCourseModal';
@@ -51,7 +51,7 @@ const AdminCataloguePage = () => {
 
     return (
         <>
-            <Header />
+            <HeaderLayout />
 
             {showAddForm && (
                 <AddCourseModal

@@ -28,7 +28,7 @@ export const useCatalogue = () => {
     // State to control visibility of the add/edit form
     const [showAddForm, setShowAddForm] = useState(false);
     // Get current user's email from Auth context
-    const { email } = useAuth();
+    const { email, role } = useAuth();
 
     // Template for a new course with default values
     const initialCourse = {
@@ -42,19 +42,17 @@ export const useCatalogue = () => {
         years: [],
     };
 
+    const [filters, setFilters] = useState({
+        types: [],
+        programs: [],
+        languages: [],
+        years: []
+    });
+
     // Filter state 'tech' | 'hum' | null
-    const [courseTypeFilter, setCourseTypeFilter] = useState(null);
+    const [courseTypeFilter, setCourseTypeFilter] = useState('tech');
 
-    useEffect(() => {
-        const fetchCourses = async () => {
-            const filters = {};
-            if (courseTypeFilter) filters.types = [courseTypeFilter]; // 'tech' or 'hum'
-            const result = await filterCourses(filters); // use your provided filterCourses()
-            setCourses(result);
-        };
 
-        fetchCourses();
-    }, [courseTypeFilter]);
 
 
     // State for currently editing or adding course
@@ -69,18 +67,37 @@ export const useCatalogue = () => {
         const loadCourses = async () => {
             try {
                 setLoading(true);
-                const data = await fetchCourses(email, isAdmin(email));
-                console.log("Fetched courses:", data);
+                const isUserAdmin = isAdmin(email);
+
+                // Combine courseTypeFilter + other filters
+                const activeFilters = { ...filters };
+                if (courseTypeFilter) {
+                    activeFilters.types = [courseTypeFilter];
+                }
+
+                // If any filters applied, use filterCourses; otherwise fetch all
+                let data;
+                const hasFilters = Object.values(activeFilters).some(val => val?.length > 0);
+
+                if (hasFilters) {
+                    data = await filterCourses(activeFilters);
+                } else {
+                    data = await fetchCourses(email, isUserAdmin);
+                }
+
                 setCourses(data);
             } catch (err) {
-                console.error(err);
+                console.error("Error loading courses:", err);
                 setCourses([]);
+                setError(err.message || "Failed to load courses");
             } finally {
                 setLoading(false);
             }
         };
+
         loadCourses();
-    }, []);
+    }, [email, filters, courseTypeFilter]);
+
     /**
      * Loads course data for editing based on the course ID.
      * Tries to find the course locally, otherwise fetches from API.
@@ -222,5 +239,7 @@ export const useCatalogue = () => {
         startAddingCourse,
         courseTypeFilter,
         setCourseTypeFilter,
+        filters,
+        setFilters,
     };
 };

@@ -1,11 +1,12 @@
 import { useRef } from 'react';
-import Header from '../components/Header';
+
 import CourseList from '../components/CourseList';
 import ElectivesForm from '../components/ElectivesForm';
 import { useCatalogueContext } from '../context/CatalogueContext.jsx';
 import { useAuth } from '../context/AuthContext';
 import { useFormSubmit } from '../hooks/useFormSubmit';
 import styles from './CataloguePage.module.css';
+import HeaderLayout from "../components/HeaderLayout.jsx";
 
 const StudentCataloguePage = () => {
     const { role, email } = useAuth();
@@ -22,7 +23,7 @@ const StudentCataloguePage = () => {
 
     return (
         <>
-            <Header />
+            <HeaderLayout />
 
             <div className={styles.pageWrapper}>
                 <div className={styles.leftSection}>

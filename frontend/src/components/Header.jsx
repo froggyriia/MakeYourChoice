@@ -22,6 +22,7 @@ import { getDeadlineForGroup } from '../api/functions_for_programs.js'; // API t
 import { isAdmin } from "../utils/validation.js"; // Utility to check if a user is an admin
 import { useExcelExport } from "../hooks/useExcelExport.js"; // Custom hook for Excel export functionality
 import { useCatalogueContext } from '../context/CatalogueContext.jsx'; // Context for course/program state management
+import FilterBar from './FilterBar';
 
 /**
  * Header component that handles:
@@ -124,22 +125,7 @@ const Header = () => {
                 </div>
             )}
 
-            {role === 'student' && (
-                <div className={styles.tabs}>
-                    <button
-                        className={`${styles.tabButton} ${courseTypeFilter === 'tech' ? styles.active : ''}`}
-                        onClick={() => setCourseTypeFilter('tech')}
-                    >
-                        Technical
-                    </button>
-                    <button
-                        className={`${styles.tabButton} ${courseTypeFilter === 'hum' ? styles.active : ''}`}
-                        onClick={() => setCourseTypeFilter('hum')}
-                    >
-                        Humanities
-                    </button>
-                </div>
-            )}
+
 
             {/* Always visible logout button */}
             <button onClick={handleLogout} className={styles.logoutButton}>
