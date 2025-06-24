@@ -1,3 +1,12 @@
+/**
+ * FilterBar Component
+ *
+ * This component provides filtering controls for courses based on user role.
+ * Students can filter by course type (technical/humanities).
+ * Admins can filter by program and course type.
+ * All users can filter by language and year.
+ */
+
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import styles from './FilterBar.module.css';
@@ -11,6 +20,10 @@ const FilterBar = ({ filters = {}, setFilters }) => {
     const { catalogue } = useCatalogueContext();
     const { courseTypeFilter, setCourseTypeFilter } = catalogue;
 
+    /**
+     * Fetches a list of unique programs and maps them into options
+     * for the React Select dropdown. Executes on initial mount.
+     */
     useEffect(() => {
         const fetchPrograms = async () => {
             try {
@@ -19,20 +32,33 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                     value: prog,
                     label: prog,
                 }));
-                setProgramOptions(options);
+                setProgramOptions(options); // Update state with formatted options
             } catch (error) {
                 console.error('Failed to load programs:', error);
             }
         };
 
-        fetchPrograms();
+        fetchPrograms(); // Trigger fetch on component mount
     }, []);
 
+    /**
+     * Handles changes from the multi-select dropdown (for program filter).
+     * Updates the `programs` field in the filter state.
+     *
+     * @param {Array} selectedOptions - Selected options from React Select
+     */
     const handleSelectChange = (selectedOptions) => {
         const values = selectedOptions ? selectedOptions.map(opt => opt.value) : [];
         setFilters((prev) => ({ ...prev, programs: values }));
     };
 
+    /**
+     * Handles checkbox changes for multi-category filters like languages and years.
+     * Adds or removes the selected value from the filter state.
+     *
+     * @param {string} category - Filter category ('languages', 'years', etc.)
+     * @param {string|number} value - The value to add/remove
+     */
     const handleCheckboxChange = (category, value) => {
         setFilters((prev) => {
             const current = prev[category] || [];
@@ -45,7 +71,7 @@ const FilterBar = ({ filters = {}, setFilters }) => {
 
     return (
         <div className={styles.filterBarContainer}>
-            {/* Type toggle buttons (for students only) */}
+            {/* Filter by type (for students only) */}
             {role === 'student' && (
                 <div className={styles.filterGroup}>
                     <span className={styles.filterLabel}>Type</span>
@@ -66,9 +92,10 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                 </div>
             )}
 
-            {/* Program filter (only for admins) */}
+            {/* Admin-specific program and type filters */}
             {role === "admin" && (
                 <>
+                    {/* Program multi-select filter */}
                     <div className={styles.filterGroup}>
                         <span className={styles.filterLabel}>Program</span>
                         <Select
@@ -91,6 +118,7 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                         />
                     </div>
 
+                    {/* Admin-specific course type toggle */}
                     <div className={styles.filterGroup}>
                         <span className={styles.filterLabel}>Type</span>
                         <div className={styles.tabs}>
@@ -111,7 +139,7 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                 </>
             )}
 
-            {/* Language filter */}
+            {/* Language checkboxes */}
             <div className={styles.filterGroup}>
                 <span className={styles.filterLabel}>Language</span>
                 {['Eng', 'Rus'].map((lang) => (
@@ -126,7 +154,7 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                 ))}
             </div>
 
-            {/* Year filter */}
+            {/* Year checkboxes */}
             <div className={styles.filterGroup}>
                 <span className={styles.filterLabel}>Year</span>
                 {[1, 2, 3, 4].map((year) => (

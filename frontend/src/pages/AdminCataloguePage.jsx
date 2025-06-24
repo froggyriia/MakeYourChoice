@@ -1,3 +1,14 @@
+/**
+ * AdminCataloguePage
+ *
+ * This page provides the administrative interface for managing:
+ * - The course catalogue (create, edit, delete courses)
+ * - Student programs (add/edit/delete groups of programs)
+ *
+ * Only accessible by users with an 'admin' role.
+ * Includes modals for course/program management, along with dynamic listings.
+ */
+
 import { useRef } from 'react';
 import HeaderLayout from '../components/HeaderLayout';
 import CourseList from '../components/CourseList';
@@ -10,9 +21,16 @@ import styles from './CataloguePage.module.css';
 
 const AdminCataloguePage = () => {
     const { role } = useAuth();
-    const { catalogue, programs } = useCatalogueContext();
+
+    // Block access if user is not an admin
+    if (role !== 'admin') return <p>Access denied</p>;
+
     const scrollPosition = useRef(0);
 
+    // Access course and program catalogue state
+    const { catalogue, programs } = useCatalogueContext();
+
+    // Destructure course-related state and handlers
     const {
         courses,
         currentCourse,
@@ -25,6 +43,7 @@ const AdminCataloguePage = () => {
         startEditingCourse,
     } = catalogue;
 
+    // Destructure program-related state and handlers
     const {
         programs: programList,
         programData,
@@ -37,22 +56,30 @@ const AdminCataloguePage = () => {
         startEditingProgram,
     } = programs;
 
+    /**
+     * Handles cancellation of the Add/Edit Course modal.
+     * Resets course form and scrolls back to previous position.
+     */
     const handleModalCancel = () => {
         handleCancel();
         window.scrollTo(0, scrollPosition.current);
     };
 
+    /**
+     * Handles cancellation of the Add/Edit Program modal.
+     * Resets program form and scrolls back to previous position.
+     */
     const handleProgramModalCancel = () => {
         handleProgramCancel();
         window.scrollTo(0, scrollPosition.current);
     };
 
-    if (role !== 'admin') return <p>Access denied</p>;
-
     return (
         <>
+            {/* Sticky header */}
             <HeaderLayout />
 
+            {/* Course modal (shown when adding or editing) */}
             {showAddForm && (
                 <AddCourseModal
                     course={currentCourse}
@@ -63,6 +90,7 @@ const AdminCataloguePage = () => {
                 />
             )}
 
+            {/* Program modal (shown when adding or editing) */}
             {showProgramModal && (
                 <AddStudentsProgramModal
                     programData={programData}
@@ -72,7 +100,9 @@ const AdminCataloguePage = () => {
                 />
             )}
 
+            {/* Main layout: left = courses, right = programs */}
             <div className={styles.pageWrapper}>
+                {/* Course management */}
                 <div className={styles.leftSection}>
                     <CourseList
                         courses={courses}
@@ -81,15 +111,14 @@ const AdminCataloguePage = () => {
                     />
                 </div>
 
+                {/* Program management */}
                 <div className={styles.rightSection}>
                     <p><b>Student Programs</b></p>
                     <br />
                     <ProgramList
                         programs={programList}
                         onDeleteProgram={handleDeleteProgram}
-                        onEditProgram={(groupTitle) => {
-                            startEditingProgram(groupTitle);
-                        }}
+                        onEditProgram={startEditingProgram}
                     />
                 </div>
             </div>
