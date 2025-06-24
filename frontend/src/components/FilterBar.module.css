@@ -1,0 +1,70 @@
+.filterBarContainer {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 2rem;
+    padding: 1rem;
+    align-items: center;
+    overflow-x: auto;
+    background-color: var(--color-elem-background);
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    scrollbar-width: none;       /* Firefox */
+    -ms-overflow-style: none;
+}
+
+/* Set each group to inline layout */
+.filterGroup {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    white-space: nowrap;
+}
+
+.filterLabel {
+    font-weight: 600;
+    font-size: 14px;
+    color: #444;
+    margin-right: 0.5rem;
+}
+
+.filterCheckbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #333;
+}
+
+.reactSelect {
+    min-width: 200px;
+    max-width: 250px;
+    font-size: 14px;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    justify-content: center;
+}
+
+.tabButton {
+    padding: 12px 24px;
+    background-color: var(--color-inactive); /* Inactive default */
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tabButton.active {
+    background: var(--color-primary); /* Active = green gradient */
+}
+
+.tabButton:hover:not(.active) {
+    background-color: #aaa; /* Hover for inactive */
+}
+
