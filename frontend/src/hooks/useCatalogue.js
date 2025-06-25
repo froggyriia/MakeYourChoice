@@ -17,6 +17,7 @@ import {
     filterCourses
 } from '../api/functions_for_courses.js';
 import { isAdmin } from '../utils/validation.js';
+import { getUserProgram } from '../api/functions_for_users.js'
 
 export const useCatalogue = () => {
     const { email } = useAuth();
@@ -50,34 +51,36 @@ export const useCatalogue = () => {
     const [courseTypeFilter, setCourseTypeFilter] = useState('tech'); // 'tech', 'hum', or null
 
     useEffect(() => {
-        const loadCourses = async () => {
-            try {
-                setLoading(true);
-                const isUserAdmin = isAdmin(email);
+  const loadCourses = async () => {
+    try {
+      setLoading(true);
+      const isUserAdmin = isAdmin(email);
 
-                const activeFilters = { ...filters };
-                if (!isUserAdmin && courseTypeFilter) {
-                    activeFilters.types = [courseTypeFilter];
-                }
+      const baseCourses = await fetchCourses(email, isUserAdmin);
 
-                const hasFilters = Object.values(activeFilters).some(val => val?.length > 0);
-                const data = hasFilters
-                    ? await filterCourses(activeFilters)
-                    : await fetchCourses(email, isUserAdmin);
+      const activeFilters = { ...filters };
+      if (!isUserAdmin && courseTypeFilter) {
+        activeFilters.types = [courseTypeFilter];
+      }
 
-                setCourses(data);
-                setError(null);
-            } catch (err) {
-                console.error(err);
-                setCourses([]);
-                setError(err.message || "Failed to load courses");
-            } finally {
-                setLoading(false);
-            }
-        };
+      const data = await filterCourses(activeFilters, baseCourses);
 
-        if (email) loadCourses();
-    }, [email, filters, courseTypeFilter]);
+      console.log('Active filters:', activeFilters);
+      console.log('Loaded courses:', data);
+
+      setCourses(data);
+      setError(null);
+    } catch (err) {
+      console.error(err);
+      setCourses([]);
+      setError(err.message || "Failed to load courses");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (email) loadCourses();
+}, [email, filters, courseTypeFilter]);
 
     const startEditingCourse = async (courseId) => {
         let course = courses.find((c) => c.id === courseId);
