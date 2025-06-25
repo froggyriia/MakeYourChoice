@@ -18,6 +18,7 @@ import AddStudentsProgramModal from '../components/AddStudentProgramModal';
 import { useCatalogueContext } from '../context/CatalogueContext.jsx';
 import { useAuth } from '../context/AuthContext';
 import styles from './CataloguePage.module.css';
+import CourseListGrid from "../components/CourseListGrid.jsx";
 
 const AdminCataloguePage = () => {
     const { role } = useAuth();
@@ -104,11 +105,13 @@ const AdminCataloguePage = () => {
             <div className={styles.pageWrapper}>
                 {/* Course management */}
                 <div className={styles.leftSection}>
-                    <CourseList
-                        courses={courses}
-                        onDeleteCourse={handleDeleteCourse}
-                        onEditCourse={startEditingCourse}
-                    />
+                    {/*<CourseList*/}
+                    {/*    courses={courses}*/}
+                    {/*    onDeleteCourse={handleDeleteCourse}*/}
+                    {/*    onEditCourse={startEditingCourse}*/}
+                    {/*/>*/}
+                    <CourseListGrid courses={courses} onTileClick={(id) => console.log("Clicked:", id)} />
+
                 </div>
 
                 {/* Program management */}

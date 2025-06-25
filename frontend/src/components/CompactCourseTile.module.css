@@ -1,0 +1,46 @@
+.tile {
+    background-color: var(--color-elem-background);
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    font-family: 'Montserrat', sans-serif;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 120px;
+}
+
+.tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.title {
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.info {
+    font-size: 15px;
+    margin-bottom: 6px;
+    color: #555;
+}
+
+/* Optional responsive tweaks */
+@media (max-width: 768px) {
+    .tile {
+        padding: 12px;
+    }
+
+    .title {
+        font-size: 18px;
+    }
+
+    .info {
+        font-size: 14px;
+    }
+}
