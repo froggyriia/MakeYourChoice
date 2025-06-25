@@ -15,13 +15,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx'; // Provides user email, role, and logout function
-import styles from './Header.module.css'; // Module-scoped CSS styling
-import { getUserProgram } from "../api/functions_for_users.js"; // API to get user's academic group
-import { getDeadlineForGroup } from '../api/functions_for_programs.js'; // API to get program deadline
-import { isAdmin } from "../utils/validation.js"; // Utility to check if a user is an admin
-import { useExcelExport } from "../hooks/useExcelExport.js"; // Custom hook for Excel export functionality
-import { useCatalogueContext } from '../context/CatalogueContext.jsx'; // Context for course/program state management
+import { useAuth } from '../context/AuthContext.jsx';
+import styles from './Header.module.css';
+import { getUserProgram } from "../api/functions_for_users.js";
+import { getDeadlineForGroup } from '../api/functions_for_programs.js';
+import { isAdmin } from "../utils/validation.js";
+import { useCatalogueContext } from '../context/CatalogueContext.jsx';
 
 /**
  * Header component that handles:
@@ -31,17 +30,14 @@ import { useCatalogueContext } from '../context/CatalogueContext.jsx'; // Contex
  * - Logout functionality
  */
 const Header = () => {
-    // Get shared catalogue state and admin action handlers
     const { catalogue, programs, excelExport } = useCatalogueContext();
-    const { courseTypeFilter, setCourseTypeFilter } = catalogue;
-    const navigate = useNavigate(); // Navigation hook
-    const { logout, email, role } = useAuth(); // Destructure user info and logout method
-    const [deadline, setDeadline] = useState(null); // Local state to hold formatted deadline
+    const { viewMode, setViewMode, courseTypeFilter, setCourseTypeFilter } = catalogue;
+    const navigate = useNavigate();
+    const { logout, email, role } = useAuth();
+    const [deadline, setDeadline] = useState(null);
 
     /**
-     * Handles user logout by:
-     * - Clearing session via AuthContext
-     * - Redirecting user to the homepage
+     * Logs the user out by calling context method and redirects to the homepage.
      */
     const handleLogout = () => {
         logout();
@@ -49,56 +45,68 @@ const Header = () => {
     };
 
     /**
-     * Fetches and sets the program deadline based on the logged-in user's group.
-     * This only runs on mount or when the email changes.
+     * Retrieves the user's academic program and its corresponding deadline.
+     * Converts the deadline timestamp into a readable format and stores it in state.
      */
     useEffect(() => {
         const fetchDeadline = async () => {
             if (!email) return;
 
-            // Fetch academic program/group for this user
-            const group = await getUserProgram(email);
-            console.log(group); // For debugging: log user group
-
+            const group = await getUserProgram(email); // Get user's academic group
             if (group) {
-                // Get the submission deadline for that group
-                const deadlineTs = await getDeadlineForGroup(group);
-
+                const deadlineTs = await getDeadlineForGroup(group); // Get deadline for the group
                 if (deadlineTs) {
-                    // Format timestamp into readable date string
                     const formatted = new Date(deadlineTs).toLocaleString('en-GB', {
                         day: 'numeric',
                         month: 'long',
                         hour: '2-digit',
                         minute: '2-digit',
                     });
-                    setDeadline(formatted);
+                    setDeadline(formatted); // Save formatted deadline in state
                 }
             }
         };
 
-        fetchDeadline(); // Run the async function
-    }, [email]); // Dependency: re-run when email changes
+        fetchDeadline(); // Execute on mount or email change
+    }, [email]);
 
-    // If the user is not logged in, don't render anything
+    // If no email is present, do not render the header
     if (!email) return null;
 
     return (
         <div className={styles.header}>
             <div className={styles.headerContent}>
-                {/* Display logged-in user's email */}
+                {/* Show user's email */}
                 <span className={styles.email}>{email}</span>
-
-                {/* Show deadline for non-admin users */}
+                {/* View toggle buttons next to email */}
+                {role === 'admin' && (
+                    <div className={styles.viewToggleButtons}>
+                        <button
+                            className={`${styles.viewButton} ${catalogue.viewMode === 'compact' ? styles.active : ''}`}
+                            onClick={() => {catalogue.setViewMode('compact');
+                                console.log(viewMode);}}
+                        >
+                            Compact
+                        </button>
+                        <button
+                            className={`${styles.viewButton} ${catalogue.viewMode === 'full' ? styles.active : ''}`}
+                            onClick={() => {catalogue.setViewMode('full');
+                                console.log(viewMode);}}
+                        >
+                            Full
+                        </button>
+                    </div>
+                )}
+                {/* Show deadline if user is not an admin */}
                 {deadline && !isAdmin(email) && (
                     <span className={styles.deadline}>⏰ Deadline: {deadline}</span>
                 )}
             </div>
 
-            {/* Admin-only controls for course and program management */}
+            {/* Admin-specific action buttons */}
             {role === 'admin' && (
                 <div className={styles.adminActions}>
-                    {/* Triggers course addition workflow from context */}
+                    {/* Trigger add course workflow */}
                     <button
                         className={styles.addCourseButton}
                         onClick={catalogue.startAddingCourse}
@@ -106,7 +114,7 @@ const Header = () => {
                         Add course
                     </button>
 
-                    {/* Opens modal to add a new student program */}
+                    {/* Open modal to add student program */}
                     <button
                         className={styles.addCourseButton}
                         onClick={() => programs.setShowModal(true)}
@@ -114,7 +122,7 @@ const Header = () => {
                         Add Student Program
                     </button>
 
-                    {/* Exports current priorities data to Excel */}
+                    {/* Export priority data to Excel */}
                     <button
                         onClick={excelExport.exportToExcel}
                         className={styles.exportButton}
@@ -124,24 +132,7 @@ const Header = () => {
                 </div>
             )}
 
-            {role === 'student' && (
-                <div className={styles.tabs}>
-                    <button
-                        className={`${styles.tabButton} ${courseTypeFilter === 'tech' ? styles.active : ''}`}
-                        onClick={() => setCourseTypeFilter('tech')}
-                    >
-                        Technical
-                    </button>
-                    <button
-                        className={`${styles.tabButton} ${courseTypeFilter === 'hum' ? styles.active : ''}`}
-                        onClick={() => setCourseTypeFilter('hum')}
-                    >
-                        Humanities
-                    </button>
-                </div>
-            )}
-
-            {/* Always visible logout button */}
+            {/* Logout control for all users */}
             <button onClick={handleLogout} className={styles.logoutButton}>
                 Log out
             </button>

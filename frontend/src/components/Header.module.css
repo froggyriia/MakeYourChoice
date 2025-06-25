@@ -83,30 +83,23 @@
     box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
-.tabs {
+.viewToggleButtons {
     display: flex;
-    gap: 10px;
-    margin-bottom: 24px;
-    justify-content: center;
+    gap: 8px;
 }
 
-.tabButton {
-    padding: 12px 24px;
-    background-color: var(--color-inactive);
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-weight: 600;
+/* Buttons themselves */
+.viewButton {
+    padding: 4px 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    font-size: 14px;
 }
 
-.tabButton.active {
-    background: linear-gradient(135deg, var(--color-primary), #4CAF50);
-}
-
-.tabButton:hover:not(.active) {
-    background-color: #aaa;
+.viewButton.active {
+    background: var(--color-primary); /* Active = green gradient */
 }
 
 .exportButton {
@@ -126,6 +119,37 @@
 .exportButton:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(64, 187, 32, 0.3);
+}
+
+.belowHeader {
+    margin-top: 80px; /* offset to sit below the fixed header */
+    padding: 0 2rem;
+    z-index: 1;
+    position: relative;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    justify-content: center;
+}
+
+.tabButton {
+    padding: 12px 24px;
+    background-color: var(--color-inactive); /* Inactive default */
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+
+
+.tabButton:hover:not(.active) {
+    background-color: #aaa; /* Hover for inactive */
 }
 
 @media (max-width: 768px) {

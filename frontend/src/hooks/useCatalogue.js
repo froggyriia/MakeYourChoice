@@ -1,13 +1,14 @@
 /**
- * Custom React hook for managing the course catalogue state and operations.
+ * useCatalogue.js
  *
- * Provides functionality to fetch, add, edit, and delete courses.
- * Manages loading and error states, and controls form visibility.
- * Integrates with authentication to fetch data relevant to the current user.
+ * Custom React hook to manage course catalogue operations:
+ * - Fetching, filtering, editing, and adding courses
+ * - Handles state for course form, filters, and async status
+ * - Integrates with AuthContext to filter data based on user role
  */
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx';
 import {
     fetchCourses,
     addCourse,
@@ -15,22 +16,20 @@ import {
     getCourseInfo,
     filterCourses
 } from '../api/functions_for_courses.js';
-
-import { isAdmin} from "../utils/validation.js";
+import { isAdmin } from '../utils/validation.js';
 
 export const useCatalogue = () => {
-    // State for list of courses
-    const [courses, setCourses] = useState([]);
-    // State to indicate loading status for async operations
-    const [loading, setLoading] = useState(false);
-    // State to hold error messages
-    const [error, setError] = useState(null);
-    // State to control visibility of the add/edit form
-    const [showAddForm, setShowAddForm] = useState(false);
-    // Get current user's email from Auth context
-    const { email } = useAuth();
+    const { email, role } = useAuth();
 
-    // Template for a new course with default values
+    const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    const [showAddForm, setShowAddForm] = useState(false);
+    const [currentCourse, setCurrentCourse] = useState(null);
+
+    const [viewMode, setViewMode] = useState('full');
+
     const initialCourse = {
         id: null,
         title: '',
@@ -42,67 +41,63 @@ export const useCatalogue = () => {
         years: [],
     };
 
-    // Filter state 'tech' | 'hum' | null
-    const [courseTypeFilter, setCourseTypeFilter] = useState(null);
+    const [filters, setFilters] = useState({
+        types: [],
+        programs: [],
+        languages: [],
+        years: []
+    });
 
-    useEffect(() => {
-        const fetchCourses = async () => {
-            const filters = {};
-            if (courseTypeFilter) filters.types = [courseTypeFilter]; // 'tech' or 'hum'
-            const result = await filterCourses(filters); // use your provided filterCourses()
-            setCourses(result);
-        };
-
-        fetchCourses();
-    }, [courseTypeFilter]);
-
-
-    // State for currently editing or adding course
-    const [currentCourse, setCurrentCourse] = useState(initialCourse);
+    const [courseTypeFilter, setCourseTypeFilter] = useState('tech');
 
     /**
-     * Fetches courses from the backend API when the component mounts.
-     * Uses the current user's email and admin status to determine data scope.
-     * Handles loading and error states during fetch.
+     * Load courses from backend when email, filters, or course type changes.
+     * Applies filtering if active; otherwise loads full list for user.
      */
     useEffect(() => {
         const loadCourses = async () => {
             try {
                 setLoading(true);
-                const data = await fetchCourses(email, isAdmin(email));
-                console.log("Fetched courses:", data);
+                const isUserAdmin = isAdmin(email);
+
+                const activeFilters = { ...filters };
+                if (!isUserAdmin && courseTypeFilter) {
+                    activeFilters.types = [courseTypeFilter];
+                }
+
+                const hasFilters = Object.values(activeFilters).some(val => val?.length > 0);
+                const data = hasFilters
+                    ? await filterCourses(activeFilters)
+                    : await fetchCourses(email, isUserAdmin);
+
                 setCourses(data);
+                setError(null);
             } catch (err) {
-                console.error(err);
                 setCourses([]);
+                setError(err.message || "Failed to load courses");
             } finally {
                 setLoading(false);
             }
         };
-        loadCourses();
-    }, []);
+
+        if (email) loadCourses();
+    }, [email, filters, courseTypeFilter]);
+
     /**
-     * Loads course data for editing based on the course ID.
-     * Tries to find the course locally, otherwise fetches from API.
-     * Normalizes years and program fields to expected types.
-     * Opens the add/edit form with loaded course data.
-     *
-     * @param {number|string} courseId - ID of the course to edit
+     * Starts course editing by loading course data by ID
+     * Normalizes types for form binding
      */
     const startEditingCourse = async (courseId) => {
-        // Try to find course in current state
         let course = courses.find((c) => c.id === courseId);
-
         if (!course) {
             try {
-                // Fetch course info from API if not found locally
                 course = await getCourseInfo(courseId);
-            } catch (e) {
+            } catch {
                 setError('Failed to load course for editing');
                 return;
             }
         }
-        // Normalize data types for form consistency
+
         const normalizedCourse = {
             ...course,
             years: (course.years || []).map(Number),
@@ -113,73 +108,51 @@ export const useCatalogue = () => {
         setShowAddForm(true);
     };
 
-    /**
-     * Initializes adding a new course by resetting form state.
-     * Opens the add course form with default initialCourse values.
-     */
+    /** Resets form to initial state and shows the add form */
     const startAddingCourse = () => {
         setCurrentCourse(initialCourse);
         setShowAddForm(true);
     };
-    /**
-     * Handles toggling year selection in the current course's years array.
-     * If the year is already selected, removes it; otherwise adds it.
-     *
-     * @param {string|number} year - The year to toggle in the course years
-     */
+
+    /** Toggles year in currentCourse.years */
     const handleYearsChange = (year) => {
         const yearInt = Number(year);
         setCurrentCourse((prev) => {
-            const prevYears = prev.years.map(Number);
-            const years = prevYears.includes(yearInt)
-                ? prevYears.filter((y) => y !== yearInt)
-                : [...prevYears, yearInt];
-            console.log('Old years:', prevYears, 'New years:', years);
-            return { ...prev, years };
+            const updated = prev.years.includes(yearInt)
+                ? prev.years.filter((y) => y !== yearInt)
+                : [...prev.years, yearInt];
+            return { ...prev, years: updated };
         });
     };
 
-    /**
-     * Handles generic input changes in the current course form.
-     * Updates the currentCourse state with new name/value pair.
-     *
-     * @param {Object} param0
-     * @param {string} param0.name - Name of the field to update
-     * @param {any} param0.value - New value for the field
-     */
+    /** Handles change in any currentCourse input field */
     const handleChange = ({ name, value }) => {
         setCurrentCourse((prev) => ({ ...prev, [name]: value }));
     };
+
     /**
-     * Submits the current course to the API for adding or updating.
-     * Cleans up the course data, ensuring correct types.
-     * Updates the course list in state accordingly.
-     * Handles any errors by setting error state.
+     * Submits current course (new or edited) to backend.
+     * Updates local course list and hides the form on success.
      */
     const handleSubmit = async () => {
         try {
-            // Normalize course data before sending
-            const cleanedCourse = {
+            const cleaned = {
                 ...currentCourse,
                 years: (currentCourse.years || []).map(Number),
                 program: (currentCourse.program || []).map(String),
             };
 
-            if (cleanedCourse.id) {
-                // Edit existing course
-                const updatedCourse = await editCourseInfo(cleanedCourse);
-                // Replace course in state with updated version
+            if (cleaned.id) {
+                const updated = await editCourseInfo(cleaned);
                 setCourses((prev) =>
-                    prev.map((c) => (c.id === updatedCourse.id ? updatedCourse : c))
+                    prev.map((c) => (c.id === updated.id ? updated : c))
                 );
             } else {
-                // Add new course
-                const { data, error } = await addCourse(cleanedCourse);
+                const { data, error } = await addCourse(cleaned);
                 if (error) throw error;
-                // Append new course to state list
                 setCourses((prev) => [...prev, data[0]]);
             }
-            // Reset form and hide it after submission
+
             setCurrentCourse(initialCourse);
             setShowAddForm(false);
             setError(null);
@@ -187,32 +160,30 @@ export const useCatalogue = () => {
             setError(err.message);
         }
     };
-    /**
-     * Cancels adding or editing and resets form state.
-     * Hides the add/edit form and clears errors.
-     */
+
+    /** Cancels add/edit and resets form */
     const handleCancel = () => {
         setCurrentCourse(initialCourse);
         setShowAddForm(false);
         setError(null);
     };
-    /**
-     * Removes a course from the course list state by ID.
-     * Does not call API delete here; expected to be called after deletion.
-     *
-     * @param {number|string} id - ID of the course to remove
-     */
+
+    /** Deletes course locally (assumes backend delete succeeded) */
     const handleDeleteCourse = (id) => {
         setCourses((prev) => prev.filter((c) => c.id !== id));
     };
-    // Return all relevant state and handlers to be used in components
+
     return {
         courses,
         loading,
         error,
-        currentCourse,
-        setShowAddForm,
         showAddForm,
+        currentCourse,
+        filters,
+        courseTypeFilter,
+        setShowAddForm,
+        setFilters,
+        setCourseTypeFilter,
         handleChange,
         handleYearsChange,
         handleSubmit,
@@ -220,7 +191,7 @@ export const useCatalogue = () => {
         handleDeleteCourse,
         startEditingCourse,
         startAddingCourse,
-        courseTypeFilter,
-        setCourseTypeFilter,
+        viewMode,
+        setViewMode,
     };
 };
