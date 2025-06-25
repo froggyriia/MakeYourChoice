@@ -24,7 +24,6 @@ export async function fetchCourses(email, allCourses = false) {
       query = query
        .contains("program", [userProgram])
        .eq("archived", false);
-//      query = query.contains('program', [userProgram]);
     }
 
     const { data, error } = await query;
@@ -32,6 +31,7 @@ export async function fetchCourses(email, allCourses = false) {
     if (error) throw error;
 
     const filteredData = Array.isArray(data) ? data : [];
+
     if (!allCourses) {
       return filteredData.filter(course => course.archived === false);
     }
@@ -178,38 +178,26 @@ export const deleteCourse = async (courseTitle) => {
  * @param {Array} [filters.programs] - Programs to filter by
  * @param {Array} [filters.languages] - Languages to filter by
  * @param {boolean} [filters.isArchived] - Archive status to filter by
+ * @param {Array} [filters.years] - Years of study to filter by
+ * @param {Array} [initialCourses] - courses fetched by program from fetchCourses function
  * @returns {Promise<Array>} - Filtered list of courses
  */
-export async function filterCourses(filters = {}) {
-    let query = supabase
-    .from('catalogue')
-    .select('*')
+export async function filterCourses(filters = {}, initialCourses = null) {
+  if (initialCourses) {
+    return initialCourses.filter(course => {
+      const typeMatch = !filters.types?.length || filters.types.includes(course.type);
+      const programMatch = !filters.programs?.length ||
+                         course.program.some(prog => filters.programs.includes(prog));
+      const languageMatch = !filters.languages?.length ||
+                           filters.languages.includes(course.language);
+      const archiveMatch = typeof filters.isArchived !== 'boolean' ||
+                          course.archived === filters.isArchived;
 
-  if (filters.types?.length) {
-    query = query.eq('type', filters.types)
+      return typeMatch && programMatch && languageMatch && archiveMatch;
+    });
   }
-
-  if (filters.programs?.length) {
-    query = query.overlaps('program', filters.programs)
-  }
-
-  if (filters.languages?.length) {
-    query = query.eq('language', filters.languages)
-  }
-
-  if (typeof filters.isArchived === 'boolean') {
-    query = query.eq('archived', filters.isArchived)
-  }
-
-  const { data, error } = await query
-
-  if (error) {
-    console.error('Error while loading courses:', error)
-    return []
-  }
-
-  return data
 }
+
 /**
 * function to toggle the status of the course (archived/unarchived)
 * @param {number} courseId - course ID, that need to be archived/unarchived
