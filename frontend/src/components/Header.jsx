@@ -30,6 +30,7 @@ import { useCatalogueContext } from '../context/CatalogueContext.jsx';
  * - Logout functionality
  */
 const Header = () => {
+    // Get shared catalogue state and admin action handlers
     const { catalogue, programs, excelExport } = useCatalogueContext();
     const { viewMode, setViewMode, courseTypeFilter, setCourseTypeFilter } = catalogue;
     const navigate = useNavigate();
@@ -37,7 +38,9 @@ const Header = () => {
     const [deadline, setDeadline] = useState(null);
 
     /**
-     * Logs the user out by calling context method and redirects to the homepage.
+     * Handles user logout by:
+     * - Clearing session via AuthContext
+     * - Redirecting user to the homepage
      */
     const handleLogout = () => {
         logout();
@@ -45,24 +48,30 @@ const Header = () => {
     };
 
     /**
-     * Retrieves the user's academic program and its corresponding deadline.
-     * Converts the deadline timestamp into a readable format and stores it in state.
+     * Fetches and sets the program deadline based on the logged-in user's group.
+     * This only runs on mount or when the email changes.
      */
     useEffect(() => {
         const fetchDeadline = async () => {
             if (!email) return;
 
-            const group = await getUserProgram(email); // Get user's academic group
+            // Fetch academic program/group for this user
+            const group = await getUserProgram(email);
+            console.log(group); // For debugging: log user group
+
             if (group) {
-                const deadlineTs = await getDeadlineForGroup(group); // Get deadline for the group
+                // Get the submission deadline for that group
+                const deadlineTs = await getDeadlineForGroup(group);
+
                 if (deadlineTs) {
+                    // Format timestamp into readable date string
                     const formatted = new Date(deadlineTs).toLocaleString('en-GB', {
                         day: 'numeric',
                         month: 'long',
                         hour: '2-digit',
                         minute: '2-digit',
                     });
-                    setDeadline(formatted); // Save formatted deadline in state
+                    setDeadline(formatted);
                 }
             }
         };
@@ -70,7 +79,7 @@ const Header = () => {
         fetchDeadline(); // Execute on mount or email change
     }, [email]);
 
-    // If no email is present, do not render the header
+    // If the user is not logged in, don't render anything
     if (!email) return null;
 
     return (

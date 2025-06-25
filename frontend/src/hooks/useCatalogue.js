@@ -19,7 +19,7 @@ import {
 import { isAdmin } from '../utils/validation.js';
 
 export const useCatalogue = () => {
-    const { email, role } = useAuth();
+    const { email } = useAuth();
 
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -27,7 +27,6 @@ export const useCatalogue = () => {
 
     const [showAddForm, setShowAddForm] = useState(false);
     const [currentCourse, setCurrentCourse] = useState(null);
-
     const [viewMode, setViewMode] = useState('full');
 
     const initialCourse = {
@@ -48,12 +47,8 @@ export const useCatalogue = () => {
         years: []
     });
 
-    const [courseTypeFilter, setCourseTypeFilter] = useState('tech');
+    const [courseTypeFilter, setCourseTypeFilter] = useState('tech'); // 'tech', 'hum', or null
 
-    /**
-     * Load courses from backend when email, filters, or course type changes.
-     * Applies filtering if active; otherwise loads full list for user.
-     */
     useEffect(() => {
         const loadCourses = async () => {
             try {
@@ -73,6 +68,7 @@ export const useCatalogue = () => {
                 setCourses(data);
                 setError(null);
             } catch (err) {
+                console.error(err);
                 setCourses([]);
                 setError(err.message || "Failed to load courses");
             } finally {
@@ -83,10 +79,6 @@ export const useCatalogue = () => {
         if (email) loadCourses();
     }, [email, filters, courseTypeFilter]);
 
-    /**
-     * Starts course editing by loading course data by ID
-     * Normalizes types for form binding
-     */
     const startEditingCourse = async (courseId) => {
         let course = courses.find((c) => c.id === courseId);
         if (!course) {
@@ -108,13 +100,11 @@ export const useCatalogue = () => {
         setShowAddForm(true);
     };
 
-    /** Resets form to initial state and shows the add form */
     const startAddingCourse = () => {
         setCurrentCourse(initialCourse);
         setShowAddForm(true);
     };
 
-    /** Toggles year in currentCourse.years */
     const handleYearsChange = (year) => {
         const yearInt = Number(year);
         setCurrentCourse((prev) => {
@@ -125,15 +115,10 @@ export const useCatalogue = () => {
         });
     };
 
-    /** Handles change in any currentCourse input field */
     const handleChange = ({ name, value }) => {
         setCurrentCourse((prev) => ({ ...prev, [name]: value }));
     };
 
-    /**
-     * Submits current course (new or edited) to backend.
-     * Updates local course list and hides the form on success.
-     */
     const handleSubmit = async () => {
         try {
             const cleaned = {
@@ -161,14 +146,12 @@ export const useCatalogue = () => {
         }
     };
 
-    /** Cancels add/edit and resets form */
     const handleCancel = () => {
         setCurrentCourse(initialCourse);
         setShowAddForm(false);
         setError(null);
     };
 
-    /** Deletes course locally (assumes backend delete succeeded) */
     const handleDeleteCourse = (id) => {
         setCourses((prev) => prev.filter((c) => c.id !== id));
     };
@@ -181,9 +164,13 @@ export const useCatalogue = () => {
         currentCourse,
         filters,
         courseTypeFilter,
+        viewMode,
+
         setShowAddForm,
         setFilters,
         setCourseTypeFilter,
+        setViewMode,
+
         handleChange,
         handleYearsChange,
         handleSubmit,
@@ -191,7 +178,5 @@ export const useCatalogue = () => {
         handleDeleteCourse,
         startEditingCourse,
         startAddingCourse,
-        viewMode,
-        setViewMode,
     };
 };

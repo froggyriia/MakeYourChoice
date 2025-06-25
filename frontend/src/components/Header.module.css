@@ -152,6 +152,14 @@
     background-color: #aaa; /* Hover for inactive */
 }
 
+.belowHeader {
+    margin-top: 80px; /* offset to sit below the fixed header */
+    padding: 0 2rem;
+    z-index: 1;
+    position: relative;
+}
+
+
 @media (max-width: 768px) {
     .header {
         padding: 0.8rem calc(1rem + 15px) 0.8rem 1rem;

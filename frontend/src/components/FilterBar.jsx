@@ -65,7 +65,6 @@ const FilterBar = ({ filters = {}, setFilters }) => {
             const updated = current.includes(value)
                 ? current.filter((v) => v !== value)
                 : [...current, value];
-            console.log(updated)
             return { ...prev, [category]: updated };
         });
     };
@@ -133,7 +132,6 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                             </label>
                         ))}
                     </div>
-
                 </>
             )}
 
