@@ -28,6 +28,8 @@ export const useCatalogue = () => {
     const [showAddForm, setShowAddForm] = useState(false);
     const [currentCourse, setCurrentCourse] = useState(null);
 
+    const [viewMode, setViewMode] = useState('full');
+
     const initialCourse = {
         id: null,
         title: '',
@@ -59,7 +61,7 @@ export const useCatalogue = () => {
                 const isUserAdmin = isAdmin(email);
 
                 const activeFilters = { ...filters };
-                if (courseTypeFilter) {
+                if (!isUserAdmin && courseTypeFilter) {
                     activeFilters.types = [courseTypeFilter];
                 }
 
@@ -189,5 +191,7 @@ export const useCatalogue = () => {
         handleDeleteCourse,
         startEditingCourse,
         startAddingCourse,
+        viewMode,
+        setViewMode,
     };
 };

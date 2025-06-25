@@ -65,6 +65,7 @@ const FilterBar = ({ filters = {}, setFilters }) => {
             const updated = current.includes(value)
                 ? current.filter((v) => v !== value)
                 : [...current, value];
+            console.log(updated)
             return { ...prev, [category]: updated };
         });
     };
@@ -118,24 +119,21 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                         />
                     </div>
 
-                    {/* Admin-specific course type toggle */}
+                    {/* Admin-specific course type checkboxes */}
                     <div className={styles.filterGroup}>
                         <span className={styles.filterLabel}>Type</span>
-                        <div className={styles.tabs}>
-                            <button
-                                className={`${styles.tabButton} ${courseTypeFilter === 'tech' ? styles.active : ''}`}
-                                onClick={() => setCourseTypeFilter('tech')}
-                            >
-                                Technical
-                            </button>
-                            <button
-                                className={`${styles.tabButton} ${courseTypeFilter === 'hum' ? styles.active : ''}`}
-                                onClick={() => setCourseTypeFilter('hum')}
-                            >
-                                Humanities
-                            </button>
-                        </div>
+                        {['tech', 'hum'].map((type) => (
+                            <label key={type} className={styles.filterCheckbox}>
+                                <input
+                                    type="checkbox"
+                                    checked={(filters.types || []).includes(type)}
+                                    onChange={() => handleCheckboxChange('types', type)}
+                                />
+                                {type === 'tech' ? 'Technical' : 'Humanities'}
+                            </label>
+                        ))}
                     </div>
+
                 </>
             )}
 

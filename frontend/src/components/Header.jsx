@@ -31,7 +31,7 @@ import { useCatalogueContext } from '../context/CatalogueContext.jsx';
  */
 const Header = () => {
     const { catalogue, programs, excelExport } = useCatalogueContext();
-    const { courseTypeFilter, setCourseTypeFilter } = catalogue;
+    const { viewMode, setViewMode, courseTypeFilter, setCourseTypeFilter } = catalogue;
     const navigate = useNavigate();
     const { logout, email, role } = useAuth();
     const [deadline, setDeadline] = useState(null);
@@ -78,7 +78,25 @@ const Header = () => {
             <div className={styles.headerContent}>
                 {/* Show user's email */}
                 <span className={styles.email}>{email}</span>
-
+                {/* View toggle buttons next to email */}
+                {role === 'admin' && (
+                    <div className={styles.viewToggleButtons}>
+                        <button
+                            className={`${styles.viewButton} ${catalogue.viewMode === 'compact' ? styles.active : ''}`}
+                            onClick={() => {catalogue.setViewMode('compact');
+                                console.log(viewMode);}}
+                        >
+                            Compact
+                        </button>
+                        <button
+                            className={`${styles.viewButton} ${catalogue.viewMode === 'full' ? styles.active : ''}`}
+                            onClick={() => {catalogue.setViewMode('full');
+                                console.log(viewMode);}}
+                        >
+                            Full
+                        </button>
+                    </div>
+                )}
                 {/* Show deadline if user is not an admin */}
                 {deadline && !isAdmin(email) && (
                     <span className={styles.deadline}>⏰ Deadline: {deadline}</span>

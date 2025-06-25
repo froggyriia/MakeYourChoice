@@ -83,6 +83,24 @@
     box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
+.viewToggleButtons {
+    display: flex;
+    gap: 8px;
+}
+
+/* Buttons themselves */
+.viewButton {
+    padding: 4px 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.viewButton.active {
+    background: var(--color-primary); /* Active = green gradient */
+}
 
 .exportButton {
     margin-right: 0;
@@ -110,6 +128,29 @@
     position: relative;
 }
 
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    justify-content: center;
+}
+
+.tabButton {
+    padding: 12px 24px;
+    background-color: var(--color-inactive); /* Inactive default */
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+
+
+.tabButton:hover:not(.active) {
+    background-color: #aaa; /* Hover for inactive */
+}
 
 @media (max-width: 768px) {
     .header {

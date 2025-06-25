@@ -22,6 +22,8 @@ import CourseListGrid from "../components/CourseListGrid.jsx";
 
 const AdminCataloguePage = () => {
     const { role } = useAuth();
+    const { catalogue, programs } = useCatalogueContext();
+    const { viewMode } = catalogue;
 
     // Block access if user is not an admin
     if (role !== 'admin') return <p>Access denied</p>;
@@ -29,7 +31,7 @@ const AdminCataloguePage = () => {
     const scrollPosition = useRef(0);
 
     // Access course and program catalogue state
-    const { catalogue, programs } = useCatalogueContext();
+
 
     // Destructure course-related state and handlers
     const {
@@ -105,12 +107,18 @@ const AdminCataloguePage = () => {
             <div className={styles.pageWrapper}>
                 {/* Course management */}
                 <div className={styles.leftSection}>
-                    {/*<CourseList*/}
-                    {/*    courses={courses}*/}
-                    {/*    onDeleteCourse={handleDeleteCourse}*/}
-                    {/*    onEditCourse={startEditingCourse}*/}
-                    {/*/>*/}
-                    <CourseListGrid courses={courses} onTileClick={(id) => console.log("Clicked:", id)} />
+                    {catalogue.viewMode === 'compact' && (
+                        <CourseListGrid courses={courses} onTileClick={(id) => console.log("Clicked:", id)} />
+                    )}
+                    {catalogue.viewMode !== 'compact' && (
+                        <CourseList
+                            courses={courses}
+                            onDeleteCourse={handleDeleteCourse}
+                            onEditCourse={startEditingCourse}
+                        />
+                    )}
+
+
 
                 </div>
 

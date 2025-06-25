@@ -16,6 +16,7 @@ const CompactCourseTile = ({ course, onClick }) => {
             <h3 className={styles.title}>{course.title}</h3>
             <p className={styles.info}>Program: {Array.isArray(course.program) ? course.program.join(', ') : course.program}</p>
             <p className={styles.info}>Language: {course.language}</p>
+            <p className={styles.info}>Type: {course.type}</p>
         </div>
     );
 };
