@@ -5,7 +5,7 @@
  * It displays the user's email, logout button, and — if the user is a student — the program deadline.
  * For admin users, it also shows buttons to add courses, add student programs, and export data to Excel.
  *
- * ➕ Data Sources:
+ * Data Sources:
  * - User email and role from AuthContext
  * - Academic group (program) from getUserProgram()
  * - Program deadline from getDeadlineForGroup()
@@ -14,7 +14,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import styles from './Header.module.css';
 import { getUserProgram } from "../api/functions_for_users.js";
@@ -36,6 +36,9 @@ const Header = () => {
     const navigate = useNavigate();
     const { logout, email, role } = useAuth();
     const [deadline, setDeadline] = useState(null);
+    const location = useLocation();
+    const currentPath = location.pathname;
+
 
     /**
      * Handles user logout by:
@@ -115,21 +118,23 @@ const Header = () => {
             {/* Admin-specific action buttons */}
             {role === 'admin' && (
                 <div className={styles.adminActions}>
-                    {/* Trigger add course workflow */}
-                    <button
-                        className={styles.addCourseButton}
-                        onClick={catalogue.startAddingCourse}
-                    >
-                        Add course
-                    </button>
+                    {currentPath.includes('/admin-catalogue/courses') && (
+                            <button
+                                className={styles.addCourseButton}
+                                onClick={catalogue.startAddingCourse}
+                            >
+                                Add course
+                            </button>
+                    )}
 
-                    {/* Open modal to add student program */}
-                    <button
-                        className={styles.addCourseButton}
-                        onClick={() => programs.setShowModal(true)}
-                    >
-                        Add Student Program
-                    </button>
+                    {currentPath.includes('/admin-catalogue/programs') && (
+                        <button
+                            className={styles.addCourseButton}
+                            onClick={() => programs.setShowModal(true)}
+                        >
+                            Add Student Program
+                        </button>
+                    )}
 
                     {/* Export priority data to Excel */}
                     <button
