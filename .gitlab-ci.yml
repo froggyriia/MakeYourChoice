@@ -1,6 +1,7 @@
 variables:
   DOCKER_TLS_CERTDIR: "/certs"
   APP: "my-app"
+  TRIVY_CACHE_DIR: ".trivycache"
 
 stages:
   - build
@@ -15,11 +16,13 @@ build:
     - docker info
     - echo "$HARBOR_PASSWORD" | docker login -u "$HARBOR_USERNAME" "$HARBOR_HOST" --password-stdin
   script:
-    - docker build -t my-docker-image .
-    - docker tag my-docker-image $HARBOR_HOST/$HARBOR_PROJECT/$APP:$CI_JOB_ID
-    - docker tag my-docker-image $HARBOR_HOST/$HARBOR_PROJECT/$APP:latest
-    - docker push $HARBOR_HOST/$HARBOR_PROJECT/$APP:$CI_JOB_ID
+    - docker build -t $APP .
+    - docker tag $APP $HARBOR_HOST/$HARBOR_PROJECT/$APP:$CI_COMMIT_SHORT_SHA
+    - docker tag $APP $HARBOR_HOST/$HARBOR_PROJECT/$APP:latest
+    - docker push $HARBOR_HOST/$HARBOR_PROJECT/$APP:$CI_COMMIT_SHORT_SHA
     - docker push $HARBOR_HOST/$HARBOR_PROJECT/$APP:latest
+  tags:
+    - docker
 
 container_scanning:
   stage: test
@@ -27,25 +30,30 @@ container_scanning:
     name: $HARBOR_HOST/docker-hub-cache/aquasec/trivy:latest
     entrypoint: [""]
   variables:
-    GIT_STRATEGY: none
-    TRIVY_USERNAME: "$HARBOR_USERNAME"
-    TRIVY_PASSWORD: "$HARBOR_PASSWORD"
-    TRIVY_AUTH_URL: "$HARBOR_HOST"
     FULL_IMAGE_NAME: $HARBOR_HOST/$HARBOR_PROJECT/$APP:latest
-  script:
+  before_script:
     - trivy --version
-    - time trivy image --clear-cache
-    - time trivy image --download-db-only --no-progress --cache-dir .trivycache/
-    - time trivy image --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@/contrib/gitlab.tpl" --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$FULL_IMAGE_NAME"
-    - time trivy image --exit-code 0 --cache-dir .trivycache/ --no-progress "$FULL_IMAGE_NAME"
-    - time trivy image --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress "$FULL_IMAGE_NAME"
+    - trivy clean --scan-cache
+    - trivy image --download-db-only --cache-dir $TRIVY_CACHE_DIR
+  script:
+    - trivy image \
+        --cache-dir $TRIVY_CACHE_DIR \
+        --no-progress \
+        --severity HIGH,CRITICAL \
+        --exit-code 1 \
+        --format template \
+        --template "@/contrib/gitlab.tpl" \
+        --output "gl-container-scanning-report.json" \
+        $FULL_IMAGE_NAME
   cache:
     paths:
-      - .trivycache/
+      - $TRIVY_CACHE_DIR
   artifacts:
     when: always
     reports:
       container_scanning: gl-container-scanning-report.json
+    paths:
+      - gl-container-scanning-report.json
   tags:
     - docker
   needs:
