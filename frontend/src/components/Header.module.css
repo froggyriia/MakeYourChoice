@@ -62,17 +62,17 @@
 .adminActions {
     display: flex;
     gap: 16px;
-    margin-top: 0;
+    margin-top: 0.075rem;
     align-items: center;
 }
 .addCourseButton {
-    padding: 12px 24px;
+    padding: 8px 20px;
     background: linear-gradient(135deg, var(--color-primary), #4CAF50);
     border: none;
-    border-radius: 12px;
+    border-radius: 8px;
     color: white;
     font-weight: 600;
-    font-size: 18px;
+    font-size: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
@@ -91,7 +91,7 @@
 /* Buttons themselves */
 .viewButton {
     padding: 4px 10px;
-    background-color: #f0f0f0;
+    background-color: #9f9f9f;
     border: 1px solid #ccc;
     border-radius: 4px;
     cursor: pointer;
@@ -103,14 +103,14 @@
 }
 
 .exportButton {
-    margin-right: 0;
-    padding: 12px 24px;
+    margin-right: 3rem;
+    padding: 8px 20px;
     background: linear-gradient(135deg, #40BB20, #2E8B57);
     border: none;
-    border-radius: 12px;
+    border-radius: 8px;
     color: white;
     font-weight: 600;
-    font-size: 18px;
+    font-size: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(64, 187, 32, 0.2);

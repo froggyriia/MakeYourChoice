@@ -1,10 +1,11 @@
 /**
  * FilterBar Component
  *
- * This component provides filtering controls for courses based on user role.
- * Students can filter by course type (technical/humanities).
- * Admins can filter by program and course type.
- * All users can filter by language and year.
+ * Provides interactive filtering controls for courses with a button-based UI.
+ * Features role-specific filters:
+ * - Students can filter by course type (technical/humanities) using toggle buttons
+ * - Admins get additional filters for programs (dropdown) and course types
+ * - All users can filter by language and year through toggle buttons
  */
 
 import React, { useEffect, useState } from 'react';
@@ -16,36 +17,40 @@ import { useCatalogueContext } from '../context/CatalogueContext.jsx';
 
 const FilterBar = ({ filters = {}, setFilters }) => {
     const [programOptions, setProgramOptions] = useState([]);
+    const [isLoadingPrograms, setIsLoadingPrograms] = useState(false);
     const { role } = useAuth();
     const { catalogue } = useCatalogueContext();
     const { courseTypeFilter, setCourseTypeFilter } = catalogue;
 
     /**
-     * Fetches a list of unique programs and maps them into options
-     * for the React Select dropdown. Executes on initial mount.
+     * Fetches unique programs from API and formats them for dropdown options.
+     * Runs once on component mount and manages loading state.
      */
     useEffect(() => {
         const fetchPrograms = async () => {
+            setIsLoadingPrograms(true);
             try {
                 const programs = await uniquePrograms();
                 const options = programs.map(prog => ({
                     value: prog,
                     label: prog,
                 }));
-                setProgramOptions(options); // Update state with formatted options
+                setProgramOptions(options);
             } catch (error) {
                 console.error('Failed to load programs:', error);
+            } finally {
+                setIsLoadingPrograms(false);
             }
         };
 
-        fetchPrograms(); // Trigger fetch on component mount
+        fetchPrograms();
     }, []);
 
     /**
-     * Handles changes from the multi-select dropdown (for program filter).
-     * Updates the `programs` field in the filter state.
-     *
-     * @param {Array} selectedOptions - Selected options from React Select
+     * Handles program selection changes in the multi-select dropdown.
+     * Converts selected options to values array and updates filters.
+     * 
+     * @param {Array} selectedOptions - Array of selected option objects from React Select
      */
     const handleSelectChange = (selectedOptions) => {
         const values = selectedOptions ? selectedOptions.map(opt => opt.value) : [];
@@ -53,13 +58,13 @@ const FilterBar = ({ filters = {}, setFilters }) => {
     };
 
     /**
-     * Handles checkbox changes for multi-category filters like languages and years.
-     * Adds or removes the selected value from the filter state.
-     *
-     * @param {string} category - Filter category ('languages', 'years', etc.)
-     * @param {string|number} value - The value to add/remove
+     * Toggles filter values for button-based filters (languages, years, types).
+     * Adds or removes the value from the specified filter category.
+     * 
+     * @param {string} category - The filter category to update ('languages', 'years', etc.)
+     * @param {string|number} value - The filter value to toggle
      */
-    const handleCheckboxChange = (category, value) => {
+    const handleButtonFilter = (category, value) => {
         setFilters((prev) => {
             const current = prev[category] || [];
             const updated = current.includes(value)
@@ -69,37 +74,45 @@ const FilterBar = ({ filters = {}, setFilters }) => {
         });
     };
 
+    /**
+     * Checks if a filter value is currently active in the specified category.
+     * Helper function for determining button active state.
+     * 
+     * @param {string} category - The filter category to check
+     * @param {string|number} value - The value to check for
+     * @returns {boolean} True if the value is active in the category
+     */
+    const isActive = (category, value) => {
+        return (filters[category] || []).includes(value);
+    };
+
     return (
         <div className={styles.filterBarContainer}>
-            {/* Filter by type (for students only) */}
+            {/* Student-specific course type filter (toggle buttons) */}
             {role === 'student' && (
                 <div className={styles.filterGroup}>
                     <span className={styles.filterLabel}>Type</span>
-                    <div className={styles.tabs}>
+                    {['tech', 'hum'].map((type) => (
                         <button
-                            className={`${styles.tabButton} ${courseTypeFilter === 'tech' ? styles.active : ''}`}
-                            onClick={() => setCourseTypeFilter('tech')}
+                            key={type}
+                            className={`${styles.filterButton} ${courseTypeFilter === type ? styles.active : ''}`}
+                            onClick={() => setCourseTypeFilter(type)}
                         >
-                            Technical
+                            {type === 'tech' ? 'Technical' : 'Humanities'}
                         </button>
-                        <button
-                            className={`${styles.tabButton} ${courseTypeFilter === 'hum' ? styles.active : ''}`}
-                            onClick={() => setCourseTypeFilter('hum')}
-                        >
-                            Humanities
-                        </button>
-                    </div>
+                    ))}
                 </div>
             )}
 
-            {/* Admin-specific program and type filters */}
+            {/* Admin-specific filters */}
             {role === "admin" && (
                 <>
-                    {/* Program multi-select filter */}
+                    {/* Program multi-select dropdown filter */}
                     <div className={styles.filterGroup}>
                         <span className={styles.filterLabel}>Program</span>
                         <Select
                             isMulti
+                            isLoading={isLoadingPrograms}
                             name="programs"
                             options={programOptions}
                             value={(filters.programs || []).map(value => ({
@@ -109,59 +122,56 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                             onChange={handleSelectChange}
                             className={styles.reactSelect}
                             classNamePrefix="select"
-                            placeholder="Select programs..."
+                            placeholder={isLoadingPrograms ? "Loading..." : "Select programs..."}
+                            menuPortalTarget={document.body}
                             styles={{
                                 menuPortal: base => ({ ...base, zIndex: 9999 }),
                                 menu: base => ({ ...base, zIndex: 9999 }),
                             }}
-                            menuPortalTarget={document.body}
                         />
                     </div>
 
-                    {/* Admin-specific course type checkboxes */}
+                    {/* Admin course type filter (toggle buttons) */}
                     <div className={styles.filterGroup}>
                         <span className={styles.filterLabel}>Type</span>
                         {['tech', 'hum'].map((type) => (
-                            <label key={type} className={styles.filterCheckbox}>
-                                <input
-                                    type="checkbox"
-                                    checked={(filters.types || []).includes(type)}
-                                    onChange={() => handleCheckboxChange('types', type)}
-                                />
+                            <button
+                                key={type}
+                                className={`${styles.filterButton} ${isActive('types', type) ? styles.active : ''}`}
+                                onClick={() => handleButtonFilter('types', type)}
+                            >
                                 {type === 'tech' ? 'Technical' : 'Humanities'}
-                            </label>
+                            </button>
                         ))}
                     </div>
                 </>
             )}
 
-            {/* Language checkboxes */}
+            {/* Language filter (toggle buttons) - available to all roles */}
             <div className={styles.filterGroup}>
                 <span className={styles.filterLabel}>Language</span>
                 {['Eng', 'Rus'].map((lang) => (
-                    <label key={lang} className={styles.filterCheckbox}>
-                        <input
-                            type="checkbox"
-                            checked={(filters.languages || []).includes(lang)}
-                            onChange={() => handleCheckboxChange('languages', lang)}
-                        />
+                    <button
+                        key={lang}
+                        className={`${styles.filterButton} ${isActive('languages', lang) ? styles.active : ''}`}
+                        onClick={() => handleButtonFilter('languages', lang)}
+                    >
                         {lang}
-                    </label>
+                    </button>
                 ))}
             </div>
 
-            {/* Year checkboxes */}
+            {/* Year filter (toggle buttons) - available to all roles */}
             <div className={styles.filterGroup}>
                 <span className={styles.filterLabel}>Year</span>
                 {[1, 2, 3, 4].map((year) => (
-                    <label key={year} className={styles.filterCheckbox}>
-                        <input
-                            type="checkbox"
-                            checked={(filters.years || []).includes(year)}
-                            onChange={() => handleCheckboxChange('years', year)}
-                        />
+                    <button
+                        key={year}
+                        className={`${styles.filterButton} ${isActive('years', year) ? styles.active : ''}`}
+                        onClick={() => handleButtonFilter('years', year)}
+                    >
                         {year}
-                    </label>
+                    </button>
                 ))}
             </div>
         </div>
