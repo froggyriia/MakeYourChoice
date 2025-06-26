@@ -1,5 +1,3 @@
-//functions_for_courses.js
-
 import { supabase } from '../pages/supabaseClient.jsx';
 import { getUserProgram } from './functions_for_users.js';
 
@@ -24,7 +22,6 @@ export async function fetchCourses(email, allCourses = false) {
       query = query
        .contains("program", [userProgram])
        .eq("archived", false);
-//      query = query.contains('program', [userProgram]);
     }
 
     const { data, error } = await query;
@@ -210,8 +207,9 @@ export async function filterCourses(filters = {}) {
 
   return data
 }
+
 /**
-* function to toggle the status of the course (archived/unarchived)
+* Toggles the status of the course (archived/unarchived)
 * @param {number} courseId - course ID, that need to be archived/unarchived
 * @param {boolean} currentStatus - current archivation status (true - archived, false - unarchived)
 * @returns {Promise<Object>} - returns updated course information
@@ -234,3 +232,66 @@ export async function archivedCourses(courseId, currentStatus) {
     }
 }
 
+/**
+ * Adds a completed course to user's history
+ * @param {string} email - User email
+ * @param {string} courseTitle - Completed course title
+ * @returns {Promise<Object>} - Returns object with added record and error info
+ */
+export const addCompletedCourse = async (email, courseTitle) => {
+  try {
+    const { data, error } = await supabase
+      .from('course_history')
+      .insert({ email, completed_course: courseTitle })
+      .select();
+
+    if (error) throw error;
+    return { data, error };
+  } catch (error) {
+    console.error('Error adding completed course:', error.message);
+    throw error;
+  }
+};
+
+/**
+ * Gets user's completed courses history
+ * @param {string} email - User email
+ * @returns {Promise<Array>} - Array of completed courses
+ */
+export const getCompletedCourses = async (email) => {
+  try {
+    const { data, error } = await supabase
+      .from('course_history')
+      .select('completed_course')
+      .eq('email', email);
+
+    if (error) throw error;
+    return data.map(item => item.completed_course);
+  } catch (error) {
+    console.error('Error fetching completed courses:', error.message);
+    return [];
+  }
+};
+
+/**
+ * Checks if user has completed a specific course
+ * @param {string} email - User email
+ * @param {string} courseTitle - Course title to check
+ * @returns {Promise<boolean>} - True if course is completed
+ */
+export const hasCompletedCourse = async (email, courseTitle) => {
+  try {
+    const { data, error } = await supabase
+      .from('course_history')
+      .select('*')
+      .eq('email', email)
+      .eq('completed_course', courseTitle)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error;
+    return !!data;
+  } catch (error) {
+    console.error('Error checking course completion:', error.message);
+    return false;
+  }
+};
