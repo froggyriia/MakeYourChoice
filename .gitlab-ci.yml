@@ -24,25 +24,32 @@ build:
   tags:
     - docker
 
-
-stages:
-  - build
-  - test
-  - deploy
-
-
-# EXISITNG PARST OF YOUR DOCKERFILE
-
-deploy:
-  stage: deploy
-  before_script:
-    - docker info
-    - echo "$HARBOR_PASSWORD" | docker login -u "$HARBOR_USERNAME" "$HARBOR_HOST" --password-stdin
+container_scanning:
+  stage: test
+  image:
+    name: $HARBOR_HOST/docker-hub-cache/aquasec/trivy:latest
+    entrypoint: [""]
+  variables:
+    GIT_STRATEGY: none
+    TRIVY_USERNAME: "$HARBOR_USERNAME"
+    TRIVY_PASSWORD: "$HARBOR_PASSWORD"
+    TRIVY_AUTH_URL: "$HARBOR_HOST"
+    FULL_IMAGE_NAME: $HARBOR_HOST/$HARBOR_PROJECT/$APP:latest
   script:
-    - docker pull $HARBOR_HOST/$HARBOR_PROJECT/$APP:latest
-    - docker rm -f $APP || true
-    - docker run -d --name $APP -p 80:80 $HARBOR_HOST/$HARBOR_PROJECT/$APP:latest
+    - trivy --version
+    - time trivy image --clear-cache
+    - time trivy image --download-db-only --no-progress --cache-dir .trivycache/
+    - time trivy image --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@/contrib/gitlab.tpl" --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$FULL_IMAGE_NAME"
+    - time trivy image --exit-code 0 --cache-dir .trivycache/ --no-progress "$FULL_IMAGE_NAME"
+    - time trivy image --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress "$FULL_IMAGE_NAME"
+  cache:
+    paths:
+      - .trivycache/
+  artifacts:
+    when: always
+    reports:
+      container_scanning: gl-container-scanning-report.json
   tags:
-    - dev-env
+    - docker
   needs:
-    - container_scanning
+    - build
