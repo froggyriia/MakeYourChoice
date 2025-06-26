@@ -4,10 +4,20 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-bottom: 20px;
-    max-width: 600px;
+    /*max-width: 600px;*/
     width: 100%;
     font-family: 'Montserrat', sans-serif;
     transition: all 0.3s ease;
+}
+
+
+.description :global(.wmde-markdown) {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #fff !important; /* white background */
+    color: #000 !important; /* black text */
+    padding: 1rem;
+    border-radius: 5px;
+    box-sizing: border-box;
 }
 
 .courseItem.deleting {

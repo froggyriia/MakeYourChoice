@@ -8,6 +8,8 @@
 import { useState } from 'react';
 import styles from './CourseItem.module.css';
 import { deleteCourse } from '../api/functions_for_courses.js'
+import MarkdownPreview from '@uiw/react-markdown-preview';
+import '@uiw/react-markdown-preview/markdown.css';
 
 /**
  * Renders a course item with title, instructor, language, programs, years, and type.
@@ -23,6 +25,7 @@ import { deleteCourse } from '../api/functions_for_courses.js'
 const CourseItem = ({ course, onDelete, onEdit }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const { themes } = MarkdownPreview;
 
     /**
      * Handles the deletion of a course.
@@ -59,7 +62,14 @@ const CourseItem = ({ course, onDelete, onEdit }) => {
             </p>
             <p className={styles.info}>Type: {course.type}</p>
 
-            {isOpen && <div className={styles.description}>{course.description}</div>}
+            {isOpen && (
+                <div className={styles.description}>
+                    <MarkdownPreview
+                        source={course.description}
+
+                    />
+                </div>
+            )}
 
             <div className={styles.buttonsContainer}>
                 <button

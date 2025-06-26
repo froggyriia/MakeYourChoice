@@ -75,16 +75,18 @@ const FilterBar = ({ filters = {}, setFilters }) => {
             {role === 'student' && (
                 <div className={styles.filterGroup}>
                     <span className={styles.filterLabel}>Type</span>
-                    <div className={styles.tabs}>
+                    <div >
                         <button
                             className={`${styles.tabButton} ${courseTypeFilter === 'tech' ? styles.active : ''}`}
                             onClick={() => setCourseTypeFilter('tech')}
+                            type="button"
                         >
                             Technical
                         </button>
                         <button
                             className={`${styles.tabButton} ${courseTypeFilter === 'hum' ? styles.active : ''}`}
                             onClick={() => setCourseTypeFilter('hum')}
+                            type="button"
                         >
                             Humanities
                         </button>

@@ -2,17 +2,21 @@
     display: flex;
     flex-wrap: nowrap;
     gap: 2rem;
-    padding: 1rem;
+    padding: 1rem 2rem; /* match header padding */
     align-items: center;
     overflow-x: auto;
-    background-color: var(--color-elem-background);
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    scrollbar-width: none;       /* Firefox */
+    background-color: white; /* same as header */
+    border-radius: 8px; /* same radius as header bottom corners */
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); /* match header shadow */
+    scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none;
 }
 
-/* Set each group to inline layout */
+/* hide scrollbar for webkit */
+.filterBarContainer::-webkit-scrollbar {
+    display: none;
+}
+
 .filterGroup {
     display: flex;
     flex-direction: row;
@@ -42,29 +46,68 @@
     font-size: 14px;
 }
 
-.tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 24px;
-    justify-content: center;
-}
-
-.tabButton {
-    padding: 12px 24px;
-    background-color: var(--color-inactive); /* Inactive default */
-    border: none;
+/* Use header button styles */
+.filterBarContainer button,
+.filterBarContainer .btn {
+    /* Reuse the existing btn styles */
+    padding: 10px 20px;
+    font-size: 15px;
     border-radius: 8px;
-    color: white;
     font-weight: 600;
+    color: white;
+    border: none;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    margin-left: 10px;
 }
 
+.filterBarContainer button:hover,
+.filterBarContainer .btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Use existing color variants as needed, for example: */
+.filterBarContainer .btn--green {
+    background-color: var(--color-primary);
+}
+
+.filterBarContainer .btn--green:hover {
+    background-color: #43a047;
+}
+
+.filterBarContainer .btn--red {
+    background-color: #ff4444;
+}
+
+.filterBarContainer .btn--red:hover {
+    background-color: #c62828;
+}
+
+.filterBarContainer .btn--gray {
+    background-color: var(--color-inactive);
+}
+
+.filterBarContainer .btn--gray:hover {
+    background-color: #777;
+}
 .tabButton.active {
-    background: var(--color-primary); /* Active = green gradient */
+    background-color: var(--color-primary);
+    color: white;
 }
 
-.tabButton:hover:not(.active) {
-    background-color: #aaa; /* Hover for inactive */
+.tabButton.active:hover {
+    background-color: #43a047;
 }
+/* Responsive tweaks to match header */
+@media (max-width: 768px) {
+    .filterBarContainer {
+        padding: 0.8rem 1rem;
+        gap: 1rem;
+    }
 
+    .filterBarContainer button,
+    .filterBarContainer .btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
