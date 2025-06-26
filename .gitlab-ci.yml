@@ -1,9 +1,9 @@
-stages:
-  - build
-
 variables:
   DOCKER_TLS_CERTDIR: "/certs"
   APP: "my-app"
+
+stages:
+  - build
 
 build:
   stage: build
