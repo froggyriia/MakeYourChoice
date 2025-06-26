@@ -98,7 +98,7 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                             onClick={() => setCourseTypeFilter('tech')}
                             type="button"
                         >
-                            {courseTypeFilter === 'tech' ? 'Technical' : 'Humanities'}
+                            Technical
                         </button>
                         <button
                             className={`${styles.tabButton} ${courseTypeFilter === 'hum' ? styles.active : ''}`}
