@@ -13,8 +13,7 @@ import {
     fetchCourses,
     addCourse,
     editCourseInfo,
-    getCourseInfo,
-    filterCourses
+    getCourseInfo
 } from '../api/functions_for_courses.js';
 import { isAdmin } from '../utils/validation.js';
 import { getUserProgram } from '../api/functions_for_users.js'
@@ -56,17 +55,12 @@ export const useCatalogue = () => {
       setLoading(true);
       const isUserAdmin = isAdmin(email);
 
-      const baseCourses = await fetchCourses(email, isUserAdmin);
-
       const activeFilters = { ...filters };
       if (!isUserAdmin && courseTypeFilter) {
         activeFilters.types = [courseTypeFilter];
       }
 
-      const data = await filterCourses(activeFilters, baseCourses);
-
-      console.log('Active filters:', activeFilters);
-      console.log('Loaded courses:', data);
+      const data = await fetchCourses(email, isUserAdmin, activeFilters);
 
       setCourses(data);
       setError(null);
@@ -140,6 +134,7 @@ export const useCatalogue = () => {
                 if (error) throw error;
                 setCourses((prev) => [...prev, data[0]]);
             }
+
 
             setCurrentCourse(initialCourse);
             setShowAddForm(false);
