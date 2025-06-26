@@ -23,14 +23,14 @@ const AdminCataloguePage = () => {
         <>
             <HeaderLayout />
 
-            <div className={styles.pageWrapper}>
+            <div className={styles.adminPageWrapper}>
                 {/* Sidebar */}
-                <div className={styles.leftSection}>
+                <div className={styles.adminSidebar}>
                     <SidebarMenu />
                 </div>
 
                 {/* Dynamic page based on route */}
-                <div className={styles.rightSection}>
+                <div className={styles.adminMainContent}>
                     <Outlet />
                 </div>
             </div>

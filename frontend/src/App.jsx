@@ -8,6 +8,7 @@ import StudentCataloguePage from './pages/StudentCataloguePage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { CatalogueProvider } from './context/CatalogueContext.jsx';
 
+
 export default function App() {
     return (
         <CatalogueProvider>

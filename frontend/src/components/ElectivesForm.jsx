@@ -53,7 +53,18 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
                 const count = type === 'tech' ? program.tech : program.hum;
                 setPriorityCount(count);
                 // Reset course selections
-                setSelectedCourses(Array(count).fill(""));
+                const saved = localStorage.getItem(`electives-${type}`);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    // If saved data matches expected priority count, use it
+                    if (parsed.length === count) {
+                        setSelectedCourses(parsed);
+                    } else {
+                        setSelectedCourses(Array(count).fill(""));
+                    }
+                } else {
+                    setSelectedCourses(Array(count).fill(""));
+                }
             } catch (err) {
                 console.error('Error initializing form:', err);
                 setError(err.message || 'Failed to load data');
@@ -72,13 +83,15 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
         const updated = [...selectedCourses];
         updated[index] = value;
         setSelectedCourses(updated);
+        localStorage.setItem(`electives-${type}`, JSON.stringify(updated));
     };
 
     /**
      * Clears all course selections and notifies the parent component.
      */
     const handleClear = () => {
-        setSelectedCourses(Array(5).fill(""));
+        setSelectedCourses(Array(priorityCount).fill(""));
+        localStorage.removeItem(`electives-${type}`);
         if (onClear) onClear(type);
     };
 

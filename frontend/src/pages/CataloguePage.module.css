@@ -122,6 +122,27 @@
     background-color: #aaa;
 }
 
+.adminPageWrapper {
+    display: flex;
+    padding: 80px 32px 32px 32px;
+    min-height: 100vh;
+    gap: 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.adminSidebar {
+    width: 220px;
+    flex-shrink: 0;
+}
+
+.adminMainContent {
+    flex-grow: 1;
+    overflow: visible;
+    min-width: 0;
+}
+
 @media (max-width: 1024px) {
     .pageWrapper {
         flex-direction: column;

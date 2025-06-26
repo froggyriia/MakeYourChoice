@@ -88,66 +88,63 @@ const Header = () => {
     return (
         <div className={styles.header}>
             <div className={styles.headerContent}>
-                {/* Show user's email */}
                 <span className={styles.email}>{email}</span>
-                {/* View toggle buttons next to email */}
+
                 {role === 'admin' && (
-                    <div className={styles.viewToggleButtons}>
+                    <div className={styles.buttonGroup}>
                         <button
-                            className={`${styles.viewButton} ${catalogue.viewMode === 'compact' ? styles.active : ''}`}
-                            onClick={() => {catalogue.setViewMode('compact');
-                                console.log(viewMode);}}
+                            className={`${styles.btn} ${viewMode === 'compact' ? styles['btn--green'] : styles['btn--gray']}`}
+                            onClick={() => setViewMode('compact')}
                         >
                             Compact
                         </button>
                         <button
-                            className={`${styles.viewButton} ${catalogue.viewMode === 'full' ? styles.active : ''}`}
-                            onClick={() => {catalogue.setViewMode('full');
-                                console.log(viewMode);}}
+                            className={`${styles.btn} ${viewMode === 'full' ? styles['btn--green'] : styles['btn--gray']}`}
+                            onClick={() => setViewMode('full')}
                         >
                             Full
                         </button>
                     </div>
                 )}
-                {/* Show deadline if user is not an admin */}
+
                 {deadline && !isAdmin(email) && (
                     <span className={styles.deadline}>⏰ Deadline: {deadline}</span>
                 )}
             </div>
 
-            {/* Admin-specific action buttons */}
             {role === 'admin' && (
-                <div className={styles.adminActions}>
+                <div className={styles.buttonGroup}>
                     {currentPath.includes('/admin-catalogue/courses') && (
-                            <button
-                                className={styles.addCourseButton}
-                                onClick={catalogue.startAddingCourse}
-                            >
-                                Add course
-                            </button>
+                        <button
+                            className={`${styles.btn} ${styles['btn--green']}`}
+                            onClick={catalogue.startAddingCourse}
+                        >
+                            Add course
+                        </button>
                     )}
 
                     {currentPath.includes('/admin-catalogue/programs') && (
                         <button
-                            className={styles.addCourseButton}
+                            className={`${styles.btn} ${styles['btn--green']}`}
                             onClick={() => programs.setShowModal(true)}
                         >
                             Add Student Program
                         </button>
                     )}
 
-                    {/* Export priority data to Excel */}
                     <button
+                        className={`${styles.btn} ${styles['btn--green']}`}
                         onClick={excelExport.exportToExcel}
-                        className={styles.exportButton}
                     >
                         {excelExport.isExported ? 'Exported!' : 'Export to Excel'}
                     </button>
                 </div>
             )}
 
-            {/* Logout control for all users */}
-            <button onClick={handleLogout} className={styles.logoutButton}>
+            <button
+                onClick={handleLogout}
+                className={`${styles.btn} ${styles['btn--red']}`}
+            >
                 Log out
             </button>
         </div>
