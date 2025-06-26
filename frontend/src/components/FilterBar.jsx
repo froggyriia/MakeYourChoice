@@ -92,15 +92,22 @@ const FilterBar = ({ filters = {}, setFilters }) => {
             {role === 'student' && (
                 <div className={styles.filterGroup}>
                     <span className={styles.filterLabel}>Type</span>
-                    {['tech', 'hum'].map((type) => (
+                    <div >
                         <button
-                            key={type}
-                            className={`${styles.filterButton} ${courseTypeFilter === type ? styles.active : ''}`}
-                            onClick={() => setCourseTypeFilter(type)}
+                            className={`${styles.tabButton} ${courseTypeFilter === 'tech' ? styles.active : ''}`}
+                            onClick={() => setCourseTypeFilter('tech')}
+                            type="button"
                         >
                             {type === 'tech' ? 'Technical' : 'Humanities'}
                         </button>
-                    ))}
+                        <button
+                            className={`${styles.tabButton} ${courseTypeFilter === 'hum' ? styles.active : ''}`}
+                            onClick={() => setCourseTypeFilter('hum')}
+                            type="button"
+                        >
+                            Humanities
+                        </button>
+                    </div>
                 </div>
             )}
 

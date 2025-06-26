@@ -12,6 +12,9 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from './AddCourseModal.module.css';
 import { uniquePrograms } from "../api/functions_for_courses.js";
 import Select from 'react-select';
+import MDEditor from '@uiw/react-md-editor';
+
+
 
 /**
  * AddCourseModal Component
@@ -37,6 +40,7 @@ const AddCourseModal = ({
                             onSubmit,
                             onCancel,
                         }) => {
+
     const modalRef = useRef(null);               // Reference to modal DOM node
     const textareaRef = useRef(null);            // Reference to description textarea for dynamic resizing
     const scrollPosition = useRef(0);            // Stores scroll position before modal opens
@@ -178,13 +182,13 @@ const AddCourseModal = ({
                     {/* Course Description */}
                     <label>
                         Description:
-                        <textarea
-                            ref={textareaRef}
-                            name="description"
-                            value={course.description}
-                            onChange={handleTextareaChange}
-                            required
-                        />
+                        <div data-color-mode="light">
+                            <MDEditor
+                                value={course.description}
+                                onChange={(value) => onChange({ name: 'description', value: value || '' })}
+                                height={300}
+                            />
+                        </div>
                     </label>
 
                     {/* Teacher Name */}

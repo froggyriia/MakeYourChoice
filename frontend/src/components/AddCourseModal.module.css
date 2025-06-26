@@ -26,6 +26,7 @@ body.modal-open {
 
 /* Main modal container block */
 .modalContainer {
+    font-family: 'Montserrat', sans-serif;
     background-color: var(--color-elem-background); /* custom background from theme */
     padding: 16px 24px;
     border-radius: 10px;
@@ -34,8 +35,15 @@ body.modal-open {
     width: 90%;
     max-height: 90vh; /* restrict height to viewport */
     overflow-y: auto;
-    font-family: 'Montserrat', sans-serif;
+
     color: #333; /* dark text */
+}
+
+.w-md-editor,
+.w-md-editor-text-input,
+.w-md-editor-text-input:focus,
+.w-md-editor-preview {
+    font-family: 'Montserrat', sans-serif !important;
 }
 
 /* Modal title styles */
