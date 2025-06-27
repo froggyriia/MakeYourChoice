@@ -10,6 +10,7 @@ import CourseList from '../components/CourseList';
 import CourseListGrid from '../components/CourseListGrid';
 import AddCourseModal from '../components/AddCourseModal';
 import { useCatalogueContext } from '../context/CatalogueContext';
+import { archivedCourses } from '../api/functions_for_courses.js';
 
 const AdminCoursesPage = () => {
     const scrollPosition = useRef(0);
@@ -26,6 +27,7 @@ const AdminCoursesPage = () => {
             handleDeleteCourse,
             startEditingCourse,
             viewMode,
+            handleArchiveCourse,
         }
     } = useCatalogueContext();
 
@@ -58,6 +60,7 @@ const AdminCoursesPage = () => {
                     courses={courses}
                     onDeleteCourse={handleDeleteCourse}
                     onEditCourse={startEditingCourse}
+                    onArchiveCourse={handleArchiveCourse}
                 />
             )}
         </>

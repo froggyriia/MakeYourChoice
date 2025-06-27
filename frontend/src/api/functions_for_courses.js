@@ -244,7 +244,7 @@ export async function archiveCourse(courseId) {
         console.error("Error archiving course:", error.message);
         return null;
     }
-;}
+}
 
 export async function unarchiveCourse(courseId) {
     try {

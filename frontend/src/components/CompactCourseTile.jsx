@@ -12,7 +12,10 @@ import styles from './CompactCourseTile.module.css';
  */
 const CompactCourseTile = ({ course, onClick }) => {
     return (
-        <div className={styles.tile} onClick={() => onClick?.(course.id)}>
+        <div
+            className={`${styles.tile} ${course.archived ? styles.archived : ''}`}
+            onClick={() => onClick?.(course.id)}
+        >
             <h3 className={styles.title}>{course.title}</h3>
             <p className={styles.info}>Program: {Array.isArray(course.program) ? course.program.join(', ') : course.program}</p>
             <p className={styles.info}>Language: {course.language}</p>
