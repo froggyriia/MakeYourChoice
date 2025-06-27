@@ -151,6 +151,28 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                             </button>
                         ))}
                     </div>
+                    {/* Admin archived filter */}
+                    <div className={styles.filterGroup}>
+                        <span className={styles.filterLabel}>Archived</span>
+                        {[
+                            { label: "Active", value: false },
+                            { label: "Archived", value: true }
+                        ].map(option => (
+                            <button
+                                key={option.label}
+                                className={`${styles.filterButton} ${filters.isArchived === option.value ? styles.active : ''}`}
+                                onClick={() =>
+                                    setFilters(prev => ({
+                                        ...prev,
+                                        isArchived: option.value
+                                    }))
+                                }
+                            >
+                                {option.label}
+                            </button>
+                        ))}
+                    </div>
+
                 </>
             )}
 

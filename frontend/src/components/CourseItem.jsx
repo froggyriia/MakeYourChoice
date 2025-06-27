@@ -22,9 +22,10 @@ import '@uiw/react-markdown-preview/markdown.css';
  * @param {Function} props.onEdit - Callback to invoke when editing is triggered.
  * @returns {JSX.Element}
  */
-const CourseItem = ({ course, onDelete, onEdit }) => {
+const CourseItem = ({ course, onDelete, onEdit, onArchive}) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isArchiving, setIsArchiving] = useState(false);
     const { themes } = MarkdownPreview;
 
     /**
@@ -47,9 +48,18 @@ const CourseItem = ({ course, onDelete, onEdit }) => {
         if (onEdit) onEdit(course.id);
     };
 
+    const handleArchive = async () => {
+        if (onArchive) {
+            await onArchive(course.id, course.archived);
+        }
+    };
+
+
 
     return (
-        <div className={`${styles.courseItem} ${isDeleting ? styles.deleting : ''}`}>
+        <div
+            className={`${styles.courseItem} ${isDeleting ? styles.deleting : ''} ${course.archived ? styles.archived : ''}`}
+        >
             <h2 className={styles.title}>{course.title}</h2>
             <p className={styles.info}>Instructor: {course.teacher}</p>
             <p className={styles.info}>Language: {course.language}</p>
@@ -84,6 +94,17 @@ const CourseItem = ({ course, onDelete, onEdit }) => {
                         className={styles.toggleButton}
                     >
                         Edit
+                    </button>
+                )}
+
+                {onArchive && (
+                    <button
+                        onClick={handleArchive}
+                        className={styles.toggleButton}
+                        disabled={isArchiving}
+                    >
+                        {course.archived ? 'De-archive' : 'Archive'}
+                        {isArchiving && '...'}
                     </button>
                 )}
 

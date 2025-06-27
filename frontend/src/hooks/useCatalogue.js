@@ -13,7 +13,7 @@ import {
     fetchCourses,
     addCourse,
     editCourseInfo,
-    getCourseInfo
+    getCourseInfo, archivedCourses, archiveCourse, unarchiveCourse
 } from '../api/functions_for_courses.js';
 import { isAdmin } from '../utils/validation.js';
 import { getUserProgram } from '../api/functions_for_users.js'
@@ -49,32 +49,34 @@ export const useCatalogue = () => {
 
     const [courseTypeFilter, setCourseTypeFilter] = useState('tech'); // 'tech', 'hum', or null
 
+    const loadCourses = async () => {
+        try {
+            setLoading(true);
+            const isUserAdmin = isAdmin(email);
+
+            const activeFilters = { ...filters };
+            if (!isUserAdmin && courseTypeFilter) {
+                activeFilters.types = [courseTypeFilter];
+            }
+
+            const data = await fetchCourses(email, isUserAdmin, activeFilters);
+
+            setCourses(data);
+            setError(null);
+        } catch (err) {
+            console.error(err);
+            setCourses([]);
+            setError(err.message || "Failed to load courses");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-  const loadCourses = async () => {
-    try {
-      setLoading(true);
-      const isUserAdmin = isAdmin(email);
-
-      const activeFilters = { ...filters };
-      if (!isUserAdmin && courseTypeFilter) {
-        activeFilters.types = [courseTypeFilter];
-      }
-
-      const data = await fetchCourses(email, isUserAdmin, activeFilters);
-
-      setCourses(data);
-      setError(null);
-    } catch (err) {
-      console.error(err);
-      setCourses([]);
-      setError(err.message || "Failed to load courses");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (email) loadCourses();
-}, [email, filters, courseTypeFilter]);
+        if (email) {
+            loadCourses();
+        }
+    }, [email, filters, courseTypeFilter]);
 
     const startEditingCourse = async (courseId) => {
         let course = courses.find((c) => c.id === courseId);
@@ -154,6 +156,20 @@ export const useCatalogue = () => {
         setCourses((prev) => prev.filter((c) => c.id !== id));
     };
 
+    const handleArchiveCourse = async (id, currentStatus) => {
+        try {
+            if (currentStatus) {
+                await unarchiveCourse(id);
+            } else {
+                await archiveCourse(id);
+            }
+            await loadCourses();
+        } catch (err) {
+            console.error('Error archiving/unarchiving course:', err);
+            setError(err.message || 'Failed to change archive status');
+        }
+    };
+
     return {
         courses,
         loading,
@@ -176,5 +192,8 @@ export const useCatalogue = () => {
         handleDeleteCourse,
         startEditingCourse,
         startAddingCourse,
+        handleArchiveCourse,
+
+        refetch: loadCourses,
     };
 };
