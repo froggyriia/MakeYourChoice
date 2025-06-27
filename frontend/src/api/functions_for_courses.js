@@ -229,7 +229,37 @@ export async function archivedCourses(courseId, currentStatus) {
 
         return null;
     }
-}
+};
+
+export async function archiveCourse(courseId) {
+    try {
+        const { data, error } = await supabase
+            .from("catalogue")
+            .update({ archived: true })
+            .eq("id", courseId);
+
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        console.error("Error archiving course:", error.message);
+        return null;
+    }
+;}
+
+export async function unarchiveCourse(courseId) {
+    try {
+        const { data, error } = await supabase
+            .from("catalogue")
+            .update({ archived: false })
+            .eq("id", courseId);
+
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        console.error("Error unarchiving course:", error.message);
+        return null;
+    }
+};
 
 /**
  * Adds a completed course to user's history
