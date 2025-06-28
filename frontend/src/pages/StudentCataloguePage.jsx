@@ -28,6 +28,9 @@ const StudentCataloguePage = () => {
         courses,
         courseTypeFilter,
     } = catalogue;
+    console.log("[StudentCataloguePage] current visible courses:", courses);
+    console.log("[StudentCataloguePage] current courseTypeFilter:", courseTypeFilter);
+
 
     // Only students are allowed to access this page
     if (role === 'admin') return <p>Access denied</p>;

@@ -35,7 +35,7 @@ const AdminCoursesPage = () => {
         handleCancel();
         window.scrollTo(0, scrollPosition.current);
     };
-
+    console.log("[AdminCoursesPage] current filtered courses:", courses);
     return (
         <>
             <h2>Elective Courses</h2>

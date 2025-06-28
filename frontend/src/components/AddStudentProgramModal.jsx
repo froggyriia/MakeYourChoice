@@ -93,6 +93,8 @@ const AddStudentsProgramModal = ({
             alert('Please fill all required fields');
             return;
         }
+        console.log("[AddStudentsProgramModal] submitting new program:", programData);
+
         onSubmit(); // Trigger form submission after validation
     };
 

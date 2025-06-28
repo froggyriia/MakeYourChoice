@@ -68,13 +68,31 @@ export const usePrograms = () => {
     }, []);
 
     /**
-     * Removes a program from the local state (UI only).
+     * Deletes a program both in Supabase and locally.
      *
-     * @param {string} groupTitle - The title of the group to delete.
+     * @param {number|string} programIdOrTitle - ID или student_group программы
      */
-    const handleDeleteProgram = (groupTitle) => {
-        setPrograms((prev) => prev.filter((p) => p.student_group !== groupTitle));
+    const handleDeleteProgram = async (programIdOrTitle) => {
+
+        try {
+            const found = programs.find(
+                (p) => p.id === programIdOrTitle || p.student_group === programIdOrTitle
+            );
+
+            if (!found) {
+                console.warn('No program found');
+                return;
+            }
+
+            await deleteProgram(found.title);
+
+            setPrograms((prev) => prev.filter((p) => p.id !== found.id));
+        } catch (e) {
+            console.error('Error occurred while program deleting:', e.message);
+            setError(e.message);
+        }
     };
+
 
     /**
      * Handles form submission for creating or editing a program.
@@ -112,6 +130,7 @@ export const usePrograms = () => {
             console.error(e.message);
             setError(e.message);
         }
+
     };
 
     /**
