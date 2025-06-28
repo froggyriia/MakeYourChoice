@@ -24,7 +24,7 @@ import styles from './Header.module.css';
 const HeaderLayout = () => {
     const { catalogue } = useCatalogueContext();
     const { filters, setFilters, courseTypeFilter, setCourseTypeFilter } = catalogue;
-
+    console.log("[HeaderLayout] filters state:", filters);
     return (
         <>
             <Header /> {/* Top fixed header */}
