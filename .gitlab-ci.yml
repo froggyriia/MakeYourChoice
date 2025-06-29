@@ -24,6 +24,35 @@ build:
   tags:
     - docker
 
+unit_tests:
+  stage: test
+  image: node:${NODE_VERSION}
+  before_script:
+    - npm install
+  script:
+    - npm run test:unit  # пример для Jest: "jest --config jest.unit.config.js"
+  artifacts:
+    when: always
+    reports:
+      junit: reports/unit-test-report.xml
+
+integration_tests:
+  stage: test
+  image: node:18
+  services:
+    - postgres:13
+  variables:
+    SUPABASE_URL: "$SUPABASE_URL"
+    SUPABASE_KEY: "$SUPABASE_KEY"
+  before_script:
+    - npm install
+    - npm run db:migrate
+  script:
+    - npm run tests:integration
+  artifacts:
+    reports:
+      junit: reports/integration-report.xml
+
 container_scanning:
   stage: test
   image:
