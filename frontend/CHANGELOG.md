@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.9](https://gitlab.pg.innopolis.university/makeyourchoice-team-17/makeyourchoice/compare/v0.0.8...v0.0.9) (2025-06-27)
+
+
+### Features
+
+* **archive:** now courses can be archived on button ([2644995](https://gitlab.pg.innopolis.university/makeyourchoice-team-17/makeyourchoice/commit/26449956563276cb1a101f7b250bd5e2f80b2769))
+* **frontend:** add functions that call database and archive/unarchive courses ([ad7fcb3](https://gitlab.pg.innopolis.university/makeyourchoice-team-17/makeyourchoice/commit/ad7fcb35c4130ec41818c9b3a7fb6d70e65b78c8))
+* now fetchCourses handles filters, program and completed courses history ([13b2d71](https://gitlab.pg.innopolis.university/makeyourchoice-team-17/makeyourchoice/commit/13b2d71c1421dc4fb74bb1c370c86a15a0840b13))
+
+
+### Bug Fixes
+
+* **vercel:** vercel.json fixed for deploy ([8b57829](https://gitlab.pg.innopolis.university/makeyourchoice-team-17/makeyourchoice/commit/8b5782943f894ed49f32b1028e100326bc273da2))
+
 ### [0.0.8](https://gitlab.pg.innopolis.university/makeyourchoice-team-17/makeyourchoice/compare/v0.0.7...v0.0.8) (2025-06-26)
 
 

@@ -35,6 +35,7 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                     value: prog,
                     label: prog,
                 }));
+                console.log("[FilterBar] Loaded program options:", options);
                 setProgramOptions(options);
             } catch (error) {
                 console.error('Failed to load programs:', error);
@@ -54,7 +55,11 @@ const FilterBar = ({ filters = {}, setFilters }) => {
      */
     const handleSelectChange = (selectedOptions) => {
         const values = selectedOptions ? selectedOptions.map(opt => opt.value) : [];
-        setFilters((prev) => ({ ...prev, programs: values }));
+        setFilters((prev) => {
+            const newFilters = { ...prev, programs: values };
+            console.log("[FilterBar] programs filter changed:", newFilters);
+            return newFilters;
+        });
     };
 
     /**
@@ -70,7 +75,9 @@ const FilterBar = ({ filters = {}, setFilters }) => {
             const updated = current.includes(value)
                 ? current.filter((v) => v !== value)
                 : [...current, value];
-            return { ...prev, [category]: updated };
+            const newFilters = { ...prev, [category]: updated };
+            console.log(`[FilterBar] ${category} filter changed:`, newFilters);
+            return newFilters;
         });
     };
 
@@ -151,6 +158,32 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                             </button>
                         ))}
                     </div>
+                    {/* Admin archived filter */}
+                    <div className={styles.filterGroup}>
+                        <span className={styles.filterLabel}>Archived</span>
+                        {[
+                            { label: "Active", value: false },
+                            { label: "Archived", value: true }
+                        ].map(option => (
+                            <button
+                                key={option.label}
+                                className={`${styles.filterButton} ${filters.isArchived === option.value ? styles.active : ''}`}
+                                onClick={() =>
+                                    setFilters(prev => {
+                                        const newFilters = {
+                                            ...prev,
+                                            isArchived: option.value
+                                        };
+                                        console.log("[FilterBar] archived filter changed:", newFilters);
+                                        return newFilters;
+                                    })
+                                }
+                            >
+                                {option.label}
+                            </button>
+                        ))}
+                    </div>
+
                 </>
             )}
 

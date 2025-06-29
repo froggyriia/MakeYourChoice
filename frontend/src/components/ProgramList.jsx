@@ -18,6 +18,7 @@ import ProgramItem from './ProgramItem';
  * @returns {JSX.Element}
  */
 const ProgramList = ({ programs, onDeleteProgram, onEditProgram }) => {
+    console.log("[ProgramList] rendering programs:", programs);
     return (
         <div>
             {programs.length ? (

@@ -18,7 +18,7 @@ import CourseItem from './CourseItem';
  * @param {Function} props.onEditCourse - Callback when a course is edited.
  * @returns {JSX.Element}
  */
-const CourseList = ({ courses, onDeleteCourse, onEditCourse }) => {
+const CourseList = ({ courses, onDeleteCourse, onEditCourse, onArchiveCourse }) => {
     return (
         <div>
             {courses.length ? (
@@ -28,6 +28,8 @@ const CourseList = ({ courses, onDeleteCourse, onEditCourse }) => {
                         course={course}
                         onDelete={onDeleteCourse}
                         onEdit={onEditCourse}
+                        onArchive={onArchiveCourse}
+
                     />
                 ))
             ) : (
