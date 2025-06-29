@@ -36,13 +36,9 @@ unit_tests:
 integration_tests:
   stage: test
   image: node:20
-  variables:
-    SUPABASE_URL: "$SUPABASE_URL"
-    SUPABASE_KEY: "$SUPABASE_KEY"
   before_script:
     - cd frontend
     - npm install
-    - npx supabase gen types typescript --local > src/database.types.ts
   script:
     - npm run test:integration
 
