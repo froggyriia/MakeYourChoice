@@ -33,6 +33,8 @@ lint:
   artifacts:
     reports:
       junit: eslint-report.xml
+    paths:
+      - frontend/reports/
 
 unit_tests:
   stage: test
@@ -47,7 +49,7 @@ unit_tests:
     reports:
       junit: frontend/reports/unit-tests.xml
     paths:
-      - frontend/coverage/
+      - frontend/reports/
 
 integration_tests:
   stage: test
