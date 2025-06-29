@@ -24,24 +24,30 @@ build:
   tags:
     - docker
 
+lint:
+  stage: test
+  image: node:20
+  script:
+    - cd frontend
+    - npm run lint
+  artifacts:
+    reports:
+      junit: eslint-report.xml
+
 unit_tests:
   stage: test
   image: node:20
-  variables:
-    SUPABASE_URL: "$SUPABASE_URL"
-    SUPABASE_ANON_KEY: "$SUPABASE_ANON_KEY"
-    VITE_SUPABASE_URL: "$SUPABASE_URL"
-    VITE_SUPABASE_ANON_KEY: "$SUPABASE_ANON_KEY"
   before_script:
     - cd frontend
     - npm install
-    - npx supabase gen types typescript --project-id "$SUPABASE_PROJECT_ID" > src/database.types.ts || true
     - npm update
   script:
-    - echo "VITE_SUPABASE_URL=$VITE_SUPABASE_URL" >> .env
-    - echo "VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY" >> .env
-    - cat .env
     - npm run test:unit
+  artifacts:
+    reports:
+      junit: frontend/reports/unit-tests.xml
+    paths:
+      - frontend/coverage/
 
 integration_tests:
   stage: test
@@ -61,6 +67,9 @@ integration_tests:
     - echo "VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY" >> .env
     - cat .env
     - npm run test:integration
+  artifacts:
+    reports:
+      junit: frontend/reports/integration-tests.xml
 
 container_scanning:
   stage: test
@@ -91,3 +100,11 @@ container_scanning:
     - docker
   needs:
     - build
+
+security_scan:
+  stage: test
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+  script:
+    - trivy fs --security-checks vuln,config .
