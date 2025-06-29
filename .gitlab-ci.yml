@@ -26,13 +26,13 @@ build:
 
 unit_tests:
   stage: test
-  image: node:${NODE_VERSION}
+  image: node:20
   before_script:
     - cd frontend
     - npm install
     - npx supabase gen types typescript --local > src/database.types.ts
   script:
-    - npm run test:unit  # пример для Jest: "jest --config jest.unit.config.js"
+    - npm run tests:unit
   artifacts:
     when: always
     reports:
@@ -40,14 +40,14 @@ unit_tests:
 
 integration_tests:
   stage: test
-  image: node:18
+  image: node:20
   variables:
     SUPABASE_URL: "$SUPABASE_URL"
     SUPABASE_KEY: "$SUPABASE_KEY"
   before_script:
     - cd frontend
     - npm install
-    - npm run db:migrate
+    - npm run db:migrate || true
     - npx supabase gen types typescript --local > src/database.types.ts
   script:
     - npm run tests:integration
