@@ -33,15 +33,22 @@ unit_tests:
   before_script:
     - cd frontend
     - npm install
+    - npx supabase gen types typescript --project-id "$SUPABASE_PROJECT_ID" > src/database.types.ts || true
+    - npm update
   script:
     - npm run test:unit
 
 integration_tests:
   stage: test
   image: node:20
+  variables:
+    SUPABASE_URL: "$SUPABASE_URL"
+    SUPABASE_ANON_KEY: "$SUPABASE_ANON_KEY"
   before_script:
     - cd frontend
     - npm install
+    - npx supabase gen types typescript --project-id "$SUPABASE_PROJECT_ID" > src/database.types.ts || true
+    - npm update
   script:
     - npm run test:integration
 
