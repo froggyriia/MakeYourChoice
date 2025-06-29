@@ -6,5 +6,15 @@ export default defineConfig({
   base: '/',
   build: {
     outDir: 'dist'
-  }
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    //setupFiles: './src/setupTests.js',
+  },
+  esbuild: {
+    target: 'esnext',
+    jsx: 'automatic',
+    jsxImportSource: 'react',
+  },
 });

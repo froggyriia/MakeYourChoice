@@ -10,17 +10,14 @@ import { useState } from 'react';
 import ExcelJS from 'exceljs';
 import { supabase } from '../pages/supabaseClient.jsx';
 
-
-export function useExcelExport() {
-    const [isExported, setIsExported] = useState(false);
-    /**
+/**
      * creates an abbreviation from a course name by taking the first letter of each word.
      * handles various word separators (spaces, hyphens, colons) and eng/ru characters.
      *
      * @param {string} name - the full course name to abbreviate
      * @returns {string} the generated abbreviation or original input if invalid
      */
-    const createAbbreviation = (name) => {
+    export const createAbbreviation = (name) => {
         if (!name || typeof name !== 'string') return name;
 
         return name
@@ -29,6 +26,10 @@ export function useExcelExport() {
             .filter(Boolean)
             .join('');
     };
+
+export function useExcelExport() {
+    const [isExported, setIsExported] = useState(false);
+
 
     const exportToExcel = async () => {
         try {
