@@ -28,6 +28,8 @@ unit_tests:
   stage: test
   image: node:20
   variables:
+    SUPABASE_URL: "$SUPABASE_URL"
+    SUPABASE_ANON_KEY: "$SUPABASE_ANON_KEY"
     VITE_SUPABASE_URL: "$SUPABASE_URL"
     VITE_SUPABASE_ANON_KEY: "$SUPABASE_ANON_KEY"
   before_script:
@@ -45,6 +47,8 @@ integration_tests:
   stage: test
   image: node:20
   variables:
+    SUPABASE_URL: "$SUPABASE_URL"
+    SUPABASE_ANON_KEY: "$SUPABASE_ANON_KEY"
     VITE_SUPABASE_URL: "$SUPABASE_URL"
     VITE_SUPABASE_ANON_KEY: "$SUPABASE_ANON_KEY"
   before_script:
