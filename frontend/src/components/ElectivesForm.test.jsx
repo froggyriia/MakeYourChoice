@@ -5,7 +5,7 @@ import ElectivesForm from './ElectivesForm';
 import { useAuth } from '../context/AuthContext';
 import { useFormSubmit } from '../hooks/useFormSubmit';
 
-// Моки
+// Mocks
 vi.mock('../api/functions_for_courses', () => ({
   fetchCourses: vi.fn().mockResolvedValue([
     { id: 1, title: 'Advanced React', type: 'tech' },
