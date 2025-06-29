@@ -29,13 +29,9 @@ unit_tests:
   image: node:20
   before_script:
     - cd frontend
-    - npm ci --no-audit 
+    - npm install
   script:
     - npm run test:unit
-  artifacts:
-    when: always
-    reports:
-      junit: frontend/reports/unit-test-report.xml
 
 integration_tests:
   stage: test
@@ -45,13 +41,10 @@ integration_tests:
     SUPABASE_KEY: "$SUPABASE_KEY"
   before_script:
     - cd frontend
-    - npm ci --no-audit 
+    - npm install
     - npx supabase gen types typescript --local > src/database.types.ts
   script:
     - npm run test:integration
-  artifacts:
-    reports:
-      junit: reports/integration-report.xml
 
 container_scanning:
   stage: test
