@@ -79,7 +79,6 @@ container_scanning:
     name: $HARBOR_HOST/docker-hub-cache/aquasec/trivy:latest
     entrypoint: [""]
   variables:
-    GIT_STRATEGY: none
     TRIVY_USERNAME: "$HARBOR_USERNAME"
     TRIVY_PASSWORD: "$HARBOR_PASSWORD"
     TRIVY_AUTH_URL: "$HARBOR_HOST"
