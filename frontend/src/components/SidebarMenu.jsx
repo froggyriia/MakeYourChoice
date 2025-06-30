@@ -14,7 +14,7 @@ export default function SidebarMenu() {
             <h2 className={styles.title}>Menu</h2>
 
             <NavLink
-                to="/admin-catalogue/courses"
+                to="/admin/courses"
                 className={({ isActive }) =>
                     isActive ? `${styles.link} ${styles.activeLink}` : styles.link
                 }
@@ -23,7 +23,7 @@ export default function SidebarMenu() {
             </NavLink>
 
             <NavLink
-                to="/admin-catalogue/programs"
+                to="/admin/programs"
                 className={({ isActive }) =>
                     isActive ? `${styles.link} ${styles.activeLink}` : styles.link
                 }
