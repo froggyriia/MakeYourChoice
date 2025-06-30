@@ -28,8 +28,11 @@ lint:
   stage: test
   image: node:20
   script:
-    - cd frontend
+    - echo "Starting scripts"
+    - npm install
     - npm run lint
+    - npm run test
+    - echo "Finishing scripts"
   artifacts:
     reports:
       junit: frontend/reports/eslint-report.xml
