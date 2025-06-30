@@ -30,7 +30,7 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
     const [error, setError] = useState(null);
     const [selectedCourses, setSelectedCourses] = useState(Array(5).fill(""));
     const [priorityCount, setPriorityCount] = useState(0);
-    const { email, role } = useAuth();
+    const { email, currentRole } = useAuth();
 
     useEffect(() => {
         // Initializes the form by fetching elective courses and program info

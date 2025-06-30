@@ -15,7 +15,7 @@ import {
     editCourseInfo,
     getCourseInfo, archivedCourses, archiveCourse, unarchiveCourse
 } from '../api/functions_for_courses.js';
-import { isAdmin } from '../utils/validation.js';
+import { isAdmin } from '../hooks/validation.js';
 import { getUserProgram } from '../api/functions_for_users.js'
 
 export const useCatalogue = () => {

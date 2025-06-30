@@ -1,3 +1,4 @@
+// routes.jsx
 import { Navigate } from 'react-router-dom';
 import LoginPage from '../pages/LoginPage.jsx';
 import AdminCataloguePage from '../pages/AdminCataloguePage.jsx';
@@ -13,7 +14,7 @@ const routes = [
     },
 
     {
-        path: '/admin-catalogue',
+        path: '/admin',
         element: (
             <ProtectedRoute
                 element={<AdminCataloguePage />}

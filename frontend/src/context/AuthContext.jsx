@@ -1,38 +1,58 @@
+// AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { isAdmin, isStudent } from '../hooks/validation.js'
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [role, setRole] = useState(null);
+    const [trueRole, setTrueRole] = useState(null);
+    const [currentRole, setCurrentRole] = useState(null);
     const [email, setEmail] = useState('');
-    const [loading, setLoading] = useState(true); // 🆕 loading
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const storedRole = localStorage.getItem('role');
+        const storedCurrentRole = localStorage.getItem('currentRole');
+        const storedTrueRole = localStorage.getItem('trueRole');
         const storedEmail = localStorage.getItem('email');
 
-        if (storedRole) setRole(storedRole);
+        if (storedCurrentRole) setCurrentRole(storedCurrentRole);
+        if (storedTrueRole) setTrueRole(storedTrueRole);
         if (storedEmail) setEmail(storedEmail);
 
-        setLoading(false); // 🆕 done loading
+        setLoading(false);
     }, []);
 
-    const loginAs = (newRole, userEmail) => {
-        setRole(newRole);
+    const loginAs = async (userEmail) => {
+        const admin = await isAdmin(userEmail);
+        const student = await isStudent(userEmail);
+
+        let roleGroup;
+        if (admin && student) roleGroup = 'admin-student';
+        else if (admin) roleGroup = 'admin';
+        else roleGroup = 'student';
+
+        const resolvedRole = admin ? 'admin' : 'student';
+
+        setTrueRole(roleGroup);
+        setCurrentRole(resolvedRole);
         setEmail(userEmail);
-        localStorage.setItem('role', newRole);
+
+        localStorage.setItem('trueRole', roleGroup);
+        localStorage.setItem('currentRole', resolvedRole);
         localStorage.setItem('email', userEmail);
+
+        return resolvedRole;
     };
 
     const logout = () => {
-        setRole(null);
+        setTrueRole(null);
+        setCurrentRole(null);
         setEmail('');
-        localStorage.removeItem('role');
-        localStorage.removeItem('email');
+        localStorage.clear();
     };
 
     return (
-        <AuthContext.Provider value={{ role, email, loginAs, logout, loading }}>
+        <AuthContext.Provider value={{ trueRole, currentRole, setCurrentRole, email, loginAs, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );

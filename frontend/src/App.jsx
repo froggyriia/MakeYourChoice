@@ -16,7 +16,7 @@ export default function App() {
                 <Route path="/" element={<LoginPage />} />
 
                 <Route
-                    path="/admin-catalogue"
+                    path="/admin"
                     element={
                         <ProtectedRoute
                             element={<AdminCataloguePage />}

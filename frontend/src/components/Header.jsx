@@ -4,13 +4,6 @@
  * This component renders the top header bar for authenticated users.
  * It displays the user's email, logout button, and — if the user is a student — the program deadline.
  * For admin users, it also shows buttons to add courses, add student programs, and export data to Excel.
- *
- * Data Sources:
- * - User email and role from AuthContext
- * - Academic group (program) from getUserProgram()
- * - Program deadline from getDeadlineForGroup()
- * - Export function from useExcelExport()
- * - UI state and actions from CatalogueContext
  */
 
 import React, { useEffect, useState } from 'react';
@@ -19,70 +12,47 @@ import { useAuth } from '../context/AuthContext.jsx';
 import styles from './Header.module.css';
 import { getUserProgram } from "../api/functions_for_users.js";
 import { getDeadlineForGroup } from '../api/functions_for_programs.js';
-import { isAdmin } from "../utils/validation.js";
 import { useCatalogueContext } from '../context/CatalogueContext.jsx';
 
-/**
- * Header component that handles:
- * - Displaying user info
- * - Showing deadline for students
- * - Admin actions: Add course, add program, export data
- * - Logout functionality
- */
 const Header = () => {
-    // Get shared catalogue state and admin action handlers
     const { catalogue, programs, excelExport } = useCatalogueContext();
     const { viewMode, setViewMode, courseTypeFilter, setCourseTypeFilter } = catalogue;
+
     const navigate = useNavigate();
-    const { logout, email, role } = useAuth();
-    const [deadline, setDeadline] = useState(null);
     const location = useLocation();
     const currentPath = location.pathname;
 
+    const { logout, email, trueRole, currentRole, setCurrentRole } = useAuth();
+
+    const [deadline, setDeadline] = useState(null);
 
     /**
-     * Handles user logout by:
-     * - Clearing session via AuthContext
-     * - Redirecting user to the homepage
-     */
-    const handleLogout = () => {
-        logout();
-        navigate('/');
-    };
-
-    /**
-     * Fetches and sets the program deadline based on the logged-in user's group.
-     * This only runs on mount or when the email changes.
+     * Fetch deadline based on user group (for non-admins)
      */
     useEffect(() => {
         const fetchDeadline = async () => {
-            if (!email) return;
+            if (!email || currentRole === 'admin') return;
 
-            // Fetch academic program/group for this user
             const group = await getUserProgram(email);
-            console.log(group); // For debugging: log user group
+            if (!group) return;
 
-            if (group) {
-                // Get the submission deadline for that group
-                const deadlineTs = await getDeadlineForGroup(group);
+            const deadlineTs = await getDeadlineForGroup(group);
+            if (!deadlineTs) return;
 
-                if (deadlineTs) {
-                    // Format timestamp into readable date string
-                    const formatted = new Date(deadlineTs).toLocaleString('en-GB', {
-                        day: 'numeric',
-                        month: 'long',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                    });
-                    setDeadline(formatted);
-                }
-            }
+            const formatted = new Date(deadlineTs).toLocaleString('en-GB', {
+                day: 'numeric',
+                month: 'long',
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+
+            setDeadline(formatted);
         };
 
-        fetchDeadline(); // Execute on mount or email change
-    }, [email]);
+        fetchDeadline();
+    }, [email, currentRole]);
 
-    // If the user is not logged in, don't render anything
+    // If the user is not logged in, render nothing
     if (!email) return null;
 
     return (
@@ -90,7 +60,7 @@ const Header = () => {
             <div className={styles.headerContent}>
                 <span className={styles.email}>{email}</span>
 
-                {role === 'admin' && (
+                {currentRole === 'admin' && (
                     <div className={styles.buttonGroup}>
                         <button
                             className={`${styles.btn} ${viewMode === 'compact' ? styles['btn--green'] : styles['btn--gray']}`}
@@ -107,14 +77,14 @@ const Header = () => {
                     </div>
                 )}
 
-                {deadline && !isAdmin(email) && (
+                {deadline && currentRole !== 'admin' && (
                     <span className={styles.deadline}>⏰ Deadline: {deadline}</span>
                 )}
             </div>
 
-            {role === 'admin' && (
+            {currentRole === 'admin' && (
                 <div className={styles.buttonGroup}>
-                    {currentPath.includes('/admin-catalogue/courses') && (
+                    {currentPath.includes('/admin/courses') && (
                         <button
                             className={`${styles.btn} ${styles['btn--green']}`}
                             onClick={catalogue.startAddingCourse}
@@ -123,7 +93,7 @@ const Header = () => {
                         </button>
                     )}
 
-                    {currentPath.includes('/admin-catalogue/programs') && (
+                    {currentPath.includes('/admin/programs') && (
                         <button
                             className={`${styles.btn} ${styles['btn--green']}`}
                             onClick={() => programs.setShowModal(true)}
@@ -141,8 +111,35 @@ const Header = () => {
                 </div>
             )}
 
+            {trueRole === 'admin-student' && (
             <button
-                onClick={handleLogout}
+                className={`${styles.btn} ${styles['btn--gray']}`}
+                onClick={() => {
+                    if (currentRole === 'admin') {
+                        setCurrentRole('student');
+                        navigate('/student-catalogue');
+                    } else {
+                        setCurrentRole('admin');
+                        navigate('/admin/courses');
+                    }
+                }}
+            >
+            {currentRole === 'admin' ? 'View as Student' : 'Back to Admin'}
+            </button>
+            )}
+
+            <button
+                onClick={() => {
+                    console.log('Search clicked');
+                    alert('Search button is working!');
+                }}
+                className={`${styles.btn} ${styles['btn--green']}`}
+            >
+                Search
+            </button>
+
+            <button
+                onClick={logout}
                 className={`${styles.btn} ${styles['btn--red']}`}
             >
                 Log out

@@ -1,7 +1,8 @@
+// useLogin.js
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { isInnopolisEmail, isAdmin } from '../utils/validation';
+import { isInnopolisEmail } from '../hooks/validation';
 
 export const useLogin = () => {
     const { loginAs } = useAuth();
@@ -9,7 +10,7 @@ export const useLogin = () => {
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
 
@@ -18,14 +19,10 @@ export const useLogin = () => {
             return;
         }
 
-        const role = isAdmin(email) ? 'admin' : 'student';
+        const resolvedRole = await loginAs(email);
 
-        // временно убираем Supabase, сразу логиним
-        loginAs(role, email);
-
-        // редирект по роли
-        if (role === 'admin') {
-            navigate('/admin-catalogue');
+        if (resolvedRole === 'admin') {
+            navigate('/admin');
         } else {
             navigate('/student-catalogue');
         }
