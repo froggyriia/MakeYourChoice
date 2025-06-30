@@ -32,7 +32,7 @@ lint:
     - npm run lint
   artifacts:
     reports:
-      junit: eslint-report.xml
+      junit: frontend/reports/eslint-report.xml
     paths:
       - frontend/reports/
 
