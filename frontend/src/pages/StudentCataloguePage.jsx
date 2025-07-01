@@ -19,7 +19,7 @@ import styles from './CataloguePage.module.css';
 import HeaderLayout from "../components/HeaderLayout.jsx";
 
 const StudentCataloguePage = () => {
-    const { role, email } = useAuth(); // Get auth info
+    const { currentRole, email } = useAuth(); // Get auth info
     const { catalogue } = useCatalogueContext(); // Course state
     const { onSubmit } = useFormSubmit(email); // Hook for handling form submission
     const scrollPosition = useRef(0); // For potential scroll restoration
@@ -33,7 +33,7 @@ const StudentCataloguePage = () => {
 
 
     // Only students are allowed to access this page
-    if (role === 'admin') return <p>Access denied</p>;
+    if (currentRole === 'admin') return <p>Access denied</p>;
 
     return (
         <>

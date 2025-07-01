@@ -19,6 +19,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # environment variables
-.env
+frontend/.env
 .env.local
 .env.*.local

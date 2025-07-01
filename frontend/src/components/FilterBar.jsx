@@ -18,7 +18,7 @@ import { useCatalogueContext } from '../context/CatalogueContext.jsx';
 const FilterBar = ({ filters = {}, setFilters }) => {
     const [programOptions, setProgramOptions] = useState([]);
     const [isLoadingPrograms, setIsLoadingPrograms] = useState(false);
-    const { role } = useAuth();
+    const { currentRole } = useAuth();
     const { catalogue } = useCatalogueContext();
     const { courseTypeFilter, setCourseTypeFilter } = catalogue;
 
@@ -96,7 +96,7 @@ const FilterBar = ({ filters = {}, setFilters }) => {
     return (
         <div className={styles.filterBarContainer}>
             {/* Student-specific course type filter (toggle buttons) */}
-            {role === 'student' && (
+            {currentRole === 'student' && (
                 <div className={styles.filterGroup}>
                     <span className={styles.filterLabel}>Type</span>
                     <div >
@@ -119,7 +119,7 @@ const FilterBar = ({ filters = {}, setFilters }) => {
             )}
 
             {/* Admin-specific filters */}
-            {role === "admin" && (
+            {currentRole === "admin" && (
                 <>
                     {/* Program multi-select dropdown filter */}
                     <div className={styles.filterGroup}>
