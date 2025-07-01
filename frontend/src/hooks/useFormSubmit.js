@@ -54,41 +54,42 @@ export function useFormSubmit(email) {
      * @throws Alerts and logs errors from Supabase or invalid form states.
      */
     const onSubmit = async (selectedCourses, activeTab) => {
-        const expectedCount = limits[activeTab];
-        if (selectedCourses.length != expectedCount || selectedCourses.some(c => !c)) {
-            alert('Please, fill all priority fields');
-            return;
-        }
+      const expectedCount = limits[activeTab];
 
-        const currentStudent = studentsPreferences.find(s => s.email === email) || {
-            email,
-            hum: Array(limits.hum).fill(""),
-            tech: Array(limits.tech).fill("")
-        };
+      // Validation remains the same
+      if (selectedCourses.length != expectedCount || selectedCourses.some(c => !c)) {
+        alert('Please fill all priority fields');
+        return;
+      }
 
-        const updatedStudent = {
-            ...currentStudent,
-            [activeTab]: selectedCourses
-        };
+      // Prepare update fields
+      const updateFields = {};
+      selectedCourses.forEach((course, i) => {
+        updateFields[`${activeTab}${i + 1}`] = course || "";
+      });
 
+      try {
+        // This will now handle both tables automatically
+        await submitPriority(email, updateFields);
+
+        // Update local state
         setStudentsPreferences(prev => {
-            const others = prev.filter(s => s.email !== email);
-            return [...others, updatedStudent];
+          const current = prev.find(s => s.email === email) || {
+            email,
+            tech: Array(limits.tech).fill(""),
+            hum: Array(limits.hum).fill("")
+          };
+          return [
+            ...prev.filter(s => s.email !== email),
+            { ...current, [activeTab]: selectedCourses }
+          ];
         });
 
-        // Build the update payload
-        const updateFields = {};
-        selectedCourses.forEach((course, i) => {
-            updateFields[`${activeTab}${i + 1}`] = course || "";
-        });
-
-        try {
-            await submitPriority(email, updateFields);
-            alert("Data was successfully submitted");
-        } catch (error) {
-            console.error("Submission error:", error);
-            alert("Error while submitting");
-        }
+        alert("Priorities submitted successfully!");
+      } catch (error) {
+        console.error("Submission error:", error);
+        alert("Failed to submit priorities");
+      }
     };
 
     return { studentsPreferences, onSubmit, limits };

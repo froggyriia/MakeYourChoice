@@ -133,24 +133,68 @@ export async function createPriority(email, fields) {
 }
 
 /**
- * Handles priority submission (either update or create).
- *
- * @async
- * @param {string} email - User's email address
- * @param {object} updateFields - Fields to update/insert
- * @returns {Promise<void>}
+ * Submit priorities to both all_priorities (with history) and last_priorities (only latest)
+ * @param {string} email
+ * @param {object} updateFields - e.g. {tech1: "Course1", hum2: "Course2"}
  */
 export async function submitPriority(email, updateFields) {
-    try {
-        const existing = await checkExistingPriority(email);
+  try {
+    const timestamp = new Date().toISOString();
+    const fullData = {
+      email,
+      ...updateFields,
+      created_at: timestamp
+    };
 
-        if (existing) {
-            await updatePriority(email, updateFields);
-        } else {
-            await createPriority(email, updateFields);
-        }
-    } catch (error) {
-        console.error('Error in submitPriority:', error);
-        throw error;
-    }
+    // 1. Always insert into all_priorities (for full history)
+    const { error: historyError } = await supabase
+      .from('all_priorities')
+      .insert([fullData]);
+
+    if (historyError) throw historyError;
+
+    // 2. Upsert into last_priorities (update if exists)
+    const { error: upsertError } = await supabase
+      .from('last_priorities')
+      .upsert([fullData], {
+        onConflict: 'email' // Update if email exists
+      });
+
+    if (upsertError) throw upsertError;
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error submitting priorities:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get last priorities for a user
+ * @param {string} email
+ */
+export async function getLastPriorities(email) {
+  const { data, error } = await supabase
+    .from('last_priorities')
+    .select('*')
+    .eq('email', email)
+    .single();
+
+  if (error && error.code !== 'PGRST116') throw error;
+  return data || null;
+}
+
+/**
+ * Get all priority submissions history for a user
+ * @param {string} email
+ */
+export async function getPriorityHistory(email) {
+  const { data, error } = await supabase
+    .from('all_priorities')
+    .select('*')
+    .eq('email', email)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data || [];
 }
