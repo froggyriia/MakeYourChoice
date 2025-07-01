@@ -21,14 +21,7 @@ import { supabase } from '../pages/supabaseClient.jsx';
     }
 
     const group = data.student_group;
-    const match = group.match(/^([Bb]\d{2}-[A-Z]+(?:[A-Z]+)*)/);
-
-    if (!match) {
-      console.warn('Unexpected group format:', group);
-      return null;
-    }
-
-    return match[1]; // форматируем в вид типа B24-DSAI
+    return group;
   } catch (err) {
     console.error('Error in getUserProgram:', err);
     return null;
