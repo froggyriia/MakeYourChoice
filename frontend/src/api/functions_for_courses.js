@@ -58,7 +58,7 @@ export const editCourseInfo = async (courseNewData) => {
 
         const cleanedData = {
             ...updateData,
-            years: Array.from(new Set((updateData.years || []).map(Number))),
+            years: Array.from(new Set((updateData.years || []).map(String))),
             program: Array.from(new Set((updateData.program || []).map(String))),
         };
 
@@ -160,9 +160,6 @@ export async function fetchCourses(email, allCourses = false, filters = {}) {
         .from('history')
         .select('course')
         .eq('email', email);
-
-    console.log("Supabase response data:", historyQuery);
-console.log("Supabase error:", historyQuery);
 
       const { data: historyData, error: historyError } = await historyQuery;
 
