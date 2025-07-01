@@ -140,26 +140,35 @@ button[type="button"] {
     font-family: 'Montserrat', sans-serif;
 }
 
-/* Primary (submit) button */
-button[type="submit"] {
-    background-color: var(--color-primary);
-    color: white;
+.fixedButtons {
+  position: sticky;
+  bottom: 0;
+  background-color: var(--color-elem-background);
+  padding: 12px 0 0;
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 1px solid #ccc;
+  z-index: 10;
 }
 
-/* Hover effect for submit button */
-button[type="submit"]:hover {
-    background-color: #349b18;
+.fixedButtons button[type="submit"] {
+  background-color: var(--color-primary);
+  color: white;
 }
 
-/* Secondary (cancel) button */
-button[type="button"] {
-    background-color: var(--color-inactive);
-    color: white;
+.fixedButtons button[type="submit"]:hover {
+  background-color: #349b18;
 }
 
-/* Hover effect for cancel button */
-button[type="button"]:hover {
-    background-color: #888;
+.fixedButtons button[type="button"] {
+  background-color: var(--color-inactive);
+  color: white;
+}
+
+.fixedButtons button[type="button"]:hover {
+  background-color: #888;
 }
 
 /* Group of toggleable buttons (used for tags, categories etc.) */
@@ -190,6 +199,21 @@ button[type="button"]:hover {
     border-color: #4caf50 !important;
     color: white !important;
 }
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background-color: var(--color-elem-background);
+  z-index: 10;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+
 
 /* Responsive styles for smaller screens (e.g., mobile) */
 @media (max-width: 768px) {
