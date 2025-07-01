@@ -19,7 +19,7 @@ import { isAdmin } from '../hooks/validation.js';
 import { getUserProgram } from '../api/functions_for_users.js'
 
 export const useCatalogue = () => {
-    const { email } = useAuth();
+    const { email,currentRole } = useAuth();
 
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -52,7 +52,7 @@ export const useCatalogue = () => {
     const loadCourses = async () => {
         try {
             setLoading(true);
-            const isUserAdmin = isAdmin(email);
+            const isUserAdmin = currentRole === 'admin';
 
             const activeFilters = { ...filters };
             if (!isUserAdmin && courseTypeFilter) {
@@ -76,7 +76,7 @@ export const useCatalogue = () => {
         if (email) {
             loadCourses();
         }
-    }, [email, filters, courseTypeFilter]);
+    }, [email, filters, courseTypeFilter, currentRole]);
 
     const startEditingCourse = async (courseId) => {
         let course = courses.find((c) => c.id === courseId);
