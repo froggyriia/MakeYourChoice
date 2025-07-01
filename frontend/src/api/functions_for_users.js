@@ -65,3 +65,92 @@ import { supabase } from '../pages/supabaseClient.jsx';
         return { tech: 0, hum: 0 };
   }
 }
+
+/**
+ * Checks if a priority record exists for the given email.
+ *
+ * @async
+ * @param {string} email - User's email address
+ * @returns {Promise<object|null>} Existing record or null if not found
+ */
+export async function checkExistingPriority(email) {
+    try {
+        const { data, error } = await supabase
+            .from('priorities')
+            .select('*')
+            .eq('email', email)
+            .single();
+
+        if (error && error.code !== 'PGRST116') throw error;
+        return data || null;
+    } catch (error) {
+        console.error('Error checking existing priority:', error);
+        throw error;
+    }
+}
+
+/**
+ * Updates existing priority record in the database.
+ *
+ * @async
+ * @param {string} email - User's email address
+ * @param {object} updateFields - Fields to update (e.g., {tech1: "Course1", tech2: "Course2"})
+ * @returns {Promise<void>}
+ */
+export async function updatePriority(email, updateFields) {
+    try {
+        const { error } = await supabase
+            .from('priorities')
+            .update(updateFields)
+            .eq('email', email);
+
+        if (error) throw error;
+    } catch (error) {
+        console.error('Error updating priority:', error);
+        throw error;
+    }
+}
+
+/**
+ * Creates a new priority record in the database.
+ *
+ * @async
+ * @param {string} email - User's email address
+ * @param {object} fields - All fields to insert (e.g., {email: "user@example.com", tech1: "Course1"})
+ * @returns {Promise<void>}
+ */
+export async function createPriority(email, fields) {
+    try {
+        const { error } = await supabase
+            .from('priorities')
+            .insert([{ email, ...fields }]);
+
+        if (error) throw error;
+    } catch (error) {
+        console.error('Error creating priority:', error);
+        throw error;
+    }
+}
+
+/**
+ * Handles priority submission (either update or create).
+ *
+ * @async
+ * @param {string} email - User's email address
+ * @param {object} updateFields - Fields to update/insert
+ * @returns {Promise<void>}
+ */
+export async function submitPriority(email, updateFields) {
+    try {
+        const existing = await checkExistingPriority(email);
+
+        if (existing) {
+            await updatePriority(email, updateFields);
+        } else {
+            await createPriority(email, updateFields);
+        }
+    } catch (error) {
+        console.error('Error in submitPriority:', error);
+        throw error;
+    }
+}

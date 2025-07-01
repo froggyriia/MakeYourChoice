@@ -7,8 +7,10 @@
  */
 
 import { useEffect, useState } from 'react';
-import { supabase } from '../pages/supabaseClient.jsx';
 import { getUserProgram, getPrioritiesNumber } from '../api/functions_for_users';
+import {
+    submitPriority
+} from '../api/functions_for_users';
 
 /**
  * Hook to manage course preference form submission and retrieve submission limits.
@@ -53,60 +55,38 @@ export function useFormSubmit(email) {
      */
     const onSubmit = async (selectedCourses, activeTab) => {
         const expectedCount = limits[activeTab];
-        // Validate: ensure all priority fields are filled
         if (selectedCourses.length != expectedCount || selectedCourses.some(c => !c)) {
             alert('Please, fill all priority fields');
             return;
         }
-        // Get existing local preference or initialize a new one
+
         const currentStudent = studentsPreferences.find(s => s.email === email) || {
             email,
             hum: Array(limits.hum).fill(""),
             tech: Array(limits.tech).fill("")
         };
-        // Update the relevant tab with new selections
+
         const updatedStudent = {
             ...currentStudent,
             [activeTab]: selectedCourses
         };
-        // Replace or add the updated student preferences locally
+
         setStudentsPreferences(prev => {
             const others = prev.filter(s => s.email !== email);
             return [...others, updatedStudent];
         });
-        // Build the Supabase update payload (e.g., tech1, tech2, ...)
+
+        // Build the update payload
         const updateFields = {};
         selectedCourses.forEach((course, i) => {
             updateFields[`${activeTab}${i + 1}`] = course || "";
         });
 
         try {
-            // Check if a row already exists for this email
-            const { data: existing, error: selectError } = await supabase
-                .from('priorities')
-                .select('*')
-                .eq('email', email)
-                .single();
-            // Ignore "no record found" error; rethrow others
-            if (selectError && selectError.code !== 'PGRST116') throw selectError;
-            // If record exists, update it
-            if (existing) {
-                const { error: updateError } = await supabase
-                    .from('priorities')
-                    .update(updateFields)
-                    .eq('email', email);
-                if (updateError) throw updateError;
-                alert("Data was successfully submitted");
-            } else {
-                // If no record, insert a new one
-                const { error: insertError } = await supabase
-                    .from('priorities')
-                    .insert([{ email, ...updateFields }]);
-                if (insertError) throw insertError;
-                alert("Data was successfully submitted");
-            }
+            await submitPriority(email, updateFields);
+            alert("Data was successfully submitted");
         } catch (error) {
-            console.error("Ошибка Supabase:", error);
+            console.error("Submission error:", error);
             alert("Error while submitting");
         }
     };
