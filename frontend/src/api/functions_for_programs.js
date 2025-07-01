@@ -2,6 +2,34 @@ import { supabase } from '../pages/supabaseClient.jsx';
 import { getUserProgram } from './functions_for_users.js'
 
 /**
+ * Checks if the form is active for the specified student program. The catalogue and form should be displayed ONLY if this is true
+ *
+ * Queries the 'semesters' table for the active semester (where is_active = true)
+ * and verifies if the provided student program exists in the list of allowed programs.
+ *
+ * @async
+ * @function isFormActive
+ * @param {string} studentProgram - The student's program to check for form availability
+ * @returns {Promise<boolean>} - Returns true if the form is active for this program, false otherwise
+ * @throws {Error} - Throws an error if there's a database query failure
+ */
+export const isFormActive = async (studentProgram) => {
+    try {
+    const { programs, error } = await supabase
+      .from('semesters')
+      .select('program')
+      .eq('is_active', true)
+      .single();
+
+    if (error) throw error;
+    return programs.program.includes(studentProgram);
+  } catch (error) {
+    console.error('Error adding program:', error.message);
+    throw error;
+  }
+};
+
+/**
  * Gets program info based on its title
  * @param {string} programTitle - program title
  * @returns {Promise<Object>} - an object with info about the program (all the columns from the db)
