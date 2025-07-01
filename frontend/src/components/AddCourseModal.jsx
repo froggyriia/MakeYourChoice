@@ -273,7 +273,7 @@ const AddCourseModal = ({
                     </label>
 
                     {/* Submit and Cancel Buttons */}
-                    <div className={styles.buttonsContainer}>
+                    <div className={styles.fixedButtons}>
                         <button type="submit">Submit</button>
                         <button type="button" onClick={onCancel}>Cancel</button>
                     </div>
