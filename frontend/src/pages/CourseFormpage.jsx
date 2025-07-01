@@ -32,7 +32,7 @@ import { getProgramInfo } from "../api/functions_for_programs.js";
  */
 export default function CourseFormPage() {
     // Get user email and role from global auth context
-    const { email, role } = useAuth();
+    const { email, currentRole } = useAuth();
     console.log('Current email in CourseFormPage:', email);
 
     // Local state to toggle between "tech" and "hum" tabs
@@ -73,7 +73,7 @@ export default function CourseFormPage() {
                     </div>
 
                     {/* === ADMIN-ONLY: EXPORT RESULTS TO EXCEL === */}
-                    {role === 'admin' && (
+                    {currentRole === 'admin' && (
                         <div style={{ marginBottom: '20px', textAlign: 'center' }}>
                             <button
                                 onClick={exportToExcel}
@@ -85,7 +85,7 @@ export default function CourseFormPage() {
                     )}
 
                     {/* === STUDENT-ONLY: COURSE SELECTION FORM === */}
-                    {role !== 'admin' && (
+                    {currentRole !== 'admin' && (
                         <ElectivesForm
                             type={activeTab} // tech or hum
                             onSubmit={(selectedCourses) => onSubmit(selectedCourses, activeTab)}

@@ -4,10 +4,10 @@ import styles from "./SidebarMenu.module.css";
 import { useAuth } from '../context/AuthContext';
 
 export default function SidebarMenu() {
-    const { role } = useAuth();
+    const { currentRole } = useAuth();
 
     // Показывать меню только если пользователь — админ
-    if (role !== 'admin') return null;
+    if (currentRole !== 'admin') return null;
 
     return (
         <div className={styles.sidebar}>
