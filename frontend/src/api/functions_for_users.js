@@ -77,7 +77,7 @@ export async function getUserYear(email) {
     console.error('Error in getUserProgram:', err);
     return null;
   }
-
+}
 /**
  * Checks if a priority record exists for the given email.
  *
