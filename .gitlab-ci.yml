@@ -5,6 +5,7 @@ variables:
 
 stages:
   - build
+  - lint
   - test
 
 build:
@@ -25,15 +26,13 @@ build:
     - docker
 
 lint:
-  stage: test
+  stage: lint
   image: node:20
   script:
     - cd frontend
-    - echo "Starting scripts"
     - npm install
     - npm run lint
     - npm run test
-    - echo "Finishing scripts"
   artifacts:
     reports:
       junit: frontend/reports/eslint-report.xml
@@ -122,3 +121,13 @@ security_scan:
     entrypoint: [""]
   script:
     - trivy fs --security-checks vuln,config .
+
+performance-test:
+  stage: test
+  image: node:20
+  script:
+    - npm install -g lighthouse
+    - lighthouse https://make-your-choice.vercel.app/ --output=json --output-path=./lighthouse-report.json
+  artifacts:
+    paths:
+      - ./lighthouse-report.json
