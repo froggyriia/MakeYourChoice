@@ -13,13 +13,14 @@ import {
     fetchCourses,
     addCourse,
     editCourseInfo,
-    getCourseInfo, archivedCourses, archiveCourse, unarchiveCourse
+    getCourseInfo,
+    archiveCourse,
+    unarchiveCourse
 } from '../api/functions_for_courses.js';
-import { isAdmin } from '../hooks/validation.js';
-import { getUserProgram } from '../api/functions_for_users.js'
+import { getUserProgram } from '../api/functions_for_users.js';
 
 export const useCatalogue = () => {
-    const { email,currentRole } = useAuth();
+    const { email, currentRole } = useAuth();
 
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -47,39 +48,36 @@ export const useCatalogue = () => {
         years: []
     });
 
-    const [courseTypeFilter, setCourseTypeFilter] = useState('tech'); // 'tech', 'hum', or null
+    const [courseTypeFilter, setCourseTypeFilter] = useState('tech');
 
+    // Load and filter courses
     const loadCourses = async () => {
         try {
             setLoading(true);
             const isUserAdmin = currentRole === 'admin';
-
             const activeFilters = { ...filters };
             if (!isUserAdmin && courseTypeFilter) {
                 activeFilters.types = [courseTypeFilter];
             }
-
             const data = await fetchCourses(email, isUserAdmin, activeFilters);
-
             setCourses(data);
             setError(null);
         } catch (err) {
             console.error(err);
             setCourses([]);
-            setError(err.message || "Failed to load courses");
+            setError(err.message || 'Failed to load courses');
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        if (email) {
-            loadCourses();
-        }
+        if (email) loadCourses();
     }, [email, filters, courseTypeFilter, currentRole]);
 
+    // Start editing existing course
     const startEditingCourse = async (courseId) => {
-        let course = courses.find((c) => c.id === courseId);
+        let course = courses.find(c => c.id === courseId);
         if (!course) {
             try {
                 course = await getCourseInfo(courseId);
@@ -88,84 +86,80 @@ export const useCatalogue = () => {
                 return;
             }
         }
-
-        const normalizedCourse = {
+        setCurrentCourse({
             ...course,
-            years: (course.years || []).map(Number),
-            program: (course.program || []).map(String),
-        };
-
-        setCurrentCourse(normalizedCourse);
+            years: course.years || [],
+            program: (course.program || []).map(String)
+        });
         setShowAddForm(true);
     };
 
+    // Start adding new course
     const startAddingCourse = () => {
         setCurrentCourse(initialCourse);
         setShowAddForm(true);
     };
 
-    const handleYearsChange = (year) => {
-        const yearInt = Number(year);
-        setCurrentCourse((prev) => {
-            const updated = prev.years.includes(yearInt)
-                ? prev.years.filter((y) => y !== yearInt)
-                : [...prev.years, yearInt];
+    // Toggle year in form
+    const handleYearsChange = year => {
+        setCurrentCourse(prev => {
+            const updated = prev.years.includes(year)
+                ? prev.years.filter(y => y !== year)
+                : [...prev.years, year];
             return { ...prev, years: updated };
         });
     };
 
+    // Handle generic field change
     const handleChange = ({ name, value }) => {
-        setCurrentCourse((prev) => ({ ...prev, [name]: value }));
+        setCurrentCourse(prev => ({ ...prev, [name]: value }));
     };
 
+    // Submit add/edit form
     const handleSubmit = async () => {
         try {
             const cleaned = {
                 ...currentCourse,
-                years: (currentCourse.years || []).map(Number),
-                program: (currentCourse.program || []).map(String),
+                years: (currentCourse.years || []).map(String),
+                program: (currentCourse.program || []).map(String)
             };
-
             if (cleaned.id) {
                 const updated = await editCourseInfo(cleaned);
-                setCourses((prev) =>
-                    prev.map((c) => (c.id === updated.id ? updated : c))
-                );
+                setCourses(prev => prev.map(c => c.id === updated.id ? updated : c));
             } else {
                 const { data, error } = await addCourse(cleaned);
                 if (error) throw error;
-                setCourses((prev) => [...prev, data[0]]);
+                setCourses(prev => [...prev, data[0]]);
             }
-
-
             setCurrentCourse(initialCourse);
             setShowAddForm(false);
             setError(null);
         } catch (err) {
+            console.error(err);
             setError(err.message);
         }
     };
 
+    // Cancel form
     const handleCancel = () => {
         setCurrentCourse(initialCourse);
         setShowAddForm(false);
         setError(null);
     };
 
-    const handleDeleteCourse = (id) => {
-        setCourses((prev) => prev.filter((c) => c.id !== id));
+    // Delete course locally
+    const handleDeleteCourse = id => {
+        setCourses(prev => prev.filter(c => c.id !== id));
     };
 
+    // Archive/unarchive course
     const handleArchiveCourse = async (id, currentStatus) => {
         try {
-            if (currentStatus) {
-                await unarchiveCourse(id);
-            } else {
-                await archiveCourse(id);
-            }
-            await loadCourses();
+            if (currentStatus) await unarchiveCourse(id);
+            else await archiveCourse(id);
+            loadCourses();
         } catch (err) {
-            console.error('Error archiving/unarchiving course:', err);
+            console.error(err);
             setError(err.message || 'Failed to change archive status');
         }
     };
@@ -179,12 +173,10 @@ export const useCatalogue = () => {
         filters,
         courseTypeFilter,
         viewMode,
-
         setShowAddForm,
         setFilters,
         setCourseTypeFilter,
         setViewMode,
-
         handleChange,
         handleYearsChange,
         handleSubmit,
@@ -193,7 +185,6 @@ export const useCatalogue = () => {
         startEditingCourse,
         startAddingCourse,
         handleArchiveCourse,
-
-        refetch: loadCourses,
+        refetch: loadCourses
     };
 };

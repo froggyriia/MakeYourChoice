@@ -15,6 +15,8 @@ import FilterBar from './FilterBar';
 import { useCatalogueContext } from '../context/CatalogueContext.jsx';
 import { useLocation } from 'react-router-dom';
 import styles from './Header.module.css';
+import {useLocation} from "react-router-dom";
+import { useAuth } from '../context/AuthContext';
 
 /**
  * Layout component that renders:
@@ -23,7 +25,9 @@ import styles from './Header.module.css';
  * - Student-specific toggle tabs for course type
  */
 const HeaderLayout = () => {
+    const location = useLocation();
     const { catalogue } = useCatalogueContext();
+    const {currentRole} = useAuth();
     const { filters, setFilters, courseTypeFilter, setCourseTypeFilter } = catalogue;
     const location = useLocation(); // getting current path
 

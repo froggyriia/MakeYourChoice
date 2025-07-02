@@ -21,6 +21,12 @@ const FilterBar = ({ filters = {}, setFilters }) => {
     const { currentRole } = useAuth();
     const { catalogue } = useCatalogueContext();
     const { courseTypeFilter, setCourseTypeFilter } = catalogue;
+    const yearOptions = [
+        'BS1', 'BS2', 'BS3', 'BS4',
+        'M1', 'M2',
+        'PhD1', 'PhD2', 'PhD3', 'PhD4',
+    ];
+
 
     /**
      * Fetches unique programs from API and formats them for dropdown options.
