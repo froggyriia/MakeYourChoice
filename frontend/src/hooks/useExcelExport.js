@@ -30,23 +30,29 @@ import { supabase } from '../pages/supabaseClient.jsx';
 export function useExcelExport() {
     const [isExported, setIsExported] = useState(false);
 
-
     const exportToExcel = async () => {
         try {
-            const { data, error } = await supabase
-                .from("priorities")
-                .select("*");
+            // Fetch data from both tables
+            const [{ data: prioritiesData, error: prioritiesError },
+                   { data: lastPrioritiesData, error: lastPrioritiesError }] = await Promise.all([
+                supabase.from("priorities").select("*"),
+                supabase.from("last_priorities").select("*")
+            ]);
 
-            if (error) throw error;
-            if (!data?.length) {
+            if (prioritiesError || lastPrioritiesError) {
+                throw prioritiesError || lastPrioritiesError;
+            }
+
+            if (!prioritiesData?.length && !lastPrioritiesData?.length) {
                 alert("No data to export");
                 return;
             }
 
+            // Process data and collect all course names
             const allCourses = new Set();
-            const processedData = data.map(row => {
-                const newRow = { ...row };
 
+            const processRow = (row) => {
+                const newRow = { ...row };
                 for (let i = 1; i <= 5; i++) {
                     const humKey = `hum${i}`;
                     const techKey = `tech${i}`;
@@ -60,38 +66,54 @@ export function useExcelExport() {
                         newRow[techKey] = createAbbreviation(newRow[techKey]);
                     }
                 }
-
                 return newRow;
-            });
+            };
 
+            const processedPriorities = prioritiesData?.map(processRow) || [];
+            const processedLastPriorities = lastPrioritiesData?.map(processRow) || [];
+
+            // Create workbook and sheets
             const workbook = new ExcelJS.Workbook();
 
-
-            const dataSheet = workbook.addWorksheet("Priorities");
-            const headers = Object.keys(processedData[0]);
-            dataSheet.addRow(headers);
-            processedData.forEach(row => {
-                dataSheet.addRow(Object.values(row));
-            });
-
-
-            const legendSheet = workbook.addWorksheet("Legend");
-            legendSheet.columns = [
-                { header: "Full Name", key: "full", width: 40 },
-                { header: "Abbreviation", key: "abbr", width: 15 }
-            ];
-
-
-            Array.from(allCourses)
-                .sort()
-                .forEach(course => {
-                    legendSheet.addRow({
-                        full: course,
-                        abbr: createAbbreviation(course)
-                    });
+            // Priorities sheet
+            if (processedPriorities.length > 0) {
+                const prioritiesSheet = workbook.addWorksheet("Priorities");
+                const headers = Object.keys(processedPriorities[0]);
+                prioritiesSheet.addRow(headers);
+                processedPriorities.forEach(row => {
+                    prioritiesSheet.addRow(Object.values(row));
                 });
+            }
 
+            // Last Priorities sheet
+            if (processedLastPriorities.length > 0) {
+                const lastPrioritiesSheet = workbook.addWorksheet("Last Priorities");
+                const headers = Object.keys(processedLastPriorities[0]);
+                lastPrioritiesSheet.addRow(headers);
+                processedLastPriorities.forEach(row => {
+                    lastPrioritiesSheet.addRow(Object.values(row));
+                });
+            }
 
+            // Legend sheet (only if we have any courses)
+            if (allCourses.size > 0) {
+                const legendSheet = workbook.addWorksheet("Legend");
+                legendSheet.columns = [
+                    { header: "Full Name", key: "full", width: 40 },
+                    { header: "Abbreviation", key: "abbr", width: 15 }
+                ];
+
+                Array.from(allCourses)
+                    .sort()
+                    .forEach(course => {
+                        legendSheet.addRow({
+                            full: course,
+                            abbr: createAbbreviation(course)
+                        });
+                    });
+            }
+
+            // Generate and download the file
             const buffer = await workbook.xlsx.writeBuffer();
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
