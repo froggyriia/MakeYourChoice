@@ -15,3 +15,20 @@ export const saveSemesterInfo = async (semData) => {
     throw error;
   }
 };
+
+export const updateSemesterActiveStatus = async (semester, semester_year, isActive) => {
+  try {
+    const { data, error } = await supabase
+      .from('semesters')
+      .update({ is_active: isActive })
+      .eq('semester', semester)
+      .eq('semester_year', semester_year)
+      .select();
+
+    if (error) throw error;
+    return { data, error };
+  } catch (error) {
+    console.error('Error updating semester active status:', error.message);
+    throw error;
+  }
+};
