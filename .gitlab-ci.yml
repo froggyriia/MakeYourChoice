@@ -123,7 +123,7 @@ security_scan:
 
 performance-test:
   stage: test
-  image: cypress/browsers:node20-chrome117
+  image: cypress/browsers:node-22.17.0-chrome-138.0.7204.92-1-ff-140.0.2-edge-138.0.3351.65-1
   script:
     - npm install -g lighthouse
     - lighthouse https://make-your-choice.vercel.app/ --output=json --output-path=./lighthouse-report.json
