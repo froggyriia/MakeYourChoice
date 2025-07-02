@@ -14,22 +14,19 @@ vi.mock('../../../src/pages/supabaseClient.jsx', () => ({
 }));
 
 describe('updateSemesterActiveStatus', () => {
-  it('успешно обновляет is_active', async () => {
+  it('successfully updating is_active', async () => {
     const result = await updateSemesterActiveStatus('Sum', '2025', false);
 
-    // Проверяем, что Supabase вызывался с правильными параметрами
     expect(supabase.from).toHaveBeenCalledWith('semesters');
     expect(supabase.update).toHaveBeenCalledWith({ is_active: false });
     expect(supabase.eq).toHaveBeenCalledWith('semester', 'Sum');
     expect(supabase.eq).toHaveBeenCalledWith('semester_year', '2025');
 
-    // Проверяем результат
     expect(result.error).toBeNull();
     expect(result.data[0].is_active).toBe(false);
   });
 
-  it('обрабатывает ошибку', async () => {
-    // Мокаем ошибку
+  it('processing error...', async () => {
     supabase.select.mockResolvedValueOnce({
       data: null,
       error: { message: 'Record not found' }
