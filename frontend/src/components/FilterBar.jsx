@@ -207,36 +207,21 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                 ))}
             </div>
 
-            {/* Year filter (toggle buttons) - available to all roles */}
-            <div className={styles.filterGroup}>
-                <span className={styles.filterLabel}>Year</span>
-                <Select
-                    isMulti
-                    name="years"
-                    options={yearOptions.map(value => ({ value, label: value }))}
-                    value={(filters.years || []).map(value => ({
-                        value,
-                        label: value,
-                    }))}
-                    onChange={(selectedOptions) => {
-                        const values = selectedOptions ? selectedOptions.map(opt => opt.value) : [];
-                        setFilters(prev => {
-                            const newFilters = { ...prev, years: values };
-                            console.log("[FilterBar] years filter changed:", newFilters);
-                            return newFilters;
-                        });
-                    }}
-                    className={styles.reactSelect}
-                    classNamePrefix="select"
-                    placeholder="Select years..."
-                    menuPortalTarget={document.body}
-                    styles={{
-                        menuPortal: base => ({ ...base, zIndex: 9999 }),
-                        menu: base => ({ ...base, zIndex: 9999 }),
-                    }}
-                />
-            </div>
-
+            {/* Year filter (toggle buttons) - only for admins */}
+            {currentRole === 'admin' && (
+                <div className={styles.filterGroup}>
+                    <span className={styles.filterLabel}>Year</span>
+                    {[1, 2, 3, 4].map((year) => (
+                        <button
+                            key={year}
+                            className={`${styles.filterButton} ${isActive('years', year) ? styles.active : ''}`}
+                            onClick={() => handleButtonFilter('years', year)}
+                        >
+                            {year}
+                        </button>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };
