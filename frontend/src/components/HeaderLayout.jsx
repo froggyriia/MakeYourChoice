@@ -16,7 +16,7 @@ import { useCatalogueContext } from '../context/CatalogueContext.jsx';
 import { useLocation } from 'react-router-dom';
 import styles from './Header.module.css';
 import { useAuth } from '../context/AuthContext';
-
+import AdminSubMenu from "@/components/AdminSubMenu.jsx";
 /**
  * Layout component that renders:
  * - A fixed header with user info and admin controls
@@ -38,28 +38,12 @@ const HeaderLayout = () => {
             <Header />
 
             <div className={styles.belowHeader}>
+                <AdminSubMenu />
                 {/* Show filter bar only for students or only on course page for admins */}
                 {showFilterBar && (
                     <FilterBar filters={filters} setFilters={setFilters} />
                 )}
 
-                {/* Course type tabs (only visible to students) */}
-                {catalogue.role === 'student' && showFilterBar && (
-                    <div className={styles.tabs}>
-                        <button
-                            className={`${styles.tabButton} ${courseTypeFilter === 'tech' ? styles.active : ''}`}
-                            onClick={() => setCourseTypeFilter('tech')}
-                        >
-                            Technical
-                        </button>
-                        <button
-                            className={`${styles.tabButton} ${courseTypeFilter === 'hum' ? styles.active : ''}`}
-                            onClick={() => setCourseTypeFilter('hum')}
-                        >
-                            Humanities
-                        </button>
-                    </div>
-                )}
             </div>
         </>
     );

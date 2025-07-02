@@ -6,7 +6,7 @@
  */
 
 import ProgramItem from './ProgramItem';
-
+import styles from './CourseList.module.css'
 /**
  * ProgramList Component
  *

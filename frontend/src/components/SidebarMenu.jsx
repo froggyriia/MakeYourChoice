@@ -30,6 +30,16 @@ export default function SidebarMenu() {
             >
                 Student Programs
             </NavLink>
+
+            <NavLink
+                to="/admin/semesters"
+                className={({ isActive }) =>
+                    isActive ? `${styles.link} ${styles.activeLink}` : styles.link
+                }
+            >
+                Semesters
+            </NavLink>
+
         </div>
     );
 }

@@ -7,6 +7,7 @@ import AdminProgramsPage from './pages/AdminProgramsPage.jsx';
 import StudentCataloguePage from './pages/StudentCataloguePage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { CatalogueProvider } from './context/CatalogueContext.jsx';
+import AdminSemesterPage from "./pages/AdminSemesterPage.jsx";
 
 
 export default function App() {
@@ -38,6 +39,15 @@ export default function App() {
                         element={
                             <ProtectedRoute
                                 element={<AdminProgramsPage />}
+                                requireAdmin={true}
+                            />
+                        }
+                    />
+                    <Route
+                        path="semesters"
+                        element={
+                            <ProtectedRoute
+                                element={<AdminSemesterPage />}
                                 requireAdmin={true}
                             />
                         }
