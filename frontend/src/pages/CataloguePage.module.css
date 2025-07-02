@@ -123,12 +123,10 @@
 }
 
 .adminPageWrapper {
-    display: flex;
-    padding: 80px 32px 32px 32px;
-    min-height: 100vh;
-    gap: 32px;
-    max-width: 1400px;
-    margin: 0 auto;
+    /* you can tweak padding / max-width as needed */
+    padding: 80px 32px 32px;
+    max-width: 1200px;       /* or whatever your design calls for */
+    margin: 0 auto;          /* centers the entire area */
     box-sizing: border-box;
 }
 
@@ -139,6 +137,7 @@
 
 .adminMainContent {
     flex-grow: 1;
+    width: 100%;
     overflow: visible;
     min-width: 0;
 }

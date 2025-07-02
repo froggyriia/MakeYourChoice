@@ -9,33 +9,23 @@
  * Includes modals for course/program management, along with dynamic listings.
  */
 
-import { useRef } from 'react';
+// src/pages/AdminCataloguePage.jsx
+import React from 'react';
 import { Outlet } from 'react-router-dom';
 import HeaderLayout from '../components/HeaderLayout';
-import SidebarMenu from '../components/SidebarMenu';
 import styles from './CataloguePage.module.css';
-import { useAuth } from '../context/AuthContext';
 
-const AdminCataloguePage = () => {
-    const { role } = useAuth();
-
+export default function AdminCataloguePage() {
     return (
         <>
             <HeaderLayout />
 
             <div className={styles.adminPageWrapper}>
-                {/* Sidebar */}
-                <div className={styles.adminSidebar}>
-                    <SidebarMenu />
-                </div>
-
-                {/* Dynamic page based on route */}
+                {/* Only one content column now */}
                 <div className={styles.adminMainContent}>
                     <Outlet />
                 </div>
             </div>
         </>
     );
-};
-
-export default AdminCataloguePage;
+}

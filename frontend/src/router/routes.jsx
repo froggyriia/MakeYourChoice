@@ -6,6 +6,7 @@ import AdminCoursesPage from '../pages/AdminCoursesPage.jsx';
 import AdminProgramsPage from '../pages/AdminProgramsPage.jsx';
 import StudentCataloguePage from '../pages/StudentCataloguePage.jsx';
 import ProtectedRoute from '../components/ProtectedRoute.jsx';
+import AdminSemestersPage from '../pages/AdminSemestersPage.jsx';
 
 const routes = [
     {
@@ -16,36 +17,25 @@ const routes = [
     {
         path: '/admin',
         element: (
-            <ProtectedRoute
-                element={<AdminCataloguePage />}
-                requireAdmin={true}
-            />
+            <ProtectedRoute requireAdmin={true}>
+                <AdminCataloguePage />    {/* renders HeaderLayout, SidebarMenu, and an <Outlet/> */}
+            </ProtectedRoute>
         ),
         children: [
-            {
-                path: 'courses',
-                element: (
-                    <ProtectedRoute
-                        element={<AdminCoursesPage />}
-                        requireAdmin={true}
-                    />
-                )
-            },
-            {
-                path: 'programs',
-                element: (
-                    <ProtectedRoute
-                        element={<AdminProgramsPage />}
-                        requireAdmin={true}
-                    />
-                )
-            },
-            {
-                index: true,
-                element: <Navigate to="courses" replace />
-            }
+            // default /admin → /admin/courses
+            { index: true,           element: <Navigate to="courses" replace /> },
+
+            // /admin/courses
+            { path: 'courses',       element: <AdminCoursesPage /> },
+
+            // /admin/programs
+            { path: 'programs',      element: <AdminProgramsPage /> },
+
+            // /admin/semesters
+            { path: 'semesters',     element: <AdminSemestersPage /> },
         ]
     },
+
 
     {
         path: '/student-catalogue',

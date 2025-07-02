@@ -1,4 +1,4 @@
-import { supabase } from '../pages/supabaseClient.js';
+import { supabase } from '../pages/supabaseClient.jsx';
 /**
  * Saves semester information to the database.
  * If a semester with the given name and year exists, updates it; otherwise creates a new record.
