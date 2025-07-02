@@ -59,6 +59,25 @@ import { supabase } from '../pages/supabaseClient.jsx';
   }
 }
 
+export async function getUserYear(email) {
+  try {
+    const { data, error } = await supabase
+      .from('emails_groups')
+      .select('year')
+      .eq('email', email)
+      .single();
+
+    if (error || !data) {
+      console.error('Supabase fetch error:', error);
+      return null;
+    }
+
+    return data.year;
+  } catch (err) {
+    console.error('Error in getUserProgram:', err);
+    return null;
+  }
+
 /**
  * Checks if a priority record exists for the given email.
  *

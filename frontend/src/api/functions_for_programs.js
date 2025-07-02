@@ -77,9 +77,18 @@ export const getProgramInfo = async (email) => {
  */
 export const addProgram = async (programData) => {
   try {
+    const dataToInsert = { ...programData };
+
+    if (dataToInsert.year !== undefined && dataToInsert.group !== undefined) {
+      dataToInsert.student_group = `${dataToInsert.year}_${dataToInsert.group}`;
+
+      delete dataToInsert.year;
+      delete dataToInsert.group;
+    }
+
     const { data, error } = await supabase
       .from('groups_electives')
-      .insert(programData)
+      .insert(dataToInsert)
       .select();
 
     if (error) throw error;

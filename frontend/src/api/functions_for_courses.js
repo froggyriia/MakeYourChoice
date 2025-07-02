@@ -1,5 +1,5 @@
 import { supabase } from '../pages/supabaseClient.jsx';
-import { getUserProgram } from './functions_for_users.js';
+import { getUserProgram, getUserYear } from './functions_for_users.js';
 
 /**
  * Adds a new course to the database
@@ -140,11 +140,21 @@ export async function fetchCourses(email, allCourses = false, filters = {}) {
     if (!allCourses && email) {
       const userProgram = await getUserProgram(email);
       if (!userProgram) {
-        console.warn(`Program not found for user ${email}`);
+        console.warn('Program not found for user ${email}');
         return [];
       }
+
+      const userYear = await getUserYear(email);
+      if (!userYear) {
+        console.warn('Year not found for user ${email}');
+        return [];
+      }
+
+      console.log("user year", userYear);
+
       query = query
        .contains("program", [userProgram])
+       .contains('years', [userYear])
        .eq("archived", false);
     }
     const { data, error } = await query;
