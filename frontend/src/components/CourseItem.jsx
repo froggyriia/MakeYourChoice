@@ -5,7 +5,7 @@
  * It allows toggling detailed view, editing, and deleting the course.
  * Used in: CataloguePage.jsx
  */
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from './CourseItem.module.css';
 import { deleteCourse } from '../api/functions_for_courses.js'
 import MarkdownPreview from '@uiw/react-markdown-preview';
@@ -26,7 +26,19 @@ const CourseItem = ({ course, onDelete, onEdit, onArchive}) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isArchiving, setIsArchiving] = useState(false);
-    const { themes } = MarkdownPreview;
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const menuRef = useRef();
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setMenuOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     /**
      * Handles the deletion of a course.
@@ -46,11 +58,15 @@ const CourseItem = ({ course, onDelete, onEdit, onArchive}) => {
      */
     const handleEdit = () => {
         if (onEdit) onEdit(course.id);
+        setMenuOpen(false);
     };
 
     const handleArchive = async () => {
         if (onArchive) {
+            setIsArchiving(true);
             await onArchive(course.id, course.archived);
+            setIsArchiving(false);
+            setMenuOpen(false);
         }
     };
 
@@ -58,26 +74,50 @@ const CourseItem = ({ course, onDelete, onEdit, onArchive}) => {
 
     return (
         <div
-            className={`${styles.courseItem} ${isDeleting ? styles.deleting : ''} ${course.archived ? styles.archived : ''}`}
+            className={`${styles.courseItem} ${isDeleting ? styles.deleting : ''} ${
+                course.archived ? styles.archived : ''
+            }`}
         >
-            <h2 className={styles.title}>{course.title}</h2>
+            <div className={styles.titleRow}>
+                <h2 className={styles.title}>{course.title}</h2>
+                <div className={styles.menuWrapper} ref={menuRef}>
+                    <button
+                        onClick={() => setMenuOpen((prev) => !prev)}
+                        className={styles.menuButton}
+                    >
+                        ⋮
+                    </button>
+                    {menuOpen && (
+                        <div className={styles.dropdown}>
+                            <button onClick={handleEdit}>Edit</button>
+                            <button onClick={handleArchive}>
+                                {course.archived ? 'De-archive' : 'Archive'}
+                            </button>
+                            <button onClick={handleDelete} className={styles.deleteButton}>
+                                Delete
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+
             <p className={styles.info}>Instructor: {course.teacher}</p>
             <p className={styles.info}>Language: {course.language}</p>
             <p className={styles.info}>
-                Program: {Array.isArray(course.program) ? course.program.join(', ') : course.program}
+                Program:{' '}
+                {Array.isArray(course.program)
+                    ? course.program.join(', ')
+                    : course.program}
             </p>
-
             <p className={styles.info}>
-                Years: {Array.isArray(course.years) ? course.years.sort().join(', ') : 'No data'}
+                Years:{' '}
+                {Array.isArray(course.years) ? course.years.sort().join(', ') : 'No data'}
             </p>
             <p className={styles.info}>Type: {course.type}</p>
 
             {isOpen && (
                 <div className={styles.description}>
-                    <MarkdownPreview
-                        source={course.description}
-
-                    />
+                    <MarkdownPreview source={course.description} />
                 </div>
             )}
 
@@ -88,34 +128,6 @@ const CourseItem = ({ course, onDelete, onEdit, onArchive}) => {
                 >
                     {isOpen ? 'Show less' : 'Show more'}
                 </button>
-                {onEdit && (
-                    <button
-                        onClick={handleEdit}
-                        className={styles.toggleButton}
-                    >
-                        Edit
-                    </button>
-                )}
-
-                {onArchive && (
-                    <button
-                        onClick={handleArchive}
-                        className={styles.toggleButton}
-                        disabled={isArchiving}
-                    >
-                        {course.archived ? 'De-archive' : 'Archive'}
-                        {isArchiving && '...'}
-                    </button>
-                )}
-
-                {onDelete && (
-                    <button
-                        onClick={handleDelete}
-                        className={styles.deleteButton}
-                    >
-                        Delete
-                    </button>
-                )}
             </div>
         </div>
     );

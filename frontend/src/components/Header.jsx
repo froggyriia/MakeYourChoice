@@ -113,7 +113,7 @@ const Header = () => {
 
             {trueRole === 'admin-student' && (
             <button
-                className={`${styles.btn} ${styles['btn--gray']}`}
+                className={`${styles.btn} ${styles['btn--green']}`}
                 onClick={() => {
                     if (currentRole === 'admin') {
                         setCurrentRole('student');
