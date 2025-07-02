@@ -46,7 +46,7 @@ const ProgramItem = ({ program, onDelete, onEdit }) => {
             <h2 className={styles.title}>{program.student_group}</h2>
             <p className={styles.info}>Tech priorities: {program.tech}</p>
             <p className={styles.info}>Hum priorities: {program.hum}</p>
-            <p className={styles.info}>Deadline: {new Date(program.deadline).toLocaleString()}</p>
+
 
             <div className={styles.buttonsContainer}>
 
