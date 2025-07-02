@@ -1,6 +1,36 @@
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    padding: 12px;
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+}
+
+.table th,
+.table td {
+    padding: 12px 8px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #333;
+}
+
+.table thead {
+    background-color: var(--color-elem-background);
+}
+
+.table th {
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.clickable:hover,
+.table tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+}
+
+.empty {
+    text-align: center;
+    color: #777;
+    padding: 24px 0;
 }
