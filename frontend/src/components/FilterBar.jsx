@@ -201,19 +201,21 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                 ))}
             </div>
 
-            {/* Year filter (toggle buttons) - available to all roles */}
-            <div className={styles.filterGroup}>
-                <span className={styles.filterLabel}>Year</span>
-                {[1, 2, 3, 4].map((year) => (
-                    <button
-                        key={year}
-                        className={`${styles.filterButton} ${isActive('years', year) ? styles.active : ''}`}
-                        onClick={() => handleButtonFilter('years', year)}
-                    >
-                        {year}
-                    </button>
-                ))}
-            </div>
+            {/* Year filter (toggle buttons) - only for admins */}
+            {currentRole === 'admin' && (
+                <div className={styles.filterGroup}>
+                    <span className={styles.filterLabel}>Year</span>
+                    {[1, 2, 3, 4].map((year) => (
+                        <button
+                            key={year}
+                            className={`${styles.filterButton} ${isActive('years', year) ? styles.active : ''}`}
+                            onClick={() => handleButtonFilter('years', year)}
+                        >
+                            {year}
+                        </button>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

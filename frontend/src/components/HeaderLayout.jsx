@@ -13,6 +13,7 @@ import React from 'react';
 import Header from './Header';
 import FilterBar from './FilterBar';
 import { useCatalogueContext } from '../context/CatalogueContext.jsx';
+import { useLocation } from 'react-router-dom';
 import styles from './Header.module.css';
 
 /**
@@ -24,18 +25,24 @@ import styles from './Header.module.css';
 const HeaderLayout = () => {
     const { catalogue } = useCatalogueContext();
     const { filters, setFilters, courseTypeFilter, setCourseTypeFilter } = catalogue;
-    console.log("[HeaderLayout] filters state:", filters);
+    const location = useLocation(); // getting current path
+
+    const showFilterBar =
+        location.pathname.startsWith('/admin/courses') ||
+        location.pathname === '/student-catalogue';
+
     return (
         <>
-            <Header /> {/* Top fixed header */}
+            <Header />
 
-            {/* Section below header: filter bar + student tabs */}
             <div className={styles.belowHeader}>
-                {/* Filters for programs, language, year, etc. */}
-                <FilterBar filters={filters} setFilters={setFilters} />
+                {/* Show filter bar only for students or only on course page for admins */}
+                {showFilterBar && (
+                    <FilterBar filters={filters} setFilters={setFilters} />
+                )}
 
                 {/* Course type tabs (only visible to students) */}
-                {catalogue.role === 'student' && (
+                {catalogue.role === 'student' && showFilterBar && (
                     <div className={styles.tabs}>
                         <button
                             className={`${styles.tabButton} ${courseTypeFilter === 'tech' ? styles.active : ''}`}
