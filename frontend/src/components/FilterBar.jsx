@@ -21,6 +21,12 @@ const FilterBar = ({ filters = {}, setFilters }) => {
     const { currentRole } = useAuth();
     const { catalogue } = useCatalogueContext();
     const { courseTypeFilter, setCourseTypeFilter } = catalogue;
+    const yearOptions = [
+        'BS1', 'BS2', 'BS3', 'BS4',
+        'M1', 'M2',
+        'PhD1', 'PhD2', 'PhD3', 'PhD4',
+    ];
+
 
     /**
      * Fetches unique programs from API and formats them for dropdown options.
@@ -204,16 +210,33 @@ const FilterBar = ({ filters = {}, setFilters }) => {
             {/* Year filter (toggle buttons) - available to all roles */}
             <div className={styles.filterGroup}>
                 <span className={styles.filterLabel}>Year</span>
-                {[1, 2, 3, 4].map((year) => (
-                    <button
-                        key={year}
-                        className={`${styles.filterButton} ${isActive('years', year) ? styles.active : ''}`}
-                        onClick={() => handleButtonFilter('years', year)}
-                    >
-                        {year}
-                    </button>
-                ))}
+                <Select
+                    isMulti
+                    name="years"
+                    options={yearOptions.map(value => ({ value, label: value }))}
+                    value={(filters.years || []).map(value => ({
+                        value,
+                        label: value,
+                    }))}
+                    onChange={(selectedOptions) => {
+                        const values = selectedOptions ? selectedOptions.map(opt => opt.value) : [];
+                        setFilters(prev => {
+                            const newFilters = { ...prev, years: values };
+                            console.log("[FilterBar] years filter changed:", newFilters);
+                            return newFilters;
+                        });
+                    }}
+                    className={styles.reactSelect}
+                    classNamePrefix="select"
+                    placeholder="Select years..."
+                    menuPortalTarget={document.body}
+                    styles={{
+                        menuPortal: base => ({ ...base, zIndex: 9999 }),
+                        menu: base => ({ ...base, zIndex: 9999 }),
+                    }}
+                />
             </div>
+
         </div>
     );
 };
