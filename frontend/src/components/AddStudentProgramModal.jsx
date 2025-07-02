@@ -104,18 +104,18 @@ const AddStudentsProgramModal = ({
                 <form onSubmit={handleFormSubmit} className={styles.form}>
                     <h2>Add Student Program</h2>
 
-                    {/*<label>*/}
-                    {/*    Year:*/}
-                    {/*    <select*/}
-                    {/*        value={programData.year}*/}
-                    {/*        onChange={(e) => onChange({ name: 'year', value: e.target.value })}*/}
-                    {/*    >*/}
-                    {/*        <option value="">Select year</option>*/}
-                    {/*        {['BS1','BS2','BS3','BS4','M1','M2','PhD1','PhD2','PhD3','PhD4'].map(y => (*/}
-                    {/*            <option key={y} value={y}>{y}</option>*/}
-                    {/*        ))}*/}
-                    {/*    </select>*/}
-                    {/*</label>*/}
+                    <label>
+                        Year:
+                        <select
+                            value={programData.year}
+                            onChange={(e) => onChange({ name: 'year', value: e.target.value })}
+                        >
+                            <option value="">Select year</option>
+                            {['BS1','BS2','BS3','BS4','M1','M2','PhD1','PhD2','PhD3','PhD4'].map(y => (
+                                <option key={y} value={y}>{y}</option>
+                            ))}
+                        </select>
+                    </label>
 
 
                     <label>

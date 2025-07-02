@@ -31,7 +31,7 @@ const HeaderLayout = () => {
     const hideFilterBar =
         currentRole === 'admin' && location.pathname === '/admin/programs';
 
-    console.log(location.pathname, hideFilterBar, currentRole);
+    // console.log(location.pathname, hideFilterBar, currentRole);
     return (
         <>
             <Header /> {/* Top fixed header */}
@@ -40,24 +40,6 @@ const HeaderLayout = () => {
             <div className={styles.belowHeader}>
                 {/* Filters for programs, language, year, etc. */}
                 {!hideFilterBar && <FilterBar filters={filters} setFilters={setFilters} />}
-
-                {/* Course type tabs (only visible to students) */}
-                {currentRole === 'student' && (
-                    <div className={styles.tabs}>
-                        <button
-                            className={`${styles.tabButton} ${courseTypeFilter === 'tech' ? styles.active : ''}`}
-                            onClick={() => setCourseTypeFilter('tech')}
-                        >
-                            Technical
-                        </button>
-                        <button
-                            className={`${styles.tabButton} ${courseTypeFilter === 'hum' ? styles.active : ''}`}
-                            onClick={() => setCourseTypeFilter('hum')}
-                        >
-                            Humanities
-                        </button>
-                    </div>
-                )}
             </div>
         </>
     );
