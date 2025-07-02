@@ -157,7 +157,7 @@ const AddCourseModal = ({
             alert("Please select at least one year.")
             return
         }
-
+        console.log(course)
         onSubmit();
     };
 
@@ -193,7 +193,7 @@ const AddCourseModal = ({
 
                     {/* Teacher Name */}
                     <label>
-                        Teacher:
+                        Instructor:
                         <input
                             type="text"
                             name="teacher"
@@ -202,22 +202,44 @@ const AddCourseModal = ({
                             required
                         />
                     </label>
-
-                    {/* Language Selection */}
                     <label>
-                        Language:
-                        <div className={styles.btnGroup}>
-                            {['Rus', 'Eng'].map((lang) => (
-                                <button
-                                    key={lang}
-                                    type="button"
-                                    className={`${styles.btn} ${course.language === lang ? styles.btnActive : ''}`}
-                                    onClick={() => handleButtonChange('language', lang)}
-                                >
-                                    {lang === 'Rus' ? 'Russian' : 'English'}
-                                </button>
-                            ))}
-                        </div>
+                        Years:
+                        <Select
+                            isMulti
+                            name="years"
+                            options={[
+                                'BS1', 'BS2', 'BS3', 'BS4',
+                                'M1', 'M2',
+                                'PhD1', 'PhD2', 'PhD3', 'PhD4',
+                            ].map(y => ({ value: y, label: y }))}
+                            value={(course.years || []).map(y => ({ value: y, label: y }))}
+                            onChange={(selected) => {
+                                const values = selected.map(item => item.value);
+                                onChange({ name: 'years', value: values });
+                            }}
+                            placeholder="Select years..."
+                            className={styles.reactSelect}
+                            classNamePrefix="select"
+
+                            styles={{
+                                menuPortal: base => ({
+                                    ...base,
+                                    zIndex: 9999,
+                                }),
+                                menu: base => ({
+                                    ...base,
+                                    maxHeight: '144px', // 4 строки по ~36px
+                                    overflowY: 'auto',
+                                }),
+                                menuList: base => ({
+                                    ...base,
+                                    maxHeight: '144px',
+                                    overflowY: 'auto',
+                                }),
+                            }}
+                        />
+
+
                     </label>
 
                     {/* Academic Program Selection */}
@@ -238,6 +260,25 @@ const AddCourseModal = ({
                         />
                     </label>
 
+                    {/* Language Selection */}
+                    <label>
+                        Language:
+                        <div className={styles.btnGroup}>
+                            {['Rus', 'Eng'].map((lang) => (
+                                <button
+                                    key={lang}
+                                    type="button"
+                                    className={`${styles.btn} ${course.language === lang ? styles.btnActive : ''}`}
+                                    onClick={() => handleButtonChange('language', lang)}
+                                >
+                                    {lang === 'Rus' ? 'Russian' : 'English'}
+                                </button>
+                            ))}
+                        </div>
+                    </label>
+
+
+
                     {/* Course Type Selection */}
                     <label>
                         Course type:
@@ -256,27 +297,14 @@ const AddCourseModal = ({
                     </label>
 
                     {/* Study Years Selection */}
-                    <label>
-                        Years:
-                        <div className={styles.btnGroup}>
-                            {[1, 2, 3, 4].map((year) => (
-                                <button
-                                    key={year}
-                                    type="button"
-                                    className={`${styles.btn} ${course.years.includes(year) ? styles.btnActive : ''}`}
-                                    onClick={() => onToggleYear(year)}
-                                >
-                                    {year}
-                                </button>
-                            ))}
-                        </div>
-                    </label>
+
+
 
                     {/* Submit and Cancel Buttons */}
-                    <div className={styles.fixedButtons}>
+                    <footer className={styles.fixedButtons}>
                         <button type="submit">Submit</button>
                         <button type="button" onClick={onCancel}>Cancel</button>
-                    </div>
+                    </footer>
                 </form>
             </div>
         </div>

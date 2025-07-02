@@ -25,6 +25,7 @@ const Header = () => {
     const { logout, email, trueRole, currentRole, setCurrentRole } = useAuth();
 
     const [deadline, setDeadline] = useState(null);
+    const [searchText, setSearchText] = useState('');
 
     /**
      * Fetch deadline based on user group (for non-admins)
@@ -60,7 +61,7 @@ const Header = () => {
             <div className={styles.headerContent}>
                 <span className={styles.email}>{email}</span>
 
-                {currentRole === 'admin' && (
+                {currentRole === 'admin' && currentPath.includes('/admin/courses') && (
                     <div className={styles.buttonGroup}>
                         <button
                             className={`${styles.btn} ${viewMode === 'compact' ? styles['btn--green'] : styles['btn--gray']}`}
@@ -128,15 +129,24 @@ const Header = () => {
             </button>
             )}
 
-            <button
-                onClick={() => {
-                    console.log('Search clicked');
-                    alert('Search button is working!');
-                }}
-                className={`${styles.btn} ${styles['btn--green']}`}
-            >
-                Search
-            </button>
+            <div className={styles.searchContainer}>
+                <input
+                    type="text"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    placeholder="Search courses..."
+                    className={styles.searchInput}
+                />
+                <button
+                    onClick={() => {
+                        console.log('Search clicked. Query:', searchText);
+                        alert(`Search for: ${searchText}`);
+                    }}
+                    className={`${styles.btn} ${styles['btn--green']}`}
+                >
+                    Search
+                </button>
+            </div>
 
             <button
                 onClick={logout}

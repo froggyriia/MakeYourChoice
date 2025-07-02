@@ -17,13 +17,11 @@ import { addProgram, getProgramInfo, deleteProgram,  editProgramInfo } from '../
 export const usePrograms = () => {
     // Default state for a new or reset program form
     const initialProgram = {
-        stage: 'B',       // B, M, P
-        year: new Date().getFullYear(),
         shortName: '',
         techCount: 0,
         humCount: 0,
-        deadline: '',     // format: 'YYYY-MM-DDTHH:mm' (datetime-local input)
     };
+
 
     const [programData, setProgramData] = useState(initialProgram); // Current form values
     const [showModal, setShowModal] = useState(false); // Show/hide modal form
@@ -102,14 +100,12 @@ export const usePrograms = () => {
      */
     const handleProgramSubmit = async () => {
         try {
-            const deadlineTimestamp = new Date(programData.deadline).toISOString();
-            const groupTitle = `${programData.stage}${programData.year.toString().slice(2)}-${programData.shortName}`;
+
 
             const payload = {
-                student_group: groupTitle,
+                student_group: programData.shortName,
                 tech: parseInt(programData.techCount, 10),
                 hum: parseInt(programData.humCount, 10),
-                deadline: deadlineTimestamp,
             };
 
             if (programData.id) {
@@ -158,12 +154,9 @@ export const usePrograms = () => {
         }
         // Parse components from the student_group string (e.g., B24-CS)
         setProgramData({
-            stage: found.student_group[0],
-            year: 2000 + parseInt(found.student_group.slice(1, 3), 10),
-            shortName: found.student_group.slice(4),
+            shortName: found.student_group,
             techCount: found.tech,
             humCount: found.hum,
-            deadline: new Date(found.deadline).toISOString().slice(0, 16),
             id: found.id,
         });
 
