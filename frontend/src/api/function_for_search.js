@@ -1,31 +1,50 @@
 import { supabase } from '../pages/supabaseClient.jsx';
+import Fuse from 'fuse.js';
 
 /**
- * Searches for courses in the catalogue by title
- * @param {string} searchTerm - The term to search for in course titles
- * @param {number} [limit=10] - Maximum number of results to return
- * @returns {Promise<Array>} - Array of course objects matching the search
+ * Searches courses by title with both DB-level and fuzzy search
+ * @param {string} searchTerm - Term to search for
+ * @param {Object} [options] - Search options
+ * @param {number} [options.limit=10] - Max results to return
+ * @param {boolean} [options.fuzzy=false] - Enable fuzzy search
+ * @returns {Promise<Array>} - Filtered courses
  */
-export const searchCoursesByTitle = async (searchTerm, limit = 10) => {
+export const searchCoursesByTitle = async (searchTerm, { limit = 10, fuzzy = false } = {}) => {
   try {
-    // Use Supabase's ilike operator for case-insensitive search
-    // We search for partial matches in the title
-    const { data, error } = await supabase
+    // Base query
+    let query = supabase
       .from('catalogue')
       .select('*')
-      .ilike('title', `%${searchTerm}%`)
-      .eq('archived', false) // Only show non-archived courses
-      .limit(limit);
+      .eq('archived', false);
 
-    if (error) {
-      console.error('Error searching courses:', error);
-      throw error;
+    // Apply DB-level search if term provided
+    if (searchTerm && searchTerm.trim() !== '') {
+      if (fuzzy) {
+        // Get all courses for client-side fuzzy search
+        const { data, error } = await query;
+        if (error) throw error;
+
+        const fuse = new Fuse(data, {
+          keys: ['title'],
+          threshold: 0.3,
+        });
+
+        return fuse.search(searchTerm)
+          .map(item => item.item)
+          .slice(0, limit);
+      } else {
+        // Use DB ilike for exact matching
+        query = query.ilike('title', `%${searchTerm}%`);
+      }
     }
 
-    console.log('Found courses:', data.length);
+    // Apply limit and execute
+    const { data, error } = await query.limit(limit);
+    if (error) throw error;
+
     return data;
   } catch (error) {
-    console.error('Failed to search courses:', error.message);
-    throw error;
+    console.error('Search failed:', error);
+    throw error; // Or return [] depending on your error handling policy
   }
 };
