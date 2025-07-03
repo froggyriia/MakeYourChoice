@@ -2,9 +2,10 @@
   "devDependencies": {
     "standard-version": "^9.5.0"
   },
-
   "scripts": {
-  "release": "standard-version"
+    "release": "standard-version"
+  },
+  "dependencies": {
+    "fuse.js": "^7.1.0"
   }
-
 }

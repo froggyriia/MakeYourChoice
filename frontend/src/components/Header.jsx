@@ -13,6 +13,7 @@ import styles from './Header.module.css';
 import { getUserProgram } from "../api/functions_for_users.js";
 import { getDeadlineForGroup } from '../api/functions_for_programs.js';
 import { useCatalogueContext } from '../context/CatalogueContext.jsx';
+import { searchCoursesByTitle } from '../api/function_for_search.js';
 
 const Header = () => {
     const { catalogue, programs, excelExport } = useCatalogueContext();
@@ -60,6 +61,24 @@ const Header = () => {
         <div className={styles.header}>
             <div className={styles.headerContent}>
                 <span className={styles.email}>{email}</span>
+
+                {currentRole === 'admin' && currentPath.includes('/admin/courses') && (
+                    <div className={styles.buttonGroup}>
+                        <button
+                            className={`${styles.btn} ${viewMode === 'compact' ? styles['btn--green'] : styles['btn--gray']}`}
+                            onClick={() => setViewMode('compact')}
+                        >
+                            Compact
+                        </button>
+                        <button
+                            className={`${styles.btn} ${viewMode === 'full' ? styles['btn--green'] : styles['btn--gray']}`}
+                            onClick={() => setViewMode('full')}
+                        >
+                            Full
+                        </button>
+                    </div>
+                )}
+
                 {deadline && currentRole !== 'admin' && (
                     <span className={styles.deadline}>⏰ Deadline: {deadline}</span>
                 )}
@@ -95,20 +114,20 @@ const Header = () => {
             )}
 
             {trueRole === 'admin-student' && (
-            <button
-                className={`${styles.btn} ${styles['btn--green']}`}
-                onClick={() => {
-                    if (currentRole === 'admin') {
-                        setCurrentRole('student');
-                        navigate('/student-catalogue');
-                    } else {
-                        setCurrentRole('admin');
-                        navigate('/admin/courses');
-                    }
-                }}
-            >
-            {currentRole === 'admin' ? 'View as Student' : 'Back to Admin'}
-            </button>
+                <button
+                    className={`${styles.btn} ${styles['btn--green']}`}
+                    onClick={() => {
+                        if (currentRole === 'admin') {
+                            setCurrentRole('student');
+                            navigate('/student-catalogue');
+                        } else {
+                            setCurrentRole('admin');
+                            navigate('/admin/courses');
+                        }
+                    }}
+                >
+                    {currentRole === 'admin' ? 'View as Student' : 'Back to Admin'}
+                </button>
             )}
 
             <div className={styles.searchContainer}>
@@ -116,13 +135,20 @@ const Header = () => {
                     type="text"
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
-                    placeholder="Search..."
+                    placeholder="Search courses..."
                     className={styles.searchInput}
                 />
                 <button
-                    onClick={() => {
-                        console.log('Search clicked. Query:', searchText);
-                        alert(`Search for: ${searchText}`);
+                    onClick={async () => {
+                        try {
+                            console.log('Searching for:', searchText);
+                            const results = await searchCoursesByTitle(searchText);
+                            console.log('Search results:', results);
+                            alert(`Found ${results.length} courses:\n${results.map(c => c.title).join('\n')}`);
+                        } catch (error) {
+                            console.error('Search error:', error);
+                            alert('Search failed. See console for details.');
+                        }
                     }}
                     className={`${styles.btn} ${styles['btn--green']}`}
                 >

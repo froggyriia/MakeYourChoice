@@ -64,11 +64,15 @@ export function useFormSubmit(email) {
 
       // Prepare update fields
       const updateFields = {};
-      selectedCourses.forEach((course, i) => {
-        updateFields[`${activeTab}${i + 1}`] = course || "";
-      });
+      for (let i = 1; i <= 5; i++) {
+        updateFields[`${activeTab}${i}`] = i <= selectedCourses.length
+          ? selectedCourses[i-1]
+          : null;
+      }
 
       try {
+          await submitPriority(email, updateFields);
+          console.log('Attempting submit with:', { email, updateFields });
         // This will now handle both tables automatically
         await submitPriority(email, updateFields);
 
@@ -87,8 +91,8 @@ export function useFormSubmit(email) {
 
         alert("Priorities submitted successfully!");
       } catch (error) {
-        console.error("Submission error:", error);
-        alert("Failed to submit priorities");
+        alert(`Error: ${error.message}`);
+        console.error('Submission details:', error);
       }
     };
 
