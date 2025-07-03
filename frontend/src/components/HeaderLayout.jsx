@@ -30,7 +30,6 @@ const HeaderLayout = () => {
     const location = useLocation(); // getting current path
 
     const showFilterBar =
-        location.pathname.startsWith('/admin/courses') ||
         location.pathname === '/student-catalogue';
 
     return (

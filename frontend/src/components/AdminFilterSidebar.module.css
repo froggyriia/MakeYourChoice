@@ -1,0 +1,27 @@
+.sidebar {
+    position: sticky;
+    top: 100px;
+    align-self: flex-start;
+
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    background: #fff;
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+}
+
+.filterLabel {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.buttonGroup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
