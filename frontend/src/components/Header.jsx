@@ -13,6 +13,7 @@ import styles from './Header.module.css';
 import { getUserProgram } from "../api/functions_for_users.js";
 import { getDeadlineForGroup } from '../api/functions_for_programs.js';
 import { useCatalogueContext } from '../context/CatalogueContext.jsx';
+import { searchCoursesByTitle } from '../api/function_for_search.js';
 
 const Header = () => {
     const { catalogue, programs, excelExport } = useCatalogueContext();
@@ -120,9 +121,16 @@ const Header = () => {
                     className={styles.searchInput}
                 />
                 <button
-                    onClick={() => {
-                        console.log('Search clicked. Query:', searchText);
-                        alert(`Search for: ${searchText}`);
+                    onClick={async () => {
+                        try {
+                            console.log('Searching for:', searchText);
+                            const results = await searchCoursesByTitle(searchText);
+                            console.log('Search results:', results);
+                            alert(`Found ${results.length} courses:\n${results.map(c => c.title).join('\n')}`);
+                        } catch (error) {
+                            console.error('Search error:', error);
+                            alert('Search failed. See console for details.');
+                        }
                     }}
                     className={`${styles.btn} ${styles['btn--green']}`}
                 >
