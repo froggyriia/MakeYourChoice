@@ -151,32 +151,33 @@ export async function createPriority(email, fields) {
  */
 export async function submitPriority(email, updateFields) {
   try {
-    const timestamp = new Date().toISOString();
     const fullData = {
-      email,
-      ...updateFields,
-      created_at: timestamp
+      email: String(email),
+      created_at: new Date().toISOString(), // Используем существующий столбец
+      ...updateFields
     };
 
-    // 1. Always insert into all_priorities (for full history)
-    const { error: historyError } = await supabase
-      .from('all_priorities')
-      .insert([fullData]);
+    console.log('Подготовленные данные:', fullData);
 
-    if (historyError) throw historyError;
+    // 1. Запись в all_priorities
+    await supabase.from('all_priorities').insert([fullData]);
 
-    // 2. Upsert into last_priorities (update if exists)
-    const { error: upsertError } = await supabase
+    // 2. UPSERT в last_priorities
+    const { error } = await supabase
       .from('last_priorities')
       .upsert([fullData], {
-        onConflict: 'email' // Update if email exists
+        onConflict: 'email'
       });
 
-    if (upsertError) throw upsertError;
-
+    if (error) throw error;
     return { success: true };
+
   } catch (error) {
-    console.error('Error submitting priorities:', error);
+    console.error('Ошибка UPSERT:', {
+      message: error.message,
+      details: error.details,
+      code: error.code
+    });
     throw error;
   }
 }

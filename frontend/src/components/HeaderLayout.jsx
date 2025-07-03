@@ -13,8 +13,10 @@ import React from 'react';
 import Header from './Header';
 import FilterBar from './FilterBar';
 import { useCatalogueContext } from '../context/CatalogueContext.jsx';
+import { useLocation } from 'react-router-dom';
 import styles from './Header.module.css';
-
+import { useAuth } from '../context/AuthContext';
+import AdminSubMenu from "@/components/AdminSubMenu.jsx";
 /**
  * Layout component that renders:
  * - A fixed header with user info and admin controls
@@ -23,34 +25,24 @@ import styles from './Header.module.css';
  */
 const HeaderLayout = () => {
     const { catalogue } = useCatalogueContext();
+    const {currentRole} = useAuth();
     const { filters, setFilters, courseTypeFilter, setCourseTypeFilter } = catalogue;
-    console.log("[HeaderLayout] filters state:", filters);
+    const location = useLocation(); // getting current path
+
+    const showFilterBar =
+        location.pathname === '/student-catalogue';
+
     return (
         <>
-            <Header /> {/* Top fixed header */}
+            <Header />
 
-            {/* Section below header: filter bar + student tabs */}
             <div className={styles.belowHeader}>
-                {/* Filters for programs, language, year, etc. */}
-                <FilterBar filters={filters} setFilters={setFilters} />
-
-                {/* Course type tabs (only visible to students) */}
-                {catalogue.role === 'student' && (
-                    <div className={styles.tabs}>
-                        <button
-                            className={`${styles.tabButton} ${courseTypeFilter === 'tech' ? styles.active : ''}`}
-                            onClick={() => setCourseTypeFilter('tech')}
-                        >
-                            Technical
-                        </button>
-                        <button
-                            className={`${styles.tabButton} ${courseTypeFilter === 'hum' ? styles.active : ''}`}
-                            onClick={() => setCourseTypeFilter('hum')}
-                        >
-                            Humanities
-                        </button>
-                    </div>
+                <AdminSubMenu />
+                {/* Show filter bar only for students or only on course page for admins */}
+                {showFilterBar && (
+                    <FilterBar filters={filters} setFilters={setFilters} />
                 )}
+
             </div>
         </>
     );

@@ -114,20 +114,20 @@ const Header = () => {
             )}
 
             {trueRole === 'admin-student' && (
-            <button
-                className={`${styles.btn} ${styles['btn--green']}`}
-                onClick={() => {
-                    if (currentRole === 'admin') {
-                        setCurrentRole('student');
-                        navigate('/student-catalogue');
-                    } else {
-                        setCurrentRole('admin');
-                        navigate('/admin/courses');
-                    }
-                }}
-            >
-            {currentRole === 'admin' ? 'View as Student' : 'Back to Admin'}
-            </button>
+                <button
+                    className={`${styles.btn} ${styles['btn--green']}`}
+                    onClick={() => {
+                        if (currentRole === 'admin') {
+                            setCurrentRole('student');
+                            navigate('/student-catalogue');
+                        } else {
+                            setCurrentRole('admin');
+                            navigate('/admin/courses');
+                        }
+                    }}
+                >
+                    {currentRole === 'admin' ? 'View as Student' : 'Back to Admin'}
+                </button>
             )}
 
             <div className={styles.searchContainer}>
