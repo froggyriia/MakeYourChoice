@@ -60,24 +60,6 @@ const Header = () => {
         <div className={styles.header}>
             <div className={styles.headerContent}>
                 <span className={styles.email}>{email}</span>
-
-                {currentRole === 'admin' && currentPath.includes('/admin/courses') && (
-                    <div className={styles.buttonGroup}>
-                        <button
-                            className={`${styles.btn} ${viewMode === 'compact' ? styles['btn--green'] : styles['btn--gray']}`}
-                            onClick={() => setViewMode('compact')}
-                        >
-                            Compact
-                        </button>
-                        <button
-                            className={`${styles.btn} ${viewMode === 'full' ? styles['btn--green'] : styles['btn--gray']}`}
-                            onClick={() => setViewMode('full')}
-                        >
-                            Full
-                        </button>
-                    </div>
-                )}
-
                 {deadline && currentRole !== 'admin' && (
                     <span className={styles.deadline}>⏰ Deadline: {deadline}</span>
                 )}
@@ -134,7 +116,7 @@ const Header = () => {
                     type="text"
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
-                    placeholder="Search courses..."
+                    placeholder="Search..."
                     className={styles.searchInput}
                 />
                 <button
