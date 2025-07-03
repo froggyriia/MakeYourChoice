@@ -13,6 +13,7 @@ import styles from './Header.module.css';
 import { getUserProgram } from "../api/functions_for_users.js";
 import { getDeadlineForGroup } from '../api/functions_for_programs.js';
 import { useCatalogueContext } from '../context/CatalogueContext.jsx';
+import { searchCoursesByTitle } from '../api/function_for_search.js';
 
 const Header = () => {
     const { catalogue, programs, excelExport } = useCatalogueContext();
@@ -25,6 +26,7 @@ const Header = () => {
     const { logout, email, trueRole, currentRole, setCurrentRole } = useAuth();
 
     const [deadline, setDeadline] = useState(null);
+    const [searchText, setSearchText] = useState('');
 
     /**
      * Fetch deadline based on user group (for non-admins)
@@ -60,7 +62,7 @@ const Header = () => {
             <div className={styles.headerContent}>
                 <span className={styles.email}>{email}</span>
 
-                {currentRole === 'admin' && (
+                {currentRole === 'admin' && currentPath.includes('/admin/courses') && (
                     <div className={styles.buttonGroup}>
                         <button
                             className={`${styles.btn} ${viewMode === 'compact' ? styles['btn--green'] : styles['btn--gray']}`}
@@ -128,15 +130,31 @@ const Header = () => {
             </button>
             )}
 
-            <button
-                onClick={() => {
-                    console.log('Search clicked');
-                    alert('Search button is working!');
-                }}
-                className={`${styles.btn} ${styles['btn--green']}`}
-            >
-                Search
-            </button>
+            <div className={styles.searchContainer}>
+                <input
+                    type="text"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    placeholder="Search courses..."
+                    className={styles.searchInput}
+                />
+                <button
+                    onClick={async () => {
+                        try {
+                            console.log('Searching for:', searchText);
+                            const results = await searchCoursesByTitle(searchText);
+                            console.log('Search results:', results);
+                            alert(`Found ${results.length} courses:\n${results.map(c => c.title).join('\n')}`);
+                        } catch (error) {
+                            console.error('Search error:', error);
+                            alert('Search failed. See console for details.');
+                        }
+                    }}
+                    className={`${styles.btn} ${styles['btn--green']}`}
+                >
+                    Search
+                </button>
+            </div>
 
             <button
                 onClick={logout}
