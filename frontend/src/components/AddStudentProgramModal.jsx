@@ -1,41 +1,17 @@
-/**
- * AddStudentsProgramModal Component
- *
- * This modal allows administrators to create or edit a student academic program.
- * It collects data such as stage (Bachelor/Master/PhD), year of entry, short program name,
- * elective priority counts, and deadline.
- *
- * Used in: CoursePage.jsx.
- */
-
 import React, { useEffect, useRef } from 'react';
 import styles from './AddCourseModal.module.css';
 import Select from 'react-select';
 import PropTypes from 'prop-types';
-/**
- * Modal component to add or edit a student program.
- *
- * @component
- * @param {Object} props - Component props.
- * @param {Object} props.programData - The state object for the program form.
- * @param {Function} props.onChange - Handler to update form values.
- * @param {Function} props.onSubmit - Callback triggered when submitting the form.
- * @param {Function} props.onCancel - Callback triggered when cancelling the modal.
- * @returns {JSX.Element} Modal form for managing student programs.
- */
+
 const AddStudentsProgramModal = ({
-                                     programData,
-                                     onChange,
-                                     onSubmit,
-                                     onCancel,
-                                 }) => {
+    programData,
+    onChange,
+    onSubmit,
+    onCancel,
+}) => {
     const modalRef = useRef(null);
     const scrollPosition = useRef(0);
 
-    /**
-     * Disables background scroll and stores scroll position on mount.
-     * Restores scroll on unmount.
-     */
     useEffect(() => {
         scrollPosition.current = window.scrollY;
         document.body.style.overflow = 'hidden';
@@ -51,9 +27,6 @@ const AddStudentsProgramModal = ({
         };
     }, []);
 
-    /**
-     * Closes modal when Escape key is pressed.
-     */
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === 'Escape') onCancel();
@@ -62,40 +35,18 @@ const AddStudentsProgramModal = ({
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onCancel]);
 
-    /**
-     * Handles changes to text and number input fields.
-     *
-     * @param {Event} e - Input change event.
-     */
     const handleInputChange = (e) => {
         onChange({ name: e.target.name, value: e.target.value });
     };
 
-    /**
-     * Handles updates to button-style inputs (stage: Bachelor, Master, PhD).
-     *
-     * @param {string} name - Field name to update.
-     * @param {string|number} value - New value to set.
-     */
-    const handleButtonChange = (name, value) => {
-        onChange({ name, value });
-    };
-
-    /**
-     * Validates required fields and triggers form submission.
-     *
-     * @param {Event} e - Form submission event.
-     */
     const handleFormSubmit = (e) => {
         e.preventDefault();
-        // Validate that key fields are filled
-        if ( !programData.shortName) {
+        if (!programData.shortName) {
             alert('Please fill all required fields');
             return;
         }
         console.log("[AddStudentsProgramModal] submitting new program:", programData);
-
-        onSubmit(); // Trigger form submission after validation
+        onSubmit();
     };
 
     return (
@@ -104,22 +55,24 @@ const AddStudentsProgramModal = ({
                 <form onSubmit={handleFormSubmit} className={styles.form}>
                     <h2>Add Student Program</h2>
 
-                    <label>
-                        Year:
+                    {/* Year — первая "полка" */}
+                    <div className={styles.formField}>
+                        <label>Year:</label>
                         <select
+                            name="year"
                             value={programData.year}
-                            onChange={(e) => onChange({ name: 'year', value: e.target.value })}
+                            onChange={handleInputChange}
                         >
                             <option value="">Select year</option>
-                            {['BS1','BS2','BS3','BS4','M1','M2','PhD1','PhD2','PhD3','PhD4'].map(y => (
+                            {['BS1', 'BS2', 'BS3', 'BS4', 'M1', 'M2', 'PhD1', 'PhD2', 'PhD3', 'PhD4'].map(y => (
                                 <option key={y} value={y}>{y}</option>
                             ))}
                         </select>
-                    </label>
+                    </div>
 
-
-                    <label>
-                        Program Short Name (e.g. DSAI):
+                    {/* Program Short Name — вторая "полка" */}
+                    <div className={styles.formField}>
+                        <label>Program Short Name (e.g. DSAI):</label>
                         <input
                             type="text"
                             name="shortName"
@@ -127,10 +80,11 @@ const AddStudentsProgramModal = ({
                             onChange={handleInputChange}
                             required
                         />
-                    </label>
+                    </div>
 
-                    <label>
-                        Tech Elective Priority Count:
+                    {/* Tech Count — третья "полка" */}
+                    <div className={styles.formField}>
+                        <label>Tech Elective Priority Count:</label>
                         <input
                             type="number"
                             name="techCount"
@@ -138,10 +92,11 @@ const AddStudentsProgramModal = ({
                             value={programData.techCount}
                             onChange={handleInputChange}
                         />
-                    </label>
+                    </div>
 
-                    <label>
-                        Humanities Elective Priority Count:
+                    {/* Humanities Count — четвёртая "полка" */}
+                    <div className={styles.formField}>
+                        <label>Humanities Elective Priority Count:</label>
                         <input
                             type="number"
                             name="humCount"
@@ -149,12 +104,11 @@ const AddStudentsProgramModal = ({
                             value={programData.humCount}
                             onChange={handleInputChange}
                         />
-                    </label>
-
+                    </div>
 
                     <div className={styles.buttonsContainer}>
-                        <button type="submit">Submit</button>
-                        <button type="button" onClick={onCancel}>Cancel</button>
+                        <button type="submit" className={styles.submitButton}>Submit</button>
+                        <button type="button" className={styles.cancelButton} onClick={onCancel}>Cancel</button>
                     </div>
                 </form>
             </div>
@@ -164,15 +118,15 @@ const AddStudentsProgramModal = ({
 
 AddStudentsProgramModal.propTypes = {
     programData: PropTypes.shape({
+        year: PropTypes.string,
         shortName: PropTypes.string.isRequired,
         techCount: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
         humCount: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-        id: PropTypes.number, // optional
+        id: PropTypes.number,
     }),
     onChange: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
 };
-
 
 export default AddStudentsProgramModal;

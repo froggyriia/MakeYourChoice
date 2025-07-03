@@ -2,8 +2,10 @@
     display: flex;
     gap: 40px;
     padding: 20px;
-    min-height: 80vh;
+    min-height: calc(80vh - 64px);
     align-items: flex-start;
+    margin-top: 64px;
+    box-sizing: border-box;
 }
 
 .pageWrapper > div:first-child {
