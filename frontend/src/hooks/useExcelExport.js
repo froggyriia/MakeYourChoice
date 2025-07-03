@@ -35,7 +35,7 @@ export function useExcelExport() {
             // Fetch data from both tables
             const [{ data: prioritiesData, error: prioritiesError },
                    { data: lastPrioritiesData, error: lastPrioritiesError }] = await Promise.all([
-                supabase.from("priorities").select("*"),
+                supabase.from("all_priorities").select("*"),
                 supabase.from("last_priorities").select("*")
             ]);
 
@@ -77,7 +77,7 @@ export function useExcelExport() {
 
             // Priorities sheet
             if (processedPriorities.length > 0) {
-                const prioritiesSheet = workbook.addWorksheet("Priorities");
+                const prioritiesSheet = workbook.addWorksheet("All Priorities");
                 const headers = Object.keys(processedPriorities[0]);
                 prioritiesSheet.addRow(headers);
                 processedPriorities.forEach(row => {
