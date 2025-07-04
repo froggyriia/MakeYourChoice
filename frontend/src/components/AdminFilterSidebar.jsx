@@ -131,19 +131,28 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
 
             {/* Status filter */}
             <div className={styles.filterGroup}>
-                <span className={styles.filterLabel}>Status</span>
-                <div className={styles.buttonGroup}>
-                    {[{ label: 'Active', value: false }, { label: 'Archived', value: true }].map((opt) => (
-                        <button
-                            key={opt.label}
-                            className={`btn-sm ${filters.isArchived === opt.value ? 'active' : ''}`}
-                            onClick={() => setFilters((prev) => ({ ...prev, isArchived: opt.value }))}
-                        >
-                            {opt.label}
-                        </button>
-                    ))}
-                </div>
-            </div>
+    <span className={styles.filterLabel}>Status</span>
+    <div className={styles.buttonGroup}>
+        <button
+            className={`btn-sm ${filters.isArchived === false ? 'active' : ''}`}
+            onClick={() => setFilters(prev => ({
+                ...prev,
+                isArchived: prev.isArchived === false ? undefined : false
+            }))}
+        >
+            Active
+        </button>
+        <button
+            className={`btn-sm ${filters.isArchived === true ? 'active' : ''}`}
+            onClick={() => setFilters(prev => ({
+                ...prev,
+                isArchived: prev.isArchived === true ? undefined : true
+            }))}
+        >
+            Archived
+        </button>
+    </div>
+</div>
         </div>
     );
 };
