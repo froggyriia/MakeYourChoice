@@ -2,18 +2,19 @@
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
+    padding-top: 64px;
 }
 
 .pageWrapper {
     display: flex;
     gap: 32px;
-    padding: 80px 32px 32px 32px;
-    min-height: 100vh; /* fill entire viewport height */
+    padding: 32px;
+    min-height: calc(100vh - 64px);
     max-width: 1400px;
     margin: 0 auto;
     align-items: flex-start;
     overflow: visible;
-
+    box-sizing: border-box;
 }
 .leftSection,
 .rightSection {

@@ -1,4 +1,5 @@
 .filterBarContainer {
+    margin-top: -1rem;
     display: flex;
     flex-wrap: nowrap;
     gap: 2rem;
@@ -6,7 +7,6 @@
     align-items: center;
     overflow-x: auto;
     background-color: white; /* same as header */
-    border-radius: 8px; /* same radius as header bottom corners */
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); /* match header shadow */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none;
