@@ -33,6 +33,12 @@ export const saveSemesterInfo = async (semData) => {
         .select();
     }
 
+    const updateResult = await supabase
+        .from('groups_electives')
+        .update({ deadline: dataWithoutId.deadline })
+        .in('student_group', dataWithoutId.program)
+        .select();
+
     if (result.error) throw result.error;
     return result.data;
   } catch (error) {

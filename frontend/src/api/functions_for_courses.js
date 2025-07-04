@@ -190,10 +190,14 @@ export async function fetchCourses(email, allCourses = false, filters = {}) {
                          filters.languages.includes(course.language);
       const archiveMatch = typeof filters.isArchived !== 'boolean' ||
                          course.archived === filters.isArchived;
+      const yearsMatch = !filters.years?.length ||
+                         (course.years || []).some(year => filters.years.includes(year));
 
       const notCompleted = allCourses || !completedCourses.includes(course.title);
+      console.log('program', programMatch);
+      console.log('years', yearsMatch);
 
-      return typeMatch && programMatch && languageMatch && archiveMatch && notCompleted;
+      return typeMatch && programMatch && languageMatch && archiveMatch && notCompleted && yearsMatch;
     });
 
     if (!allCourses) {
