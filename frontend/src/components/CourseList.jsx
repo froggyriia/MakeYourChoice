@@ -6,6 +6,7 @@
  * to the corresponding callback handlers.
  */
 import CourseItem from './CourseItem';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * Renders a list of courses using the CourseItem component.
@@ -19,6 +20,7 @@ import CourseItem from './CourseItem';
  * @returns {JSX.Element}
  */
 const CourseList = ({ courses, onDeleteCourse, onEditCourse, onArchiveCourse }) => {
+    const { currentRole } = useAuth();
     return (
         <div>
             {courses.length ? (
@@ -29,7 +31,7 @@ const CourseList = ({ courses, onDeleteCourse, onEditCourse, onArchiveCourse }) 
                         onDelete={onDeleteCourse}
                         onEdit={onEditCourse}
                         onArchive={onArchiveCourse}
-
+                        role={currentRole}
                     />
                 ))
             ) : (
