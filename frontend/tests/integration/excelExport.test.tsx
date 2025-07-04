@@ -80,10 +80,10 @@ describe('Excel Export Integration', () => {
         await exportToExcelFn();
       });
 
-      expect(supabase.from).toHaveBeenCalledWith('priorities');
+      expect(supabase.from).toHaveBeenCalledWith('all_priorities');
 
       const calls = mockWorkbook.addWorksheet.mock.calls.map(c => c[0]);
-      expect(calls).toContain('Priorities');
+      expect(calls).toContain('All Priorities');
       expect(calls.length).toBeGreaterThanOrEqual(2);
 
       expect(mockWorkbook.xlsx.writeBuffer).toHaveBeenCalled();
