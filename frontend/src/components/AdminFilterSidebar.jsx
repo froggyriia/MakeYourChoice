@@ -34,8 +34,29 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
         });
     };
 
+    const handleRejectAll = () => {
+        setFilters({
+            programs: [],
+            years: [],
+            types: [],
+            languages: [],
+            isArchived: false
+        });
+        setViewMode('compact');
+    };
+
     return (
         <div className={styles.sidebar}>
+            <div className={styles.sidebarHeader}>
+                <h3>Filters</h3>
+                <button 
+                    className={styles.rejectAllButton}
+                    onClick={handleRejectAll}
+                >
+                    Reject All
+                </button>
+            </div>
+
             {/* Program filter */}
             <div className={styles.filterGroup}>
                 <span className={styles.filterLabel}>Program</span>
@@ -48,6 +69,7 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
                         const values = selected?.map(s => s.value) || [];
                         setFilters((prev) => ({ ...prev, programs: values }));
                     }}
+                    classNamePrefix="select"
                 />
             </div>
 
@@ -73,12 +95,7 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
                     }}
                     placeholder="Select..."
                     classNamePrefix="select"
-                    menuPortalTarget={document.body}
-                    styles={{
-                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                        menu: (base) => ({ ...base, zIndex: 9999 }),
-                    }}
-            />
+                />
             </div>
 
             {/* Type filter */}
@@ -88,7 +105,7 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
                     {['tech', 'hum'].map((type) => (
                         <button
                             key={type}
-                            className={`btn-sm ${filters.types?.includes(type) ? 'active' : ''}`}
+                            className={`${styles.filterButton} ${filters.types?.includes(type) ? styles.active : ''}`}
                             onClick={() => toggleFilter('types', type)}
                         >
                             {type === 'tech' ? 'Technical' : 'Humanities'}
@@ -104,7 +121,7 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
                     {['Eng', 'Rus'].map((lang) => (
                         <button
                             key={lang}
-                            className={`btn-sm ${filters.languages?.includes(lang) ? 'active' : ''}`}
+                            className={`${styles.filterButton} ${filters.languages?.includes(lang) ? styles.active : ''}`}
                             onClick={() => toggleFilter('languages', lang)}
                         >
                             {lang}
@@ -120,7 +137,7 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
                     {['compact', 'full'].map((mode) => (
                         <button
                             key={mode}
-                            className={`btn-sm ${viewMode === mode ? 'active' : ''}`}
+                            className={`${styles.filterButton} ${viewMode === mode ? styles.active : ''}`}
                             onClick={() => setViewMode(mode)}
                         >
                             {mode.charAt(0).toUpperCase() + mode.slice(1)}
@@ -136,7 +153,7 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
                     {[{ label: 'Active', value: false }, { label: 'Archived', value: true }].map((opt) => (
                         <button
                             key={opt.label}
-                            className={`btn-sm ${filters.isArchived === opt.value ? 'active' : ''}`}
+                            className={`${styles.filterButton} ${filters.isArchived === opt.value ? styles.active : ''}`}
                             onClick={() => setFilters((prev) => ({ ...prev, isArchived: opt.value }))}
                         >
                             {opt.label}
