@@ -29,7 +29,7 @@ export default function LoginForm({ email, setEmail, error, onSubmit }) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className={styles.container}>
+        <form role ="form" onSubmit={handleSubmit} className={styles.container}>
             <h2 className={styles.title}>Welcome!</h2>
 
             <input
