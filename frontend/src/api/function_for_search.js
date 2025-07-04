@@ -28,7 +28,7 @@ export async function searchCoursesByTitle(query) {
 
     // Fuse.js options for fuzzy searching
     const fuse = new Fuse(data, {
-      keys: ['title'],
+      keys: ['title', 'description', 'teacher'],
       threshold: 0.3, // lower is stricter
     });
 
