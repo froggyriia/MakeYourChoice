@@ -56,16 +56,6 @@ describe('fetchCourses', () => {
     });
   });
 
-//   it('should fetch courses filtered by user program and year when allCourses is false', async () => {
-//     const result = await fetchCourses(mockEmail);
-//
-//
-//     expect(result.some(c => c.title === 'Course 1')).toBe(false);
-//     expect(result.some(c => c.title === 'Course 3')).toBe(false);
-//     expect(result.some(c => c.title === 'Course 4')).toBe(false);
-//     expect(result.some(c => c.title === 'Course 5')).toBe(false);
-//   });
-
 
   it('should apply additional filters when provided', async () => {
     const filters = {
