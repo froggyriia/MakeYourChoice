@@ -1,0 +1,35 @@
+@startuml
+title MakeYourChoice – Deployment View (Vercel + Supabase)
+
+' === Client side ===
+node "Client Device (Browser)" as Browser
+
+' === Vercel hosting ===
+node "Vercel (Static Hosting)" as Vercel {
+  component "React App (Vite Build)" <<client>>
+}
+
+' === Supabase Cloud ===
+cloud "Supabase (Remote Platform)" as RemoteCloud {
+  package "Supabase Services" <<Cluster>> {
+    component "Auth Service" <<auth>>
+    database "PostgreSQL Database" <<db>>
+  }
+}
+
+' === Connections ===
+Browser --> Vercel : Load React App
+Vercel --> "Auth Service" : Auth request (login/session)
+Vercel --> "PostgreSQL Database" : fetch/submit course data
+
+' === Legend ===
+note bottom
+Legend:
+• "Browser" – user’s device
+• "Vercel" – static hosting for frontend (React App)
+• "Supabase" – remote backend (Auth, Database)
+• Arrows – HTTPS connections
+• Cluster – Supabase service group
+• Cloud shape – externally hosted backend (BaaS)
+end note
+@enduml

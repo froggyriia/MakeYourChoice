@@ -37,3 +37,29 @@ This scenario supports the analysis of the following quality attributes:
 - **Performance** – responses are received within 0.5–0.6 seconds, meeting user expectations for responsiveness.
 - **Reliability** – Supabase consistently returns appropriate status codes (e.g., 200, 201) that confirm successful operations or provide fallback opportunities in case of failure.
 
+### Deployment view
+
+![Deployment Diagram](docs/architecture/deployment-view/deployment-view.png)
+
+This diagram presents the deployment architecture of the MakeYourChoice system.
+
+- The **frontend** is built with React (Vite) and deployed to **Vercel**, a static hosting platform with CI/CD.
+- The **backend** is powered by **Supabase**, a cloud-based Backend-as-a-Service solution that includes:
+    - **Auth Service** for login, signup, and role detection
+    - **PostgreSQL Database** for storing courses and user preferences
+
+**Deployment choices:**
+- Supabase was selected to offload backend logic, avoid maintaining servers, and ensure scalability.
+- Vercel enables fast and reliable global delivery of the frontend with simple deployment workflows.
+
+**Customer-side deployment:**
+- No backend server or database setup is needed.
+- To deploy the system:
+    - Clone the frontend repo
+    - Connect it to Vercel
+    - Set the required environment variables for Supabase:
+      ```env
+      VITE_SUPABASE_URL=...
+      VITE_SUPABASE_ANON_KEY=...
+      ```
+

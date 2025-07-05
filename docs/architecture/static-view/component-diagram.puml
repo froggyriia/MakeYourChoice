@@ -10,7 +10,7 @@
 [API]
 [Utils]
 [Supabase] <<database>>
-
+[Authorizer]
 
 ' main → App
 [main.jsx] -right-( StartApp
@@ -40,6 +40,10 @@
 [Hooks] -right-( UseContext
 [Context] -left- UseContext
 
+' Context → Authorizer
+[Context] -right-( AuthAPI
+[Authorizer] -left- AuthAPI
+
 ' Hooks → API
 [Hooks] -down-( CallAPI
 [API] -up- CallAPI
@@ -51,4 +55,5 @@
 ' Utils → Supabase
 [Utils] -down-( ConnectDB
 [Supabase] -up- ConnectDB
+
 @enduml
