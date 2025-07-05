@@ -1,0 +1,25 @@
+@startuml
+title MakeYourChoice Sequence Diagram – Course Selection Scenario
+
+actor User
+
+participant "Context" as Context
+participant "Authorizer" as Authorizer
+participant "DB Connector" as DB
+participant "Database" as Database
+participant "Course Form" as CourseForm
+
+User -> Context : open authorization page
+Context -> Authorizer : authorizing
+Authorizer --> Context : return user's role
+
+Context -> DB : send user's role
+DB -> Database : request user-specific courses
+Database --> DB : return appropriate courses
+DB --> Context : return courses for user
+
+Context -> CourseForm : send available courses for user
+CourseForm -> Context : send back chosen priorities
+Context --> User : return notification that form was submitted
+
+@enduml

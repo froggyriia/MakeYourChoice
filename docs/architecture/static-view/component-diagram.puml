@@ -1,0 +1,59 @@
+@startuml
+
+[main.jsx]
+[App.jsx]
+[Router]
+[Pages]
+[Components]
+[Hooks]
+[Context]
+[API]
+[Utils]
+[Supabase] <<database>>
+[Authorizer]
+
+' main → App
+[main.jsx] -right-( StartApp
+[App.jsx] -left- StartApp
+
+' App → Router
+[App.jsx] -right-( UseRouting
+[Router] -left- UseRouting
+
+' App → Pages
+[App.jsx] -down-( RenderPages
+[Pages] -up- RenderPages
+
+' Pages → Components
+[Pages] -down-( UseUI
+[Components] -up- UseUI
+
+' Components → Hooks
+[Components] -right-( CallHooks
+[Hooks] -left- CallHooks
+
+' Components → Context
+[Components] -down-( UseContext
+[Context] -up- UseContext
+
+' Hooks → Context
+[Hooks] -right-( UseContext
+[Context] -left- UseContext
+
+' Context → Authorizer
+[Context] -right-( AuthAPI
+[Authorizer] -left- AuthAPI
+
+' Hooks → API
+[Hooks] -down-( CallAPI
+[API] -up- CallAPI
+
+' API → Utils
+[API] -down-( UseClient
+[Utils] -up- UseClient
+
+' Utils → Supabase
+[Utils] -down-( ConnectDB
+[Supabase] -up- ConnectDB
+
+@enduml
