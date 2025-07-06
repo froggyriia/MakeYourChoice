@@ -1,5 +1,101 @@
+<!-- markdownlint-disable MD033 -->
+<!-- Enable Mermaid.js rendering -->
+
 # MakeYourChoice
 
+## Development
+
+### Kanban board
+
+Board link:(https://gitlab.pg.innopolis.university/makeyourchoice-team-17/makeyourchoice/-/boards)
+
+Column entry criteria:
+
+1. Open:
+   - Task has been created with clear description
+   - Initial time estimate provided (in points/hours)
+
+2. Backend Needed:
+   - Task requires backend implementation
+   - Frontend requirements (if any) are documented
+   - Task has clear acceptance criteria
+   
+3. Frontend Needed:
+   - Task requires frontend implementation
+   - Task has clear acceptance criteria
+   - Responsiveness requirements specified
+
+4. On the Future:
+   - Task is not critical for current milestone
+   - Requires external approvals/decisions
+   - Has lower priority than current tasks
+
+5. Closed:
+   - All acceptance criteria are met
+   - Code has been reviewed and approved
+   - Passed all automated tests
+   - Documentation updated (if required)
+   - Merged to main branch
+
+The board has been updated to reflect these criteria, with all existing tasks moved to appropriate columns based on their current state and requirements.
+
+### Git workflow
+Base workflow: We use a simplified GitHub Flow adapted for academic projects with feature branching and mandatory code reviews.
+Define rules for:
+1. Creating issues:
+    - All issues must be created from Kanban board columns: Open, Backend Needed, Frontend Needed, On the Future, Closed. Also they should follow user story format.
+2. Labelling issue:
+   - Sprints: MVP1, MVP2, MVP3, MVP4, MVP5
+   - Priority: Critical, High, Normal, Low
+   - Team: backend needed, frontend needed
+   - Size: small, medium, huge
+3. Assigning issues:
+   - Team lead assigns issues during sprint planning
+4. Branch management:
+   1. Naming convention: {short-description-type}
+      - adding-course-search-backend - for new features (backend)
+      - fixing-archive-button-frontend - for bug fixes (frontend)
+   2. Creation: always from main branch
+   3. Merging: only via approved Merge Requests
+   4. Commit messages:
+      - type(scope): description (plus comments optionally)
+  5. Code reviews:
+ Review of code and documentation before sending to the main branch and approval from the team lead
+
+![Git Workflow Diagram](docs/development/gitGraph_mermaid.png)
+
+### Secrets Management
+
+We follow secure practices for handling sensitive information like database credentials and API keys:
+
+#### Storage Location
+- All secrets are stored securely in **GitLab CI/CD Variables** (Project Settings → CI/CD → Variables)
+- Never committed to version control (`.gitignore` ensures this)
+- Accessed only during pipeline execution
+
+#### Secret Types Managed
+| Variable Name              | Usage                              |
+|---------------------------|------------------------------------|
+| `DATABASE_URL`            | Production database connection URL |
+| `SUPABASE_ANON_KEY`       | Supabase client access key         |
+
+#### Access Rules
+1. **Variable Protection**:
+   - Masked in pipeline logs
+
+2. **Environment Separation**:
+   ```bash
+   # Accessed in .gitlab-ci.yml as:
+   - npx supabase gen types typescript --project-id "$SUPABASE_PROJECT_ID" > src/database.types.ts || true
+   ```
+
+#### Development Setup
+For local development, create a `.env` file:
+```ini
+# .env.example (template)
+DATABASE_URL=your_local_connection_string
+SUPABASE_ANON_KEY=your_local_key
+```
 
 ## Architecture
 
@@ -128,3 +224,52 @@ Scenario (Quality Attribute Scenario format):
 - Artifact: Hook [useExcelExport](frontend/src/hooks/useExcelExport.js) and related UI
 - Response: The system requests data from Supabase, generates an Excel file with several sheets, and initiates the download
 - Response Measure: Successful export of 1000+ lines in an acceptable time, without errors or interface freezes
+
+## Build and deployment
+
+### Continuous Integration
+
+Our CI pipeline is configured using GitLab CI and consists of several stages that ensure code quality, security, and functionality.
+
+#### CI Workflow File
+- [.gitlab-ci.yml](https://gitlab.pg.innopolis.university/makeyourchoice-team-17/makeyourchoice/-/blob/main/.gitlab-ci.yml?ref_type=heads)
+
+#### Tools Used in CI
+
+1. **Docker**:
+   - Used to build container images for the application
+   - Handles image tagging and pushing to our Harbor registry
+
+2. **ESLint** (via `npm run lint`):
+   - Static code analysis for JavaScript/TypeScript
+   - Enforces coding standards and identifies potential errors
+
+3. **Jest/Vitest** (via `npm run test:unit` and `npm run test:integration`):
+   - JavaScript testing framework for unit and integration tests
+   - Verifies component functionality and integration
+
+4. **Trivy**:
+   - Container scanning for vulnerabilities (in `container_scanning` job)
+   - Filesystem security scanning (in `security_scan` job)
+   - Identifies security vulnerabilities in dependencies and container images
+
+5. **Lighthouse** (in `performance-test` job):
+   - Performance testing tool
+   - Measures web app performance, accessibility, and best practices
+
+6. **Supabase Type Generator**:
+   - Generates TypeScript types from Supabase database schema
+   - Ensures type safety when interacting with the database
+
+#### CI Workflow Runs
+All CI pipeline runs can be viewed in the [GitLab CI/CD Pipelines](https://gitlab.pg.innopolis.university/makeyourchoice-team-17/makeyourchoice/-/pipelines) section.
+### Continuous Deployment
+
+We use Vercel for continuous deployment.
+
+- Every push to the main branch triggers a redeployment of the production version.
+- Vercel is directly connected to our GitHub repository.
+- CI/CD runs and deployments can be managed via the private Vercel dashboard connected to our GitHub repository.
+
+
+- Live deployment: [https://make-your-choice.vercel.app/](https://make-your-choice.vercel.app/)
