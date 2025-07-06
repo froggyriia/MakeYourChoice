@@ -318,3 +318,11 @@ Email: admin@innopolis.university
 
 ### 6. Supabase DB structure
 ![Database tables](docs/usage/db_structure.png)
+
+### 7. Common Pages
+Route	Description
+`/login`	Login screen
+`/student-catalogue`	Elective selection for students
+`/admin/courses`	Admin view of course catalogue
+`/admin/programs`	Admin view of student programs
+`/admin/semesters` Admin view of semesters adjustments
