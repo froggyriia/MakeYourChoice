@@ -1,0 +1,114 @@
+name: "Technical Task"
+description: "File a technical task for implementation."
+title: "[Tech Task]: "
+labels: ["Tech Task", "Meta: Unknown Priority"]
+projects: ["MakeYourChoice"]
+body:
+  - type: textarea
+    id: task-description
+    attributes:
+      label: <h2>Task Description</h2>
+      description: |
+        Keep the comment.
+        Follow the instructions in the comment.
+        Write your text in this input field after the comment.
+      value: |
+        <!--
+        Provide a clear and concise description of the technical task.
+        Include any relevant context, background, or references.
+
+        Example:
+
+        Implement rate limiting for the API endpoints to prevent abuse.
+        The rate limits should be:
+        - 100 requests/minute for authenticated users
+        - 30 requests/minute for unauthenticated users
+        - 5 requests/second for all users (burst protection)
+        -->
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation-notes
+    attributes:
+      label: "<h2>Implementation Notes</h2>"
+      description: |
+        Keep the comment.
+        Follow the instructions in the comment.
+        Write your text in this input field after the comment.
+      value: |
+        <!--
+        Provide any technical details, considerations, or suggested approaches.
+        Include links to relevant documentation or references.
+
+        Example:
+
+        - Use Redis for rate limiting counters
+        - Follow the token bucket algorithm pattern
+        - Return appropriate HTTP headers (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset)
+        - Return 429 status code when limit is exceeded
+        -->
+    validations:
+      required: false
+
+  - type: textarea
+    id: subtasks-checklist
+    attributes:
+      label: "<h2>Subtasks Checklist</h2>"
+      description: |
+        Keep the comment.
+        Follow the instructions in the comment.
+        Write your text in this input field after the comment.
+      value: |
+        <!--
+        Either:
+        1. Provide a checklist of subtasks (mark with [ ] for incomplete and [x] for complete)
+        OR
+        2. List links to sub-issues/child items that will be created to complete this task
+
+        Example (checklist):
+        - [ ] Implement Redis counter storage
+        - [ ] Add rate limiting middleware
+        - [ ] Add configuration for rate limits
+        - [ ] Write unit tests
+        - [ ] Update API documentation
+
+        Example (sub-issues):
+        - https://github.com/org/repo/issues/123
+        - https://github.com/org/repo/issues/124
+        -->
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: "<h2> Acceptance Criteria </h2>"
+      description: |
+        Keep the comment.
+        Follow the instructions in the comment.
+        Write your text in this input field after the comment.
+      value: |
+        <!--
+        Define specific, testable (pass-fail) scenarios that must be met for this task to be complete.
+        Use the GIVEN/WHEN/THEN format for clarity.
+
+        Example:
+        GIVEN an unauthenticated user
+        WHEN they make more than 30 requests in a minute to any API endpoint
+        THEN requests beyond the limit return HTTP 429
+        AND the X-RateLimit-Remaining header shows 0
+        -->
+    validations:
+      required: false
+
+  - type: textarea
+    id: sub-issues
+    attributes:
+      label: "<h2> Sub-issues </h2>"
+      description: |
+        Don't modify the default text in this input field.
+      value: |
+        Sub-issues are type `Backlog` issues that must be resolved to resolve this issue.
+    validations:
+      required: false
