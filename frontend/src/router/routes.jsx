@@ -51,6 +51,11 @@ const routes = [
     },
 
     {
+        path: '/suggest-form',
+        element: <SuggestFormPage />
+    },
+
+    {
         path: '*',
         element: <Navigate to="/" replace />
     }

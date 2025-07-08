@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { CatalogueProvider } from './context/CatalogueContext.jsx';
 import AdminSemesterPage from "./pages/AdminSemesterPage.jsx";
 import AdminSuggestedPage from "./pages/AdminSuggestedPage.jsx";
+import SuggestFormPage from "./pages/SuggestFormPage.jsx";
 
 
 export default function App() {
@@ -16,6 +17,8 @@ export default function App() {
         <CatalogueProvider>
             <Routes>
                 <Route path="/" element={<LoginPage />} />
+
+                <Route path="/suggest-form" element={<SuggestFormPage />} />
 
                 <Route
                     path="/admin"
