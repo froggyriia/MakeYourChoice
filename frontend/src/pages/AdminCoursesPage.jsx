@@ -1,16 +1,9 @@
-/**
- * AdminCoursesPage
- *
- * Displays and manages the list of elective courses.
- * Includes modal for adding/editing courses.
- */
-
 import { useRef } from 'react';
 import CourseList from '../components/CourseList';
 import CourseListGrid from '../components/CourseListGrid';
 import AddCourseModal from '../components/AddCourseModal';
 import { useCatalogueContext } from '../context/CatalogueContext';
-import { archivedCourses } from '../api/functions_for_courses.js';
+import styles from './CataloguePage.module.css';
 
 const AdminCoursesPage = () => {
     const scrollPosition = useRef(0);
@@ -25,6 +18,7 @@ const AdminCoursesPage = () => {
             handleSubmit,
             handleCancel,
             handleDeleteCourse,
+            startAddingCourse,
             startEditingCourse,
             viewMode,
             handleArchiveCourse,
@@ -35,10 +29,19 @@ const AdminCoursesPage = () => {
         handleCancel();
         window.scrollTo(0, scrollPosition.current);
     };
-    // console.log("[AdminCoursesPage] current filtered courses:", courses);
+
     return (
         <>
-            <h2>Elective Courses</h2>
+            {/* Title and Add course button */}
+            <div className={styles.headerContainer}>
+                <h2>Elective Courses</h2>
+                <button
+                    className={styles.addCourseButton}
+                    onClick={startAddingCourse}
+                >
+                    Add Course
+                </button>
+            </div>
 
             {showAddForm && (
                 <AddCourseModal
@@ -50,11 +53,9 @@ const AdminCoursesPage = () => {
                 />
             )}
 
+            {/* Course List */}
             {viewMode === 'compact' ? (
-                <CourseListGrid
-                    courses={courses}
-                    // onTileClick={(id) => console.log("Clicked:", id)}
-                />
+                <CourseListGrid courses={courses} />
             ) : (
                 <CourseList
                     courses={courses}

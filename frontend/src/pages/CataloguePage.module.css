@@ -5,6 +5,15 @@
     padding-top: 64px;
 }
 
+.adminLeftColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 260px;
+    flex-shrink: 0;
+}
+
+
 .pageWrapper {
     display: flex;
     gap: 32px;
@@ -138,16 +147,6 @@
 
 .adminSidebar {
     width: 260px;
-    flex-shrink: 0;
-}
-
-.adminMainContent {
-    width: 880px;
-    max-width: 100%;
-}
-
-.adminSidebar {
-    width: 220px;
     flex-shrink: 0;
 }
 

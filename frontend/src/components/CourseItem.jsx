@@ -56,65 +56,121 @@ const CourseItem = ({ course, onDelete, onEdit, onArchive, role }) => {
         }
     };
 
+    function highlightMatch(text, match) {
+        if (!match || !match.indices) return text;
+
+        const fragments = [];
+        let lastIndex = 0;
+
+        match.indices.forEach(([start, end], idx) => {
+        // обычный текст перед совпадением
+        if (start > lastIndex) {
+            fragments.push(text.slice(lastIndex, start));
+        }
+        // подсвеченный фрагмент
+        fragments.push(
+            <mark key={idx} style={{ backgroundColor: '#fcf89f' }}>
+                {text.slice(start, end + 1)}
+            </mark>
+        );
+        lastIndex = end + 1;
+        });
+
+        // остаток строки после последнего совпадения
+        if (lastIndex < text.length) {
+            fragments.push(text.slice(lastIndex));
+        }
+
+        return fragments;
+    }
+
     return (
-        <div
-            className={`${styles.courseItem} ${isDeleting ? styles.deleting : ''} ${
-                course.archived ? styles.archived : ''
-            }`}
-        >
-            <div className={styles.titleRow}>
-                <h2 className={styles.title}>{course.title}</h2>
-                {role === 'admin' && (
-                    <div className={styles.menuWrapper} ref={menuRef}>
-                        <button
-                            onClick={() => setMenuOpen((prev) => !prev)}
-                            className={styles.menuButton}
-                        >
-                            ⋮
-                        </button>
-                        {menuOpen && (
-                            <div className={styles.dropdown}>
-                                <button onClick={handleEdit}>Edit</button>
-                                <button onClick={handleArchive}>
-                                    {course.archived ? 'De-archive' : 'Archive'}
-                                </button>
-                                <button onClick={handleDelete} className={styles.deleteButton}>
-                                    Delete
-                                </button>
-                            </div>
-                        )}
-                    </div>
+    <div
+        className={`${styles.courseItem} ${isDeleting ? styles.deleting : ''} ${
+            course.archived ? styles.archived : ''
+        }`}
+    >
+        <div className={styles.titleRow}>
+            <h2 className={styles.title}>
+                {highlightMatch(
+                    course.title,
+                    course._matches?.find((m) => m.key === 'title')
                 )}
-            </div>
+            </h2>
 
-            <p className={styles.info}>Instructor: {course.teacher}</p>
-            <p className={styles.info}>Language: {course.language}</p>
-            <p className={styles.info}>
-                Program:{' '}
-                {Array.isArray(course.program) ? course.program.join(', ') : course.program}
-            </p>
-            <p className={styles.info}>
-                Years:{' '}
-                {Array.isArray(course.years) ? course.years.sort().join(', ') : 'No data'}
-            </p>
-            <p className={styles.info}>Type: {course.type}</p>
-
-            {isOpen && (
-                <div className={styles.description}>
-                    <MarkdownPreview source={course.description} />
+            {role === 'admin' && (
+                <div className={styles.menuWrapper} ref={menuRef}>
+                    <button
+                        onClick={() => setMenuOpen((prev) => !prev)}
+                        className={styles.menuButton}
+                    >
+                        ⋮
+                    </button>
+                    {menuOpen && (
+                        <div className={styles.dropdown}>
+                            <button onClick={handleEdit}>Edit</button>
+                            <button onClick={handleArchive}>
+                                {course.archived ? 'De-archive' : 'Archive'}
+                            </button>
+                            <button onClick={handleDelete} className={styles.deleteButton}>
+                                Delete
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
-
-            <div className={styles.buttonsContainer}>
-                <button
-                    onClick={() => setIsOpen((prev) => !prev)}
-                    className={styles.toggleButton}
-                >
-                    {isOpen ? 'Show less' : 'Show more'}
-                </button>
-            </div>
         </div>
-    );
+
+        <p className={styles.info}>
+            Instructor:{' '}
+            {highlightMatch(
+                course.teacher,
+                course._matches?.find((m) => m.key === 'teacher')
+            )}
+        </p>
+        <p className={styles.info}>Language: {course.language}</p>
+        <p className={styles.info}>
+            Program:{' '}
+            {Array.isArray(course.program)
+                ? course.program.join(', ')
+                : course.program}
+        </p>
+        <p className={styles.info}>
+            Years:{' '}
+            {Array.isArray(course.years) ? course.years.sort().join(', ') : 'No data'}
+        </p>
+        <p className={styles.info}>Type: {course.type}</p>
+
+        {isOpen && (
+            <div className={styles.description}>
+                <MarkdownPreview
+                    source={
+                        // Подсвечиваем description, если есть совпадения
+                        course._matches?.find((m) => m.key === 'description')
+                            ? highlightMatch(
+                                  course.description,
+                                  course._matches.find((m) => m.key === 'description')
+                              )
+                                  .map((frag) =>
+                                      typeof frag === 'string' ? frag : frag.props.children
+                                  )
+                                  .join('')
+                            : course.description
+                    }
+                />
+            </div>
+        )}
+
+        <div className={styles.buttonsContainer}>
+            <button
+                onClick={() => setIsOpen((prev) => !prev)}
+                className={styles.toggleButton}
+            >
+                {isOpen ? 'Show less' : 'Show more'}
+            </button>
+        </div>
+    </div>
+);
 };
 
 export default CourseItem;

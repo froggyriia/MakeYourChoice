@@ -166,6 +166,7 @@ export const useCatalogue = () => {
 
     return {
         courses,
+        setCourses,
         loading,
         error,
         showAddForm,

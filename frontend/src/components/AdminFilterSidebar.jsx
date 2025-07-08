@@ -130,22 +130,6 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
                 </div>
             </div>
 
-            {/* View mode filter */}
-            <div className={styles.filterGroup}>
-                <span className={styles.filterLabel}>View</span>
-                <div className={styles.buttonGroup}>
-                    {['compact', 'full'].map((mode) => (
-                        <button
-                            key={mode}
-                            className={`${styles.filterButton} ${viewMode === mode ? styles.active : ''}`}
-                            onClick={() => setViewMode(mode)}
-                        >
-                            {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
             {/* Status filter */}
             <div className={styles.filterGroup}>
     <span className={styles.filterLabel}>Status</span>

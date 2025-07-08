@@ -9,7 +9,6 @@
  */
 
 import { useRef } from 'react';
-
 import CourseList from '../components/CourseList';
 import ElectivesForm from '../components/ElectivesForm';
 import { useCatalogueContext } from '../context/CatalogueContext.jsx';

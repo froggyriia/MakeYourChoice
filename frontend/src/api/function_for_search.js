@@ -1,6 +1,4 @@
-// Import Fuse.js for fuzzy search
 import Fuse from 'fuse.js';
-// Import Supabase client
 import { supabase } from '../pages/supabaseClient.jsx';
 
 /**
@@ -10,7 +8,6 @@ import { supabase } from '../pages/supabaseClient.jsx';
  */
 export async function searchCoursesByTitle(query) {
   try {
-    // Fetch all non-archived courses from Supabase
     const { data, error } = await supabase
       .from('catalogue')
       .select('*')
@@ -21,24 +18,20 @@ export async function searchCoursesByTitle(query) {
       return [];
     }
 
-    // If query is empty, return all courses
-    if (!query || query.trim() === '') {
-      return data;
-    }
+    if (!query || query.trim() === '') return data;
 
-    // Fuse.js options for fuzzy searching
     const fuse = new Fuse(data, {
       keys: ['title', 'description', 'teacher'],
-      threshold: 0.3, // lower is stricter
+      threshold: 0.3,
+      includeMatches: true,
     });
 
-    // Perform search
     const result = fuse.search(query);
 
-    // Extract items from Fuse.js result
-    const filteredCourses = result.map(item => item.item);
-
-    return filteredCourses;
+    return result.map(({ item, matches }) => ({
+      ...item,
+      _matches: matches,
+    }));
   } catch (err) {
     console.error('Unexpected error during course search:', err);
     return [];
