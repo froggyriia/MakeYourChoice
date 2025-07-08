@@ -9,6 +9,7 @@ import { useRef } from 'react';
 import ProgramList from '../components/ProgramList';
 import AddStudentsProgramModal from '../components/AddStudentProgramModal';
 import { useCatalogueContext } from '../context/CatalogueContext';
+import styles from './CataloguePage.module.css';
 
 const AdminProgramsPage = () => {
     const scrollPosition = useRef(0);
@@ -22,6 +23,7 @@ const AdminProgramsPage = () => {
         handleCancel,
         handleDeleteProgram,
         startEditingProgram,
+        setShowModal,
     } = useCatalogueContext().programs;
 
     const handleModalCancel = () => {
@@ -31,7 +33,16 @@ const AdminProgramsPage = () => {
 
     return (
         <>
-            <h2>Student Programs</h2>
+            {/* Title and Add program button */}
+            <div className={styles.headerContainer}>
+                <h2>Student Programs</h2>
+                <button
+                    className={styles.addCourseButton}
+                    onClick={() => setShowModal(true)}
+                >
+                    Add Student Program
+                </button>
+            </div>
 
             {showModal && (
                 <AddStudentsProgramModal

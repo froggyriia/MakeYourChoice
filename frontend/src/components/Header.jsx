@@ -14,6 +14,7 @@ import { getUserProgram } from "../api/functions_for_users.js";
 import { getDeadlineForGroup } from '../api/functions_for_programs.js';
 import { useCatalogueContext } from '../context/CatalogueContext.jsx';
 import { searchCoursesByTitle } from '../api/function_for_search.js';
+import { fetchCourses } from '../api/functions_for_courses.js';
 
 const Header = () => {
     const { catalogue, programs, excelExport } = useCatalogueContext();
@@ -54,6 +55,26 @@ const Header = () => {
         fetchDeadline();
     }, [email, currentRole]);
 
+    useEffect(() => {
+        const delayDebounce = setTimeout(async () => {
+            if (currentRole !== 'student') return;
+
+            try {
+                if (searchText.trim().length >= 3) {
+                    const results = await searchCoursesByTitle(searchText);
+                    catalogue.setCourses(results);
+                } else if (searchText.trim() === '') {
+                    const allCourses = await fetchCourses(email, false);
+                    catalogue.setCourses(allCourses);
+                }
+            } catch (err) {
+                console.error('Student search failed:', err);
+            }
+        }, 300);
+
+        return () => clearTimeout(delayDebounce);
+    }, [searchText, currentRole]);
+
     // If the user is not logged in, render nothing
     if (!email) return null;
 
@@ -65,28 +86,20 @@ const Header = () => {
                 {deadline && currentRole !== 'admin' && (
                     <span className={styles.deadline}>⏰ Deadline: {deadline}</span>
                 )}
+
+                {currentRole === 'student' && (
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        className={styles.searchInput}
+                    />
+                )}
             </div>
 
             {currentRole === 'admin' && (
                 <div className={styles.buttonGroup}>
-                    {currentPath.includes('/admin/courses') && (
-                        <button
-                            className={`${styles.btn} ${styles['btn--green']}`}
-                            onClick={catalogue.startAddingCourse}
-                        >
-                            Add course
-                        </button>
-                    )}
-
-                    {currentPath.includes('/admin/programs') && (
-                        <button
-                            className={`${styles.btn} ${styles['btn--green']}`}
-                            onClick={() => programs.setShowModal(true)}
-                        >
-                            Add Student Program
-                        </button>
-                    )}
-
                     <button
                         className={`${styles.btn} ${styles['btn--green']}`}
                         onClick={excelExport.exportToExcel}
@@ -112,32 +125,6 @@ const Header = () => {
                     {currentRole === 'admin' ? 'View as Student' : 'Back to Admin'}
                 </button>
             )}
-
-            <div className={styles.searchContainer}>
-                <input
-                    type="text"
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
-                    placeholder="Search..."
-                    className={styles.searchInput}
-                />
-                <button
-                    onClick={async () => {
-                        try {
-                            console.log('Searching for:', searchText);
-                            const results = await searchCoursesByTitle(searchText);
-                            console.log('Search results:', results);
-                            alert(`Found ${results.length} courses:\n${results.map(c => c.title).join('\n')}`);
-                        } catch (error) {
-                            console.error('Search error:', error);
-                            alert('Search failed. See console for details.');
-                        }
-                    }}
-                    className={`${styles.btn} ${styles['btn--green']}`}
-                >
-                    Search
-                </button>
-            </div>
 
             <button
                 onClick={logout}

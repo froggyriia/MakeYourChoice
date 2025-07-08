@@ -1,15 +1,15 @@
 .sidebar {
-    position: fixed;
-    top: 99px;
-    left: 0px;
-    z-index: 100;
+    position: sticky;
+    top: 80px;
+    align-self: flex-start;
+
     display: flex;
     flex-direction: column;
     gap: 24px;
     background: #fff;
     padding: 24px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    width: 375px;
+    max-width: 100%;
     max-height: calc(100vh - 100px);
     overflow-y: auto;
     border: 1px solid #f0f0f0;
@@ -22,43 +22,10 @@
     margin-bottom: 16px;
 }
 
-.filterGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.filterLabel {
-    font-weight: 600;
-    font-size: 14px;
-    color: #444;
-}
-
 .buttonGroup {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-}
-
-.filterButton {
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 13px;
-    border: 1px solid #e0e0e0;
-    background: #ccc;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.filterButton:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.filterButton.active {
-    background: var(--color-primary);
-    color: white;
-    border-color: var(--color-primary);
 }
 
 .rejectAllButton {
