@@ -28,7 +28,7 @@
     gap: 8px;
 }
 
-.rejectAllButton {
+.resetButton {
     padding: 8px 16px;
     border-radius: 20px;
     font-size: 13px;
@@ -40,7 +40,7 @@
     margin-top: 16px;
 }
 
-.rejectAllButton:hover {
+.resetButton:hover {
     background: #ff5252;
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -53,6 +53,28 @@
 
 .select__menu {
     z-index: 9999 !important;
+}
+
+.filterButton {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #333;
+}
+
+.filterButton:hover {
+    background: #eee;
+}
+
+.active {
+    background: #d3f9d8;
+    border-color: #69db7c;
+    color: #2f9e44;
+    font-weight: 600;
 }
 
 @media (max-width: 1024px) {

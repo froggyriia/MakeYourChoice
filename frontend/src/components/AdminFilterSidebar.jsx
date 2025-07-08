@@ -34,7 +34,7 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
         });
     };
 
-    const handleRejectAll = () => {
+    const handleReset = () => {
         setFilters({
             programs: [],
             years: [],
@@ -42,18 +42,17 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
             languages: [],
             isArchived: false
         });
-        setViewMode('compact');
     };
 
     return (
         <div className={styles.sidebar}>
             <div className={styles.sidebarHeader}>
                 <h3>Filters</h3>
-                <button 
-                    className={styles.rejectAllButton}
-                    onClick={handleRejectAll}
+                <button
+                    className={styles.resetButton}
+                    onClick={handleReset}
                 >
-                    Reject All
+                    Reset
                 </button>
             </div>
 
@@ -132,28 +131,28 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
 
             {/* Status filter */}
             <div className={styles.filterGroup}>
-    <span className={styles.filterLabel}>Status</span>
-    <div className={styles.buttonGroup}>
-        <button
-            className={`btn-sm ${filters.isArchived === false ? 'active' : ''}`}
-            onClick={() => setFilters(prev => ({
-                ...prev,
-                isArchived: prev.isArchived === false ? undefined : false
-            }))}
-        >
-            Active
-        </button>
-        <button
-            className={`btn-sm ${filters.isArchived === true ? 'active' : ''}`}
-            onClick={() => setFilters(prev => ({
-                ...prev,
-                isArchived: prev.isArchived === true ? undefined : true
-            }))}
-        >
-            Archived
-        </button>
-    </div>
-</div>
+                <span className={styles.filterLabel}>Status</span>
+                <div className={styles.buttonGroup}>
+                    <button
+                        className={`btn-sm ${filters.isArchived === false ? 'active' : ''}`}
+                        onClick={() => setFilters(prev => ({
+                            ...prev,
+                            isArchived: prev.isArchived === false ? undefined : false
+                        }))}
+                    >
+                        Active
+                    </button>
+                    <button
+                        className={`btn-sm ${filters.isArchived === true ? 'active' : ''}`}
+                        onClick={() => setFilters(prev => ({
+                            ...prev,
+                            isArchived: prev.isArchived === true ? undefined : true
+                        }))}
+                    >
+                        Archived
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };

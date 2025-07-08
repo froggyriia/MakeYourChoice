@@ -8,6 +8,7 @@ import StudentCataloguePage from './pages/StudentCataloguePage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { CatalogueProvider } from './context/CatalogueContext.jsx';
 import AdminSemesterPage from "./pages/AdminSemesterPage.jsx";
+import AdminSuggestedPage from "./pages/AdminSuggestedPage.jsx";
 
 
 export default function App() {
@@ -25,34 +26,47 @@ export default function App() {
                         />
                     }
                 >
-                    <Route
-                        path="courses"
-                        element={
-                            <ProtectedRoute
-                                element={<AdminCoursesPage />}
-                                requireAdmin={true}
-                            />
-                        }
-                    />
-                    <Route
-                        path="programs"
-                        element={
-                            <ProtectedRoute
-                                element={<AdminProgramsPage />}
-                                requireAdmin={true}
-                            />
-                        }
-                    />
-                    <Route
-                        path="semesters"
-                        element={
-                            <ProtectedRoute
-                                element={<AdminSemesterPage />}
-                                requireAdmin={true}
-                            />
-                        }
-                    />
-                    <Route index element={<Navigate to="courses" replace />} />
+                <Route
+                    path="courses"
+                    element={
+                        <ProtectedRoute
+                            element={<AdminCoursesPage />}
+                            requireAdmin={true}
+                        />
+                    }
+                />
+
+                <Route
+                    path="programs"
+                    element={
+                        <ProtectedRoute
+                            element={<AdminProgramsPage />}
+                            requireAdmin={true}
+                        />
+                    }
+                />
+
+                <Route
+                    path="semesters"
+                    element={
+                        <ProtectedRoute
+                            element={<AdminSemesterPage />}
+                            requireAdmin={true}
+                        />
+                    }
+                />
+
+                <Route
+                    path="suggested_courses"
+                    element={
+                        <ProtectedRoute
+                            element={<AdminSuggestedPage />}
+                            requireAdmin={true}
+                        />
+                    }
+                />
+
+                <Route index element={<Navigate to="courses" replace />} />
                 </Route>
 
                 <Route

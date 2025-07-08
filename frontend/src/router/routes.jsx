@@ -7,6 +7,7 @@ import AdminProgramsPage from '../pages/AdminProgramsPage.jsx';
 import StudentCataloguePage from '../pages/StudentCataloguePage.jsx';
 import ProtectedRoute from '../components/ProtectedRoute.jsx';
 import AdminSemestersPage from '../pages/AdminSemestersPage.jsx';
+import AdminSuggestedPage from '../pages/AdminSuggestedPage.jsx';
 
 const routes = [
     {
@@ -33,6 +34,9 @@ const routes = [
 
             // /admin/semesters
             { path: 'semesters',     element: <AdminSemestersPage /> },
+
+            // /admin/suggested_courses
+            { path: 'suggested_courses', element: <AdminSuggestedPage /> },
         ]
     },
 

@@ -11,6 +11,14 @@ export default function AdminSubMenu() {
         <nav className={styles.adminNav}>
             <div className={styles.adminNavContent}>
                 <NavLink
+                    to="/admin/suggested_courses"
+                    className={({ isActive }) =>
+                        isActive ? `${styles.navBtn} ${styles.activeBtn}` : styles.navBtn
+                    }
+                >
+                    Suggested Courses
+                </NavLink>
+                <NavLink
                     to="/admin/courses"
                     className={({ isActive }) =>
                         isActive ? `${styles.navBtn} ${styles.activeBtn}` : styles.navBtn
