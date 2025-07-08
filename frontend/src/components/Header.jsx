@@ -18,7 +18,12 @@ import { fetchCourses } from '../api/functions_for_courses.js';
 
 const Header = () => {
     const { catalogue, programs, excelExport } = useCatalogueContext();
-    const { viewMode, setViewMode, courseTypeFilter, setCourseTypeFilter } = catalogue;
+    const {
+        viewMode,
+        setViewMode,
+        courseTypeFilter,
+        programFilter
+    } = catalogue;
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -28,6 +33,8 @@ const Header = () => {
 
     const [deadline, setDeadline] = useState(null);
     const [searchText, setSearchText] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
+    const [searchError, setSearchError] = useState(null);
 
     /**
      * Fetch deadline based on user group (for non-admins)
@@ -55,25 +62,39 @@ const Header = () => {
         fetchDeadline();
     }, [email, currentRole]);
 
-    useEffect(() => {
+useEffect(() => {
         const delayDebounce = setTimeout(async () => {
             if (currentRole !== 'student') return;
 
+            setIsSearching(true);
+            setSearchError(null);
+
             try {
                 if (searchText.trim().length >= 3) {
-                    const results = await searchCoursesByTitle(searchText);
+                    const results = await searchCoursesByTitle(
+                        searchText,
+                        programFilter !== 'all' ? programFilter : undefined,
+                        courseTypeFilter !== 'all' ? courseTypeFilter : undefined
+                    );
                     catalogue.setCourses(results);
                 } else if (searchText.trim() === '') {
-                    const allCourses = await fetchCourses(email, false);
+                    const allCourses = await fetchCourses(email, false, {
+                        types: courseTypeFilter !== 'all' ? [courseTypeFilter] : [],
+                        programs: programFilter !== 'all' ? [programFilter] : []
+                    });
                     catalogue.setCourses(allCourses);
                 }
             } catch (err) {
+                setSearchError('Search failed. Please try again.');
                 console.error('Student search failed:', err);
+            } finally {
+                setIsSearching(false);
             }
         }, 300);
 
         return () => clearTimeout(delayDebounce);
-    }, [searchText, currentRole]);
+    }, [searchText, currentRole, programFilter, courseTypeFilter, email, catalogue.setCourses]);
+
 
     // If the user is not logged in, render nothing
     if (!email) return null;
@@ -88,13 +109,16 @@ const Header = () => {
                 )}
 
                 {currentRole === 'student' && (
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        value={searchText}
-                        onChange={(e) => setSearchText(e.target.value)}
-                        className={styles.searchInput}
-                    />
+                    <div className={styles.searchContainer}>
+                        <input
+                            type="text"
+                            placeholder={`Search in ${courseTypeFilter !== 'all' ? courseTypeFilter : 'all'} courses...`}
+                            value={searchText}
+                            onChange={(e) => setSearchText(e.target.value)}
+                            className={styles.searchInput}
+                        />
+                        {isSearching && <div className={styles.spinner} />}
+                    </div>
                 )}
             </div>
 

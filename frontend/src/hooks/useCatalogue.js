@@ -30,6 +30,8 @@ export const useCatalogue = () => {
     const [currentCourse, setCurrentCourse] = useState(null);
     const [viewMode, setViewMode] = useState('full');
 
+    const [programFilter, setProgramFilter] = useState('all');
+
     const initialCourse = {
         id: null,
         title: '',
@@ -186,6 +188,8 @@ export const useCatalogue = () => {
         startEditingCourse,
         startAddingCourse,
         handleArchiveCourse,
-        refetch: loadCourses
+        refetch: loadCourses,
+        programFilter,
+        setProgramFilter
     };
 };
