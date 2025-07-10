@@ -29,12 +29,12 @@ export const addCourse = async (courseData) => {
  * @returns {Promise<Object>} - Returns object with course information
  * @throws {Error} - If course not found or request error occurs
  */
-export const getCourseInfo = async (courseTitle) => {
+export const getCourseInfo = async (courseId) => {
   try {
     const { data, error } = await supabase
     .from('catalogue')
     .select('*')
-    .eq('title', courseTitle)
+    .eq('id', courseId)
     .single()
     if (error) throw error;
     return data;
@@ -108,12 +108,12 @@ export const uniquePrograms = async () => {
  * @param {string} courseTitle - Course title to delete
  * @returns {Promise<{error: Error|null}>} - Object with error (if occurred)
  */
-export const deleteCourse = async (courseTitle) => {
+export const deleteCourse = async (courseId) => {
   try {
     const { error } = await supabase
       .from('catalogue')
       .delete()
-      .eq('title', courseTitle);
+      .eq('id', courseId);
 
     return { error };
   } catch (error) {
@@ -124,96 +124,65 @@ export const deleteCourse = async (courseTitle) => {
 
 
 /**
- * Fetches and filters courses based on various criteria
+ * Fetches and filters courses based on students' academic group
  * @param {Object} options - Configuration options
  * @param {string} [options.email] - User email for program filtering
  * @param {boolean} [options.allCourses=false] - If true, returns all courses without program filtering
- * @param {Object} [options.filters={}] - Filter criteria (types, programs, languages, isArchived)
  * @returns {Promise<Array>} - Filtered array of courses
  */
-export async function fetchCourses(email, allCourses = false, filters = {}) {
+export async function fetchCourses(email, allCourses = false) {
   try {
-     let query = supabase
+    let query = supabase
       .from('catalogue')
       .select('*');
 
     if (!allCourses && email) {
       const userProgram = await getUserProgram(email);
-      if (!userProgram) {
-        console.warn('Program not found for user ${email}');
-        return [];
-      }
-
       const userYear = await getUserYear(email);
-      if (!userYear) {
-        console.warn('Year not found for user ${email}');
+
+      if (!userProgram || !userYear) {
+        console.warn(`User data not found for ${email}`);
         return [];
       }
-
-      console.log("user year", userYear);
 
       query = query
-       .contains("program", [userProgram])
-       .contains('years', [userYear])
-       .eq("archived", false);
+        .contains('program', [userProgram])
+        .contains('years', [userYear])
+        .eq('archived', false);
     }
-    const { data, error } = await query;
 
+    const { data, error } = await query;
     if (error) throw error;
 
-    const initialData = Array.isArray(data) ? data : [];
+    let resultData = Array.isArray(data) ? data : [];
 
-    let completedCourses = [];
-    console.log("email", email);
     if (!allCourses && email) {
-      let historyQuery = supabase
+      const { data: historyData, error: historyError } = await supabase
         .from('history')
         .select('course')
         .eq('email', email);
 
-      const { data: historyData, error: historyError } = await historyQuery;
-
-      if (historyError) {
-        console.error("Error fetching course history:", historyError);
-      } else {
-        completedCourses = historyData
+      if (!historyError && historyData) {
+        const completedCourses = historyData
           .filter(item => item.course !== null)
           .map(item => item.course);
+
+        resultData = resultData.filter(course =>
+          !completedCourses.includes(course.title)
+        );
       }
     }
 
-    let filteredData = initialData.filter(course => {
-      const typeMatch = !filters.types?.length || filters.types.includes(course.type);
-      const programMatch = !filters.programs?.length ||
-                         (course.program || []).some(prog => filters.programs.includes(prog));
-      const languageMatch = !filters.languages?.length ||
-                         filters.languages.includes(course.language);
-      const archiveMatch = typeof filters.isArchived !== 'boolean' ||
-                         course.archived === filters.isArchived;
-      const yearsMatch = !filters.years?.length ||
-                         (course.years || []).some(year => filters.years.includes(year));
-
-      const notCompleted = allCourses || !completedCourses.includes(course.title);
-      console.log('program', programMatch);
-      console.log('years', yearsMatch);
-
-      return typeMatch && programMatch && languageMatch && archiveMatch && notCompleted && yearsMatch;
-    });
-
-    if (!allCourses) {
-      filteredData = filteredData.filter(course => course.archived === false);
-    }
-
     if (allCourses) {
-      filteredData.sort((a, b) =>
+      resultData.sort((a, b) =>
         a.archived === b.archived ? 0 : a.archived ? 1 : -1
       );
     }
 
-    return filteredData;
+    return resultData;
 
   } catch (error) {
-    console.error('Error fetching and filtering courses:', error);
+    console.error('Error fetching courses:', error);
     return [];
   }
 }
@@ -270,69 +239,4 @@ export async function unarchiveCourse(courseId) {
         console.error("Error unarchiving course:", error.message);
         return null;
     }
-};
-
-/**
- * Adds a completed course to user's history
- * @param {string} email - User email
- * @param {string} courseTitle - Completed course title
- * @returns {Promise<Object>} - Returns object with added record and error info
- */
-export const addCompletedCourse = async (email, courseTitle) => {
-  try {
-    const { data, error } = await supabase
-      .from('course_history')
-      .insert({ email, completed_course: courseTitle })
-      .select();
-
-    if (error) throw error;
-    return { data, error };
-  } catch (error) {
-    console.error('Error adding completed course:', error.message);
-    throw error;
-  }
-};
-
-
-/**
- * Gets user's completed courses history
- * @param {string} email - User email
- * @returns {Promise<Array>} - Array of completed courses
- */
-export const getCompletedCourses = async (email) => {
-  try {
-    const { data, error } = await supabase
-      .from('course_history')
-      .select('completed_course')
-      .eq('email', email);
-
-    if (error) throw error;
-    return data.map(item => item.completed_course);
-  } catch (error) {
-    console.error('Error fetching completed courses:', error.message);
-    return [];
-  }
-};
-
-/**
- * Checks if user has completed a specific course
- * @param {string} email - User email
- * @param {string} courseTitle - Course title to check
- * @returns {Promise<boolean>} - True if course is completed
- */
-export const hasCompletedCourse = async (email, courseTitle) => {
-  try {
-    const { data, error } = await supabase
-      .from('course_history')
-      .select('*')
-      .eq('email', email)
-      .eq('completed_course', courseTitle)
-      .single();
-
-    if (error && error.code !== 'PGRST116') throw error;
-    return !!data;
-  } catch (error) {
-    console.error('Error checking course completion:', error.message);
-    return false;
-  }
 };
