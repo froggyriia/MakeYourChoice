@@ -39,6 +39,7 @@ export default function AdminSemestersPage() {
         }
     }, [selectedPrograms]);
 
+    console.log('courses:', selectedCourses);
     useEffect(() => {
         const draftState = {
             semester,
