@@ -1,13 +1,16 @@
 import { useRef, useEffect, useState } from 'react';
+import ReCAPTCHA from 'react-google-recaptcha';
 import AddCourseModal from '../components/AddCourseModal';
 import { useCatalogueContext } from '../context/CatalogueContext';
 import { supabase } from '../pages/supabaseClient.jsx';
 
 const SuggestFormPage = () => {
   const scrollPosition = useRef(0);
+  const recaptchaRef = useRef(null);
   const [message, setMessage] = useState('');
   const [step, setStep] = useState(1);
   const [fullName, setFullName] = useState('');
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
 
   const {
     catalogue: {
@@ -21,12 +24,19 @@ const SuggestFormPage = () => {
     }
   } = useCatalogueContext();
 
+  const handleRecaptchaChange = (token) => {
+    setRecaptchaToken(token);
+  };
+
   const handleContinue = () => {
     if (!fullName.trim()) {
       setMessage('Please enter your name');
       return;
     }
-
+    if (!recaptchaToken) {
+      setMessage('r u alex potyomkin?...');
+      return;
+    }
     setMessage('');
     startAddingCourse();
     setTimeout(() => {
@@ -70,6 +80,8 @@ const SuggestFormPage = () => {
       handleCancel();
       setStep(1);
       setFullName('');
+      setRecaptchaToken(null);
+      if (recaptchaRef.current) recaptchaRef.current.reset();
       setTimeout(() => setMessage(''), 3000);
     } else {
       console.error('Error from Supabase:', error);
@@ -82,6 +94,8 @@ const SuggestFormPage = () => {
     setStep(1);
     setMessage('');
     setFullName('');
+    setRecaptchaToken(null);
+    if (recaptchaRef.current) recaptchaRef.current.reset();
     window.scrollTo(0, scrollPosition.current);
   };
 
@@ -105,6 +119,12 @@ const SuggestFormPage = () => {
               }}
             />
           </label>
+          <ReCAPTCHA
+            ref={recaptchaRef}
+            sitekey="6LeAKX0rAAAAABHyEWK7mJr9_RjtXi1q4piqOa5y"
+            onChange={handleRecaptchaChange}
+            style={{ marginBottom: '16px' }}
+          />
           <button
             onClick={handleContinue}
             style={{
