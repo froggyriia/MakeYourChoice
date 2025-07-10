@@ -28,8 +28,9 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
     const [filteredCourses, setFilteredCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [selectedCourses, setSelectedCourses] = useState(Array(5).fill(""));
+
     const [priorityCount, setPriorityCount] = useState(0);
+    const [selectedCourses, setSelectedCourses] = useState(Array(priorityCount).fill(""));
     const { email, currentRole } = useAuth();
 
     useEffect(() => {
