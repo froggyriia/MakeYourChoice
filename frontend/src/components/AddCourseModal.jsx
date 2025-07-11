@@ -115,17 +115,6 @@ const AddCourseModal = ({
                         </label>
 
                         <label>
-                            Description:
-                            <div data-color-mode="light">
-                                <MDEditor
-                                    value={course.description}
-                                    onChange={(value) => onChange({ name: 'description', value: value || '' })}
-                                    height={400}
-                                />
-                            </div>
-                        </label>
-
-                        <label>
                             Instructor:
                             <input
                                 type="text"
@@ -209,6 +198,18 @@ const AddCourseModal = ({
                                 ))}
                             </div>
                         </label>
+
+                        <label>
+                            Description:
+                            <div data-color-mode="light">
+                                <MDEditor
+                                    value={course.description}
+                                    onChange={(value) => onChange({ name: 'description', value: value || '' })}
+                                    height={400}
+                                />
+                            </div>
+                        </label>
+
                     </form>
                 </div>
 
