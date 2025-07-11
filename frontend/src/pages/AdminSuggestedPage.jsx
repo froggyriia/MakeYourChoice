@@ -1,4 +1,3 @@
-// AdminSuggestedCoursesPage.jsx
 import { useEffect, useState } from 'react';
 import { supabase } from '../pages/supabaseClient.jsx';
 import styles from './CataloguePage.module.css';
