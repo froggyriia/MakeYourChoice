@@ -11,16 +11,19 @@ import styles from './SemesterList.module.css';
  */
 export default function SemesterList({ semesters, onSelect, onEdit, onDelete }) {
     return (
-        <div className={styles.list}>
-            {semesters.map(s => (
-                <SemesterTile
-                    key={s.id}
-                    semester={s}
-                    onSelect={onSelect}
-                    onEdit={onEdit}
-                    onDelete={onDelete}
-                />
-            ))}
+        <div className={styles.container}>
+            <div className={styles.header}>All Semesters</div>
+            <div className={styles.list}>
+                {semesters.map(s => (
+                    <SemesterTile
+                        key={s.id}
+                        semester={s}
+                        onSelect={onSelect}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                    />
+                ))}
+            </div>
         </div>
     );
 }

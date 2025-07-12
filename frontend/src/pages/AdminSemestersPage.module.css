@@ -2,13 +2,31 @@
     display: flex;
     height: 100%;
 }
+
 .sidebar {
-    width: 240px;
-    border-right: 1px solid var(--color-border);
-    padding: 16px;
-    overflow-y: auto;
+    width: 260px;
+    padding: 24px;
+    border-right: 1px solid #eee;
+    background: #fafafa;
 }
+
+.addButton {
+    width: 100%;
+    margin-bottom: 16px;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.addButton:hover {
+    background-color: #40bb20;
+}
+
 .content {
-    flex-grow: 1;
-    padding: 16px;
+    flex: 1;
+    padding: 24px;
 }
