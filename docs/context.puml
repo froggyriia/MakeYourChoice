@@ -1,0 +1,13 @@
+@startuml
+actor Student
+actor Admin
+
+rectangle "MakeYourChoice Web App" {
+  component "Frontend (React)"
+  component "Supabase (Auth + DB)"
+}
+
+Student --> "Frontend (React)" : submits preferences
+Admin --> "Frontend (React)" : configures courses
+"Frontend (React)" --> "Supabase (Auth + DB)" : API calls
+@enduml

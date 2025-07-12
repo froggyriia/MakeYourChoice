@@ -1,9 +1,13 @@
-// AdminSuggestedCoursesPage.jsx
 import { useEffect, useState } from 'react';
-import { supabase } from '../pages/supabaseClient.jsx';
 import styles from './CataloguePage.module.css';
 import { useAuth } from '../context/AuthContext';
 import AddCourseModal from '../components/AddCourseModal';
+import {
+  fetchSuggestedCourses,
+  updateSuggestedCourse,
+  acceptSuggestedCourse,
+  declineSuggestedCourse,
+} from '../api/function_for_suggested_courses';
 
 const AdminSuggestedCoursesPage = () => {
   const [courses, setCourses] = useState([]);
@@ -13,89 +17,43 @@ const AdminSuggestedCoursesPage = () => {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      const { data, error } = await supabase
-        .from('suggested_courses')
-        .select('*')
-        .order('id', { ascending: false });
-
-      if (error) {
-        console.error('Error while data loading:', error);
-        setCourses([]);
-      } else {
-        setCourses(data || []);
-      }
-
+      const data = await fetchSuggestedCourses();
+      setCourses(data);
       setLoading(false);
     };
 
     fetchCourses();
   }, []);
 
-  const handleChange = (key, value) => {
-    setEditingCourse((prev) => ({ ...prev, [key]: value }));
-  };
+  const handleChange = (update) => {
+      setEditingCourse((prev) => ({ ...prev, [update.name]: update.value }));
+    };
 
   const handleSaveEdit = async () => {
     try {
+      if (!editingCourse?.id) {
+        throw new Error('No course selected for editing');
+      }
+
       const { id, ...fieldsToUpdate } = editingCourse;
-      const { data, error } = await supabase
-        .from('suggested_courses')
-        .update(fieldsToUpdate)
-        .eq('id', id);
+      const updatedCourse = await updateSuggestedCourse(id, fieldsToUpdate);
 
-      if (error) throw error;
-
-      setCourses((prev) =>
-        prev.map((course) => (course.id === id ? { ...course, ...fieldsToUpdate } : course))
+      setCourses(prev =>
+        prev.map(course =>
+          course.id === id ? updatedCourse : course
+        )
       );
       setEditingCourse(null);
+      alert('Course updated successfully!');
     } catch (err) {
-      console.error('Ошибка при сохранении редактирования:', err);
+      console.error('Update error:', err);
+      alert(`Update failed: ${err.message}`);
     }
   };
 
   const handleAccept = async (course) => {
     try {
-      const {
-        title,
-        description,
-        teacher,
-        language,
-        type,
-        years,
-        program,
-      } = course;
-
-      const newCourse = {
-        title,
-        description,
-        teacher,
-        language,
-        type,
-        years: Array.isArray(years) ? years : [years],
-        program: Array.isArray(program) ? program : [program],
-        archived: false,
-      };
-
-      const { error: insertError } = await supabase
-        .from('catalogue')
-        .insert([newCourse]);
-
-      if (insertError) {
-        console.error('Ошибка при вставке в catalogue:', insertError);
-        return;
-      }
-
-      const { error: deleteError } = await supabase
-        .from('suggested_courses')
-        .delete()
-        .eq('id', course.id);
-
-      if (deleteError) {
-        console.error('Ошибка при удалении из suggested_courses:', deleteError);
-        return;
-      }
-
+      await acceptSuggestedCourse(course);
       setCourses((prev) => prev.filter((c) => c.id !== course.id));
       setEditingCourse(null);
     } catch (err) {
@@ -105,16 +63,7 @@ const AdminSuggestedCoursesPage = () => {
 
   const handleDecline = async (id) => {
     try {
-      const { error } = await supabase
-        .from('suggested_courses')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        console.error('Ошибка при удалении:', error);
-        return;
-      }
-
+      await declineSuggestedCourse(id);
       setCourses((prev) => prev.filter((c) => c.id !== id));
       setEditingCourse(null);
     } catch (err) {

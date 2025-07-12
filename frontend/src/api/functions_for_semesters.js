@@ -119,7 +119,7 @@ export const isSemesterExists = async (semTitle, semYear) => {
  * @param {string} semester - Значение семестра для поиска
  * @returns {Promise<Object|null>} Последняя запись или null, если не найдено
  */
-async function getLatestRecordBySemester(semesterName) {
+export async function getLatestRecordBySemester(semesterName) {
   try {
     const { data, error } = await supabase
       .from('semesters')
@@ -138,11 +138,26 @@ async function getLatestRecordBySemester(semesterName) {
 }
 
 /**
+ * Fetch a single semester by its PK.
+ * @param {number} id
+ * @returns {Promise<Object>}
+ */
+export async function getSemesterById(id) {
+  const { data, error } = await supabase
+      .from('semesters')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+  if (error) throw error;
+  return data;
+}
+/**
  * Находит единственный активный семестр
  * @param {string} tableName - Название таблицы (по умолчанию 'your_table_name')
  * @returns {Promise<Object|boolean>} Активная запись или false
  */
-async function isSingleActiveSemester() {
+export async function isSingleActiveSemester() {
   try {
     const { data: activeRecords, error } = await supabase
       .from('semesters')
@@ -170,7 +185,7 @@ async function isSingleActiveSemester() {
 * @returns {boolean} - имеет студент доступ или нет
 */
 
-async function isStudentAllowedInSemester(email, semester) {
+export async function isStudentAllowedInSemester(email, semester) {
 try {
     const userProgram = await getUserProgram(email);
     const userYear = await getUserYear(email);
@@ -201,7 +216,7 @@ try {
  * Получает все записи из таблицы semesters
  * @returns {Promise<Array>} Массив всех семестров или пустой массив при ошибке
  */
-async function getAllSemesters() {
+export async function getAllSemesters() {
   try {
     const { data: semesters, error } = await supabase
       .from('semesters')

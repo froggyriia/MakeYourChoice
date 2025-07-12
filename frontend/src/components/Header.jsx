@@ -1,163 +1,137 @@
-/**
- * Header.jsx
- *
- * This component renders the top header bar for authenticated users.
- * It displays the user's email, logout button, and — if the user is a student — the program deadline.
- * For admin users, it also shows buttons to add courses, add student programs, and export data to Excel.
- */
-
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+// Header.jsx
+import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate, NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import styles from './Header.module.css';
-import { getUserProgram } from "../api/functions_for_users.js";
-import { getDeadlineForGroup } from '../api/functions_for_programs.js';
 import { useCatalogueContext } from '../context/CatalogueContext.jsx';
+import styles from './Header.module.css';
+import { getUserProgram } from '../api/functions_for_users.js';
+import { getDeadlineForGroup } from '../api/functions_for_programs.js';
 import { searchCoursesByTitle } from '../api/function_for_search.js';
 import { fetchCourses } from '../api/functions_for_courses.js';
 
-const Header = () => {
-    const { catalogue, programs, excelExport } = useCatalogueContext();
-    const {
-        viewMode,
-        setViewMode,
-        courseTypeFilter,
-        programFilter
-    } = catalogue;
+export default function Header() {
+  const { email, logout, trueRole, currentRole, setCurrentRole } = useAuth();
+  const navigate = useNavigate();
+  const { catalogue, excelExport } = useCatalogueContext();
+  const { courseTypeFilter, programFilter } = catalogue;
 
-    const navigate = useNavigate();
-    const location = useLocation();
-    const currentPath = location.pathname;
+  const [searchText, setSearchText] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [deadline, setDeadline] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef();
 
-    const { logout, email, trueRole, currentRole, setCurrentRole } = useAuth();
+  // Click outside to close
+  useEffect(() => {
+    const handler = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
-    const [deadline, setDeadline] = useState(null);
-    const [searchText, setSearchText] = useState('');
-    const [isSearching, setIsSearching] = useState(false);
-    const [searchError, setSearchError] = useState(null);
+  // Deadline
+  useEffect(() => {
+    const fetchDeadline = async () => {
+      if (!email || currentRole === 'admin') return;
+      const group = await getUserProgram(email);
+      const ts = await getDeadlineForGroup(group);
+      if (ts) {
+        const formatted = new Date(ts).toLocaleString('en-GB', {
+          day: 'numeric',
+          month: 'long',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        setDeadline(formatted);
+      }
+    };
+    fetchDeadline();
+  }, [email, currentRole]);
 
-    /**
-     * Fetch deadline based on user group (for non-admins)
-     */
-    useEffect(() => {
-        const fetchDeadline = async () => {
-            if (!email || currentRole === 'admin') return;
+  // Search
+  useEffect(() => {
+    const delay = setTimeout(async () => {
+      if (currentRole !== 'student') return;
+      setIsSearching(true);
+      try {
+        if (searchText.trim().length >= 3) {
+          const res = await searchCoursesByTitle(
+            searchText,
+            programFilter !== 'all' ? programFilter : undefined,
+            courseTypeFilter !== 'all' ? courseTypeFilter : undefined
+          );
+          catalogue.setCourses(res);
+        } else if (searchText.trim() === '') {
+          const all = await fetchCourses(email, false, {
+            types: courseTypeFilter !== 'all' ? [courseTypeFilter] : [],
+            programs: programFilter !== 'all' ? [programFilter] : []
+          });
+          catalogue.setCourses(all);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+    return () => clearTimeout(delay);
+  }, [searchText, email, courseTypeFilter, programFilter]);
 
-            const group = await getUserProgram(email);
-            if (!group) return;
+  if (!email) return null;
 
-            const deadlineTs = await getDeadlineForGroup(group);
-            if (!deadlineTs) return;
+  return (
+    <header className={styles.header}>
+      <nav className={styles.navLinks}>
+        {currentRole === 'admin' && (
+          <>
+            <NavLink to="/admin/suggested_courses" className={({ isActive }) =>
+              isActive ? `${styles.navBtn} ${styles.activeBtn}` : styles.navBtn}>
+              Suggested Courses
+            </NavLink>
+            <NavLink to="/admin/courses" className={({ isActive }) =>
+              isActive ? `${styles.navBtn} ${styles.activeBtn}` : styles.navBtn}>
+              Courses
+            </NavLink>
+            <NavLink to="/admin/programs" className={({ isActive }) =>
+              isActive ? `${styles.navBtn} ${styles.activeBtn}` : styles.navBtn}>
+              Programs
+            </NavLink>
+            <NavLink to="/admin/semesters" className={({ isActive }) =>
+              isActive ? `${styles.navBtn} ${styles.activeBtn}` : styles.navBtn}>
+              Semesters
+            </NavLink>
+          </>
+        )}
+      </nav>
 
-            const formatted = new Date(deadlineTs).toLocaleString('en-GB', {
-                day: 'numeric',
-                month: 'long',
-                hour: '2-digit',
-                minute: '2-digit',
-            });
-
-            setDeadline(formatted);
-        };
-
-        fetchDeadline();
-    }, [email, currentRole]);
-
-useEffect(() => {
-        const delayDebounce = setTimeout(async () => {
-            if (currentRole !== 'student') return;
-
-            setIsSearching(true);
-            setSearchError(null);
-
-            try {
-                if (searchText.trim().length >= 3) {
-                    const results = await searchCoursesByTitle(
-                        searchText,
-                        programFilter !== 'all' ? programFilter : undefined,
-                        courseTypeFilter !== 'all' ? courseTypeFilter : undefined
-                    );
-                    catalogue.setCourses(results);
-                } else if (searchText.trim() === '') {
-                    const allCourses = await fetchCourses(email, false, {
-                        types: courseTypeFilter !== 'all' ? [courseTypeFilter] : [],
-                        programs: programFilter !== 'all' ? [programFilter] : []
-                    });
-                    catalogue.setCourses(allCourses);
-                }
-            } catch (err) {
-                setSearchError('Search failed. Please try again.');
-                console.error('Student search failed:', err);
-            } finally {
-                setIsSearching(false);
-            }
-        }, 300);
-
-        return () => clearTimeout(delayDebounce);
-    }, [searchText, currentRole, programFilter, courseTypeFilter, email, catalogue.setCourses]);
-
-
-    // If the user is not logged in, render nothing
-    if (!email) return null;
-
-    return (
-        <div className={styles.header}>
-            <div className={styles.headerContent}>
-                <span className={styles.email}>{email}</span>
-
-                {deadline && currentRole !== 'admin' && (
-                    <span className={styles.deadline}>⏰ Deadline: {deadline}</span>
-                )}
-
-                {currentRole === 'student' && (
-                    <div className={styles.searchContainer}>
-                        <input
-                            type="text"
-                            placeholder={`Search in ${courseTypeFilter !== 'all' ? courseTypeFilter : 'all'} courses...`}
-                            value={searchText}
-                            onChange={(e) => setSearchText(e.target.value)}
-                            className={styles.searchInput}
-                        />
-                        {isSearching && <div className={styles.spinner} />}
-                    </div>
-                )}
-            </div>
-
-            {currentRole === 'admin' && (
-                <div className={styles.buttonGroup}>
-                    <button
-                        className={`${styles.btn} ${styles['btn--green']}`}
-                        onClick={excelExport.exportToExcel}
-                    >
-                        {excelExport.isExported ? 'Exported!' : 'Export to Excel'}
-                    </button>
-                </div>
-            )}
-
-            {trueRole === 'admin-student' && (
-                <button
-                    className={`${styles.btn} ${styles['btn--green']}`}
-                    onClick={() => {
-                        if (currentRole === 'admin') {
-                            setCurrentRole('student');
-                            navigate('/student-catalogue');
-                        } else {
-                            setCurrentRole('admin');
-                            navigate('/admin/courses');
-                        }
-                    }}
-                >
-                    {currentRole === 'admin' ? 'View as Student' : 'Back to Admin'}
+      <div className={styles.headerRight}>
+        <span className={styles.email}>{email}</span>
+        <div className={styles.userMenuWrapper} ref={menuRef}>
+          <button className={styles.menuButton} onClick={() => setMenuOpen(p => !p)}>▾</button>
+          {menuOpen && (
+            <div className={styles.dropdown}>
+              {currentRole === 'admin' && (
+                <button onClick={excelExport.exportToExcel}>
+                  {excelExport.isExported ? 'Exported!' : 'Export to Excel'}
                 </button>
-            )}
-
-            <button
-                onClick={logout}
-                className={`${styles.btn} ${styles['btn--red']}`}
-            >
-                Log out
-            </button>
+              )}
+              {trueRole === 'admin-student' && (
+                <button onClick={() => {
+                  const newRole = currentRole === 'admin' ? 'student' : 'admin';
+                  setCurrentRole(newRole);
+                  navigate(newRole === 'admin' ? '/admin/courses' : '/student-catalogue');
+                }}>
+                  {currentRole === 'admin' ? 'View as Student' : 'Back to Admin'}
+                </button>
+              )}
+              <button className={styles.logoutButton} onClick={logout}>Log out</button>
+            </div>
+          )}
         </div>
-    );
-};
-
-export default Header;
+      </div>
+    </header>
+  );
+}
