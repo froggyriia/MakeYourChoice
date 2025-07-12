@@ -114,19 +114,7 @@ const AddCourseModal = ({
                             />
                         </label>
 
-                        <label>
-                            Description:
-                            <div data-color-mode="light">
-                                <MDEditor
-                                    value={localCourse.description || ''}
-                                    onChange={(value) => {
-                                        setLocalCourse(prev => ({ ...prev, description: value || '' }));
-                                        onChange({ name: 'description', value: value || '' });
-                                    }}
-                                    height={400}
-                                />
-                            </div>
-                        </label>
+
 
                         <label>
                             Instructor:

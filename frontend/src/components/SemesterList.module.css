@@ -1,9 +1,27 @@
-/* src/components/SemesterList.module.css */
+/* outer white card */
+.container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+/* heading above list */
+.header {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 12px;
+    user-select: none;
+}
+
+/* scrollable list area */
 .list {
-    width: 240px;
-    max-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 200px); /* adjust as needed */
     overflow-y: auto;
-    padding: 12px;
-    border-right: 1px solid #eee;
-    background: #fafafa;
+    gap: 8px;
 }
