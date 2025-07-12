@@ -1,4 +1,5 @@
 .sidebar {
+    border-radius: var(--border-radius-lg);
     position: sticky;
     top: 80px;
     align-self: flex-start;
@@ -10,7 +11,7 @@
     padding: 24px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     max-width: 100%;
-    max-height: calc(100vh - 100px);
+    max-height: calc(110vh);
     overflow-y: auto;
     border: 1px solid #f0f0f0;
 }
@@ -26,22 +27,24 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    margin-top: 0.75rem;
 }
 
 .resetButton {
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 13px;
-    border: 1px solid #e0e0e0;
-    background: #ff6b6b;
+    width: 90px;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-md);
+    border: none;
+    background: rgb(255, 50, 50);
     color: white;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-fast);
     margin-top: 16px;
 }
 
 .resetButton:hover {
-    background: #ff5252;
+    background: rgb(255, 25, 25);
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -56,25 +59,36 @@
 }
 
 .filterButton {
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 13px;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-md);
     border: 1px solid #ccc;
-    background: #f9f9f9;
+    background: var(--color-inactive);
     cursor: pointer;
     transition: all 0.2s ease;
-    color: #333;
+    color: white;
 }
 
-.filterButton:hover {
-    background: #eee;
+.filterButtonLangStat {
+    width: 6.1rem;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-md);
+    border: 1px solid #ccc;
+    background: var(--color-inactive);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: white;
+}
+
+.filterGroup {
+    font-size: var(--font-size-lg);
 }
 
 .active {
-    background: #d3f9d8;
-    border-color: #69db7c;
-    color: #2f9e44;
-    font-weight: 600;
+    background: var(--color-primary);
+    color: white;
+    font-weight: 400;
 }
 
 @media (max-width: 1024px) {

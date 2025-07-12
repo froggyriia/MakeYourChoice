@@ -7,7 +7,7 @@ import styles from './FilterHeader.module.css';
 const AdminFilterHeader = () => {
     const [searchText, setSearchText] = useState('');
     const { catalogue } = useCatalogueContext();
-    const { setCourses, viewMode, setViewMode, email } = catalogue;
+    const { setCourses, viewMode, setViewMode, email, setSearchQuery } = catalogue;
 
     useEffect(() => {
         const delayDebounce = setTimeout(async () => {
@@ -15,9 +15,11 @@ const AdminFilterHeader = () => {
                 if (searchText.trim().length >= 3) {
                     const results = await searchCoursesByTitle(searchText);
                     setCourses(results);
+                    setSearchQuery(searchText);
                 } else if (searchText.trim() === '') {
-                    const allCourses = await fetchCourses(email, true); // allCourses = true → без фильтров
+                    const allCourses = await fetchCourses(email, true);
                     setCourses(allCourses);
+                    setSearchQuery('');
                 }
             } catch (err) {
                 console.error('Search failed:', err);
@@ -25,7 +27,7 @@ const AdminFilterHeader = () => {
         }, 300);
 
         return () => clearTimeout(delayDebounce);
-    }, [searchText]);
+    }, [searchText, email, setCourses, setSearchQuery]);
 
     return (
         <div className={styles.filterHeader}>

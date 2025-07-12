@@ -1,12 +1,4 @@
-/**
- * Header.jsx
- *
- * This component renders the top header bar for authenticated users.
- * It displays the user's email, logout button, and — if the user is a student — the program deadline.
- * For admin users, it also shows buttons to add courses, add student programs, and export data to Excel.
- */
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import styles from './Header.module.css';
@@ -17,28 +9,25 @@ import { searchCoursesByTitle } from '../api/function_for_search.js';
 import { fetchCourses } from '../api/functions_for_courses.js';
 
 const Header = () => {
-    const { catalogue, programs, excelExport } = useCatalogueContext();
+    const { catalogue, excelExport } = useCatalogueContext();
     const {
-        viewMode,
-        setViewMode,
         courseTypeFilter,
         programFilter
     } = catalogue;
 
     const navigate = useNavigate();
-    const location = useLocation();
-    const currentPath = location.pathname;
-
     const { logout, email, trueRole, currentRole, setCurrentRole } = useAuth();
 
     const [deadline, setDeadline] = useState(null);
     const [searchText, setSearchText] = useState('');
     const [isSearching, setIsSearching] = useState(false);
     const [searchError, setSearchError] = useState(null);
+    const [menuOpen, setMenuOpen] = useState(false);
 
-    /**
-     * Fetch deadline based on user group (for non-admins)
-     */
+    const menuRef = useRef(null);
+    const emailButtonRef = useRef(null);
+
+    // fetch deadline
     useEffect(() => {
         const fetchDeadline = async () => {
             if (!email || currentRole === 'admin') return;
@@ -62,7 +51,8 @@ const Header = () => {
         fetchDeadline();
     }, [email, currentRole]);
 
-useEffect(() => {
+    // search
+    useEffect(() => {
         const delayDebounce = setTimeout(async () => {
             if (currentRole !== 'student') return;
 
@@ -95,67 +85,101 @@ useEffect(() => {
         return () => clearTimeout(delayDebounce);
     }, [searchText, currentRole, programFilter, courseTypeFilter, email, catalogue.setCourses]);
 
+    // close menu on click outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (
+                menuRef.current &&
+                !menuRef.current.contains(e.target) &&
+                emailButtonRef.current &&
+                !emailButtonRef.current.contains(e.target)
+            ) {
+                setMenuOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
-    // If the user is not logged in, render nothing
     if (!email) return null;
 
     return (
         <div className={styles.header}>
             <div className={styles.headerContent}>
-                <span className={styles.email}>{email}</span>
+                <div className={styles.searchAndDeadline}>
+                    {deadline && currentRole !== 'admin' && (
+                        <span className={styles.deadline}>⏰ Deadline: {deadline}</span>
+                    )}
 
-                {deadline && currentRole !== 'admin' && (
-                    <span className={styles.deadline}>⏰ Deadline: {deadline}</span>
-                )}
-
-                {currentRole === 'student' && (
-                    <div className={styles.searchContainer}>
-                        <input
-                            type="text"
-                            placeholder={`Search in ${courseTypeFilter !== 'all' ? courseTypeFilter : 'all'} courses...`}
-                            value={searchText}
-                            onChange={(e) => setSearchText(e.target.value)}
-                            className={styles.searchInput}
-                        />
-                        {isSearching && <div className={styles.spinner} />}
-                    </div>
-                )}
-            </div>
-
-            {currentRole === 'admin' && (
-                <div className={styles.buttonGroup}>
-                    <button
-                        className={`${styles.btn} ${styles['btn--green']}`}
-                        onClick={excelExport.exportToExcel}
-                    >
-                        {excelExport.isExported ? 'Exported!' : 'Export to Excel'}
-                    </button>
+                    {currentRole === 'student' && (
+                        <div className={styles.searchContainer}>
+                            <input
+                                type="text"
+                                placeholder={`Search in ${courseTypeFilter !== 'all' ? courseTypeFilter : 'all'} courses...`}
+                                value={searchText}
+                                onChange={(e) => setSearchText(e.target.value)}
+                                className={styles.searchInput}
+                            />
+                            {isSearching && <div className={styles.spinner} />}
+                        </div>
+                    )}
                 </div>
-            )}
 
-            {trueRole === 'admin-student' && (
-                <button
-                    className={`${styles.btn} ${styles['btn--green']}`}
-                    onClick={() => {
-                        if (currentRole === 'admin') {
-                            setCurrentRole('student');
-                            navigate('/student-catalogue');
-                        } else {
-                            setCurrentRole('admin');
-                            navigate('/admin/courses');
-                        }
-                    }}
-                >
-                    {currentRole === 'admin' ? 'View as Student' : 'Back to Admin'}
-                </button>
-            )}
+                <div className={styles.emailContainer}>
+                    <button
+                        ref={emailButtonRef}
+                        className={styles.emailButton}
+                        onClick={() => setMenuOpen((prev) => !prev)}
+                    >
+                        <span>{email}</span>
+                        <span className={`${styles.arrow} ${menuOpen ? styles.open : ''}`}>▾</span>
+                    </button>
 
-            <button
-                onClick={logout}
-                className={`${styles.btn} ${styles['btn--red']}`}
-            >
-                Log out
-            </button>
+                    {menuOpen && (
+                        <div className={styles.dropdownMenu} ref={menuRef}>
+                            {currentRole === 'admin' && (
+                                <button
+                                    className={styles.dropdownItem}
+                                    onClick={() => {
+                                        excelExport.exportToExcel();
+                                        setMenuOpen(false);
+                                    }}
+                                >
+                                    <img width="16" height="16" src="https://img.icons8.com/ios/50/ms-excel.png" alt="ms-excel"/> Export to Excel
+                                </button>
+                            )}
+
+                            {trueRole === 'admin-student' && (
+                                <button
+                                    className={styles.dropdownItem}
+                                    onClick={() => {
+                                        if (currentRole === 'admin') {
+                                            setCurrentRole('student');
+                                            navigate('/student-catalogue');
+                                        } else {
+                                            setCurrentRole('admin');
+                                            navigate('/admin/courses');
+                                        }
+                                        setMenuOpen(false);
+                                    }}
+                                >
+                                    <img width="16" height="16" src="https://img.icons8.com/material-outlined/24/student-male.png" alt="student-male"/> {currentRole === 'admin' ? 'View as Student' : 'Back to Admin'}
+                                </button>
+                            )}
+
+                            <button
+                                className={`${styles.dropdownItem} ${styles.logoutItem}`}
+                                onClick={() => {
+                                    logout();
+                                    setMenuOpen(false);
+                                }}
+                            >
+                                <img width="16" height="16" src="https://img.icons8.com/material-outlined/24/exit.png" alt="exit"/> Log out
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 };

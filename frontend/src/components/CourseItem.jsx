@@ -6,8 +6,9 @@
  * Used in: CataloguePage.jsx
  */
 import { useState, useRef, useEffect } from 'react';
+import { useCatalogueContext } from '../context/CatalogueContext';
 import styles from './CourseItem.module.css';
-import { deleteCourse } from '../api/functions_for_courses.js';
+import { deleteCourse } from '../api/functions_for_courses';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import '@uiw/react-markdown-preview/markdown.css';
 
@@ -21,7 +22,8 @@ const CourseItem = ({ course, onDelete, onEdit, onArchive, role }) => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [isArchiving, setIsArchiving] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
-
+    const { catalogue } = useCatalogueContext();
+    const { searchQuery } = catalogue;
     const menuRef = useRef();
 
     useEffect(() => {
@@ -56,121 +58,117 @@ const CourseItem = ({ course, onDelete, onEdit, onArchive, role }) => {
         }
     };
 
-    function highlightMatch(text, match) {
-        if (!match || !match.indices) return text;
-
-        const fragments = [];
-        let lastIndex = 0;
-
-        match.indices.forEach(([start, end], idx) => {
-        // обычный текст перед совпадением
-        if (start > lastIndex) {
-            fragments.push(text.slice(lastIndex, start));
-        }
-        // подсвеченный фрагмент
-        fragments.push(
-            <mark key={idx} style={{ backgroundColor: '#fcf89f' }}>
-                {text.slice(start, end + 1)}
-            </mark>
+    const highlightText = (text, query) => {
+        if (!query || query.length < 3 || !text) return text;
+        
+        const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+        const parts = text.split(regex);
+        
+        return parts.map((part, i) => 
+            regex.test(part) ? (
+                <span key={i} className={styles.highlightMatch}>
+                    {part}
+                </span>
+            ) : (
+                part
+            )
         );
-        lastIndex = end + 1;
-        });
+    };
 
-        // остаток строки после последнего совпадения
-        if (lastIndex < text.length) {
-            fragments.push(text.slice(lastIndex));
+    const escapeRegExp = (string) => {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    };
+
+    const renderMarkdownWithHighlights = (text, query) => {
+        const highlighted = highlightText(text, query);
+        if (Array.isArray(highlighted)) {
+            return highlighted.map((frag, i) => 
+                typeof frag === 'string' ? frag : frag.props.children
+            ).join('');
         }
-
-        return fragments;
-    }
+        return highlighted;
+    };
 
     return (
-    <div
-        className={`${styles.courseItem} ${isDeleting ? styles.deleting : ''} ${
+        <div className={`${styles.courseItem} ${isDeleting ? styles.deleting : ''} ${
             course.archived ? styles.archived : ''
-        }`}
-    >
-        <div className={styles.titleRow}>
-            <h2 className={styles.title}>
-                {highlightMatch(
-                    course.title,
-                    course._matches?.find((m) => m.key === 'title')
-                )}
-            </h2>
+        }`}>
+            <div className={styles.titleRow}>
+                <h2 className={styles.title}>
+                    {highlightText(course.title, searchQuery)}
+                </h2>
 
-            {role === 'admin' && (
-                <div className={styles.menuWrapper} ref={menuRef}>
-                    <button
-                        onClick={() => setMenuOpen((prev) => !prev)}
-                        className={styles.menuButton}
-                    >
-                        ⋮
-                    </button>
-                    {menuOpen && (
-                        <div className={styles.dropdown}>
-                            <button onClick={handleEdit}>Edit</button>
-                            <button onClick={handleArchive}>
-                                {course.archived ? 'De-archive' : 'Archive'}
-                            </button>
-                            <button onClick={handleDelete} className={styles.deleteButton}>
-                                Delete
-                            </button>
-                        </div>
-                    )}
+                {role === 'admin' && (
+                    <div className={styles.menuWrapper} ref={menuRef}>
+                        <button
+                            onClick={() => setMenuOpen((prev) => !prev)}
+                            className={styles.menuButton}
+                        >
+                            ⋮
+                        </button>
+                        {menuOpen && (
+                            <div className={styles.dropdown}>
+                                <button onClick={handleEdit}>Edit</button>
+                                <button onClick={handleArchive}>
+                                    {course.archived ? 'Unarchive' : 'Archive'}
+                                </button>
+                                <button 
+                                    onClick={handleDelete} 
+                                    className={styles.deleteButton}
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+
+            <div className={styles.courseInfo}>
+                <p className={styles.info}>
+                    <span className={styles.infoLabel}>Instructor:</span>
+                    {highlightText(course.teacher, searchQuery)}
+                </p>
+                <p className={styles.info}>
+                    <span className={styles.infoLabel}>Language:</span>
+                    {course.language}
+                </p>
+                <p className={styles.info}>
+                    <span className={styles.infoLabel}>Program:</span>
+                    {Array.isArray(course.program) 
+                        ? highlightText(course.program.join(', '), searchQuery)
+                        : course.program}
+                </p>
+                <p className={styles.info}>
+                    <span className={styles.infoLabel}>Years:</span>
+                    {Array.isArray(course.years) 
+                        ? course.years.sort().join(', ') 
+                        : 'No data'}
+                </p>
+                <p className={styles.info}>
+                    <span className={styles.infoLabel}>Type:</span>
+                    {course.type}
+                </p>
+            </div>
+
+            {isOpen && (
+                <div className={styles.description}>
+                    <MarkdownPreview
+                        source={renderMarkdownWithHighlights(course.description, searchQuery)}
+                    />
                 </div>
             )}
-        </div>
 
-        <p className={styles.info}>
-            Instructor:{' '}
-            {highlightMatch(
-                course.teacher,
-                course._matches?.find((m) => m.key === 'teacher')
-            )}
-        </p>
-        <p className={styles.info}>Language: {course.language}</p>
-        <p className={styles.info}>
-            Program:{' '}
-            {Array.isArray(course.program)
-                ? course.program.join(', ')
-                : course.program}
-        </p>
-        <p className={styles.info}>
-            Years:{' '}
-            {Array.isArray(course.years) ? course.years.sort().join(', ') : 'No data'}
-        </p>
-        <p className={styles.info}>Type: {course.type}</p>
-
-        {isOpen && (
-            <div className={styles.description}>
-                <MarkdownPreview
-                    source={
-                        // Подсвечиваем description, если есть совпадения
-                        course._matches?.find((m) => m.key === 'description')
-                            ? highlightMatch(
-                                  course.description,
-                                  course._matches.find((m) => m.key === 'description')
-                              )
-                                  .map((frag) =>
-                                      typeof frag === 'string' ? frag : frag.props.children
-                                  )
-                                  .join('')
-                            : course.description
-                    }
-                />
+            <div className={styles.buttonsContainer}>
+                <button
+                    onClick={() => setIsOpen((prev) => !prev)}
+                    className={styles.toggleButton}
+                >
+                    {isOpen ? 'Show less' : 'Show more'}
+                </button>
             </div>
-        )}
-
-        <div className={styles.buttonsContainer}>
-            <button
-                onClick={() => setIsOpen((prev) => !prev)}
-                className={styles.toggleButton}
-            >
-                {isOpen ? 'Show less' : 'Show more'}
-            </button>
         </div>
-    </div>
-);
+    );
 };
 
 export default CourseItem;

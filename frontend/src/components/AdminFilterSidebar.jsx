@@ -120,7 +120,7 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
                     {['Eng', 'Rus'].map((lang) => (
                         <button
                             key={lang}
-                            className={`${styles.filterButton} ${filters.languages?.includes(lang) ? styles.active : ''}`}
+                            className={`${styles.filterButtonLangStat} ${filters.languages?.includes(lang) ? styles.active : ''}`}
                             onClick={() => toggleFilter('languages', lang)}
                         >
                             {lang}
@@ -134,7 +134,7 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
                 <span className={styles.filterLabel}>Status</span>
                 <div className={styles.buttonGroup}>
                     <button
-                        className={`btn-sm ${filters.isArchived === false ? 'active' : ''}`}
+                        className={`${styles.filterButtonLangStat} btn-sm ${filters.isArchived === false ? 'active' : ''}`}
                         onClick={() => setFilters(prev => ({
                             ...prev,
                             isArchived: prev.isArchived === false ? undefined : false
@@ -143,7 +143,7 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
                         Active
                     </button>
                     <button
-                        className={`btn-sm ${filters.isArchived === true ? 'active' : ''}`}
+                        className={`${styles.filterButtonLangStat} btn-sm ${filters.isArchived === true ? 'active' : ''}`}
                         onClick={() => setFilters(prev => ({
                             ...prev,
                             isArchived: prev.isArchived === true ? undefined : true

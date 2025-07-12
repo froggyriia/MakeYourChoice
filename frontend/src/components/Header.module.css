@@ -23,12 +23,13 @@
     gap: 1.5rem;
     flex-grow: 1;
     justify-content: center;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
-.email {
-    font-weight: 500;
-    color: #333;
-    font-size: 15px;
+.searchAndDeadline {
+    display: flex;
+    align-items: center;
 }
 
 .deadline {
@@ -45,7 +46,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-left: 3rem;
+    margin-left: 5rem;
 }
 
 .searchInput {
@@ -69,6 +70,7 @@
     gap: 10px;
     align-items: center;
     padding-right: 10px;
+    margin-left: auto;
 }
 
 .btn {
@@ -93,15 +95,15 @@
 }
 
 .btn--green:hover {
-    background-color: #43a047;
+    background-color: var(--color-primary-dark);
 }
 
 .btn--red {
-    background-color: #ff4444;
+    background-color: rgba(255, 50, 50);
 }
 
 .btn--red:hover {
-    background-color: #c62828;
+    background-color: rgba(255, 25, 25);
 }
 
 .btn--gray {
@@ -109,9 +111,104 @@
 }
 
 .btn--gray:hover {
-    background-color: #777;
+    background-color: var(--color-text-lighter);
 }
 
+.emailContainer {
+    position: relative;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.emailButton {
+    background: none;
+    border: none;
+    color: #333;
+    font: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.5rem;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.emailWrapper {
+    position: relative;
+    margin-left: auto;
+    padding-left: 2rem;
+    padding-right: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+
+.arrow {
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.arrow.open {
+    transform: rotate(180deg);
+}
+
+/* Анимация появления меню */
+.dropdownMenu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.5rem 0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    min-width: 220px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.dropdownItem {
+    background: transparent;
+    border: none;
+    text-align: left;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    font: inherit;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: background-color 0.2s;
+    width: 100%;
+}
+
+.dropdownItem:hover {
+    background-color: #f5f5f5;
+}
+
+.logoutItem {
+    color: red;
+}
+
+.logoutItem:hover {
+    background-color: #fff2f2;
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
 
 /* Responsive tweaks */
