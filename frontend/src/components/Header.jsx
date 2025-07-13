@@ -114,20 +114,20 @@ export default function Header() {
           {menuOpen && (
             <div className={styles.dropdown}>
               {currentRole === 'admin' && (
-                <button onClick={excelExport.exportToExcel}>
-                  {excelExport.isExported ? 'Exported!' : 'Export to Excel'}
+                <button className={styles.exstButton} onClick={excelExport.exportToExcel}>
+                  <img width="16" height="16" src="https://img.icons8.com/ios/50/ms-excel.png" alt="ms-excel"/> {excelExport.isExported ? 'Exported!' : 'Export to Excel'}
                 </button>
               )}
               {trueRole === 'admin-student' && (
-                <button onClick={() => {
+                <button className={styles.exstButton} onClick={() => {
                   const newRole = currentRole === 'admin' ? 'student' : 'admin';
                   setCurrentRole(newRole);
                   navigate(newRole === 'admin' ? '/admin/courses' : '/student-catalogue');
                 }}>
-                  {currentRole === 'admin' ? 'View as Student' : 'Back to Admin'}
+                  <img width="16" height="16" src="https://img.icons8.com/material-outlined/24/student-male.png" alt="student-male"/>{currentRole === 'admin' ? 'View as Student' : 'Back to Admin'}
                 </button>
               )}
-              <button className={styles.logoutButton} onClick={logout}>Log out</button>
+              <button className={styles.logoutButton} onClick={logout}> <img width="16" height="16" src="https://img.icons8.com/material-outlined/24/exit.png" alt="exit"/> Log out</button>
             </div>
           )}
         </div>

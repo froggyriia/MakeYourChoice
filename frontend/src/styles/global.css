@@ -16,14 +16,6 @@ body {
     color: #333;
 }
 
-:root {
-    --color-primary: #40BB20;    /* ярко-зеленый для активных элементов */
-    --color-inactive: #A5A5A5;   /* серый для неактивных */
-    --color-elem-background: #FFFFFF;
-    --color-input-field: #E5E5E5;
-    --color-main-background: #E5E5E5;
-}
-
 button {
     cursor: pointer;
     background-color: var(--color-inactive);
@@ -54,18 +46,20 @@ button.active {
 
 :root {
   /* Цветовая схема */
+  --color-inactive: #A5A5A5;
+  --color-elem-background: #FFFFFF;
+  --color-input-field: #E5E5E5;
+  --color-main-background: #E5E5E5;
   --color-primary: #40BB20;         /* Основной зеленый цвет */
   --color-primary-dark: #3fa924;    /* Темный вариант primary */
   --color-primary-light: #d3f9d8;   /* Светлый вариант primary */
   --color-secondary: #007BFF;       /* Синий для второстепенных элементов */
-  --color-inactive: #ccc;           /* Серый для неактивных элементов */
   --color-danger: #ff4444;          /* Красный для опасных действий */
   --color-danger-dark: #c62828;     /* Темный вариант danger */
   --color-text: #333;               /* Основной цвет текста */
   --color-text-light: #555;         /* Светлый текст */
   --color-text-lighter: #777;       /* Еще светлее */
   --color-background: #fff;         /* Фон элементов */
-  --color-elem-background: #f8f9fa; /* Основной фон страниц */
   --color-border: #e0e0e0;          /* Цвет границ */
   --color-shadow: rgba(0, 0, 0, 0.1); /* Цвет теней */
 

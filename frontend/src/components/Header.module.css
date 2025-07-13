@@ -102,6 +102,10 @@
   color: #d00;
 }
 
+.exstButton {
+  color: black;
+}
+
 @media (max-width: 768px) {
   .header {
     flex-direction: column;
