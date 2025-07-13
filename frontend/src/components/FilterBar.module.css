@@ -84,7 +84,7 @@
 }
 
 .filterBarContainer .btn--green:hover {
-    background-color: #43a047;
+    background-color: var(--color-primary-dark);
 }
 
 .filterBarContainer .btn--red {
@@ -108,7 +108,7 @@
 }
 
 .tabButton.active:hover {
-    background-color: #43a047;
+    background-color: var(--color-primary-dark);
 }
 /* Responsive tweaks to match header */
 @media (max-width: 768px) {

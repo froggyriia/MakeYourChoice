@@ -65,7 +65,7 @@
 }
 
 .modalFooter button[type="submit"]:hover {
-    background-color: #349b18;
+    background-color: var(--color-primary-dark);
 }
 
 .modalFooter button[type="button"] {
@@ -226,7 +226,7 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-    background-color: #349b18;
+    background-color: var(--color-primary-dark);
     transform: translateY(-2px);
 }
 
@@ -317,8 +317,6 @@ button[type="button"]:hover {
 
 /* AddCourseModal.module.css */
 
-/* ... (остальные стили остаются без изменений) ... */
-
 /* Main modal container block */
 .modalContainer {
     font-family: 'Montserrat', sans-serif;
@@ -378,7 +376,7 @@ button[type="button"]:hover {
 }
 
 .modalFooter button[type="submit"]:hover {
-    background-color: #349b18;
+    background-color: var(--color-primary-dark);
     transform: translateY(-2px);
 }
 

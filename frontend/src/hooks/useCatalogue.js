@@ -33,6 +33,8 @@ export const useCatalogue = () => {
 
     const [programFilter, setProgramFilter] = useState('all');
 
+    const [searchQuery, setSearchQuery] = useState('');
+
     const initialCourse = {
         id: null,
         title: '',
@@ -249,6 +251,8 @@ export const useCatalogue = () => {
         handleArchiveCourse,
         refetch: loadCourses,
         programFilter,
+        searchQuery,
+        setSearchQuery,
         setProgramFilter
     };
 };

@@ -65,7 +65,7 @@
     width: 100%;
     border: none;
     border-radius: 8px;
-    background-color: #ff4444;
+    background-color: rgb(255, 50, 50);
     color: white;
     font-size: 18px;
     cursor: pointer;
@@ -73,7 +73,7 @@
 }
 
 .deleteButton:hover {
-    background-color: #cc0000;
+    background-color: rgb(255, 12.5, 12.5);
 }
 
 /* Добавить в конец файла */

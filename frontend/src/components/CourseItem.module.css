@@ -10,6 +10,35 @@
     position: relative;
 }
 
+.highlightMatch {
+    background-color: rgba(0, 255, 0, 0.2);
+    color: var(--color-primary);
+    text-shadow: 
+        0 0 2px #fff,
+        0 0 5px var(--color-primary),
+        0 0 10px var(--color-primary),
+        0 0 15px var(--color-primary);
+    padding: 0 2px;
+    border-radius: 2px;
+    animation: neonGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes neonGlow {
+    from {
+        text-shadow: 
+            0 0 2px #fff,
+            0 0 5px var(--color-primary),
+            0 0 10px var(--color-primary);
+    }
+    to {
+        text-shadow: 
+            0 0 3px #fff,
+            0 0 7px var(--color-primary),
+            0 0 15px var(--color-primary),
+            0 0 20px var(--color-primary);
+    }
+}
+
 .archived {
     background-color: #fff;
     border-left: 4px solid #999;
@@ -104,7 +133,7 @@
 }
 
 .toggleButton:hover {
-    background-color: #349918;
+    background-color: var(--color-primary-dark);;
 }
 
 .deleteButton {
@@ -112,7 +141,7 @@
     width: 100%;
     border: none;
     border-radius: 8px;
-    background-color: #ff4444;
+    background-color: rgb(255, 50, 50);
     color: white;
     font-size: 18px;
     cursor: pointer;
@@ -120,7 +149,7 @@
 }
 
 .deleteButton:hover {
-    background-color: #cc0000;
+    background-color: rgb(255, 25, 25);
 }
 
 /* ——— ВЫПАДАЮЩЕЕ МЕНЮ ——— */
