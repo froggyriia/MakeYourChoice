@@ -6,7 +6,7 @@
 A simple web app for students to choose and submit elective course preferences, with role-based access for admins.
 
 🌐 [Live App](https://make-your-choice.vercel.app/)  
-🎥 [Demo Video](https://drive.google.com/file/d/1MkOZ9z9mcfuEWGdAVP8uHnFERsFKT8gH/view?usp=sharing) <!-- или написать "coming soon" -->
+🎥 [Demo Video](https://drive.google.com/file/d/15fmvGx6-0NcezkjH8Lm0wCJ3hUvLieED/view?usp=drive_link) 
 
 ## Table of Contents
 
