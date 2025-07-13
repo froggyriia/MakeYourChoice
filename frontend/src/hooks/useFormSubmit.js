@@ -71,7 +71,7 @@ export function useFormSubmit(email) {
       }
 
       try {
-          await submitPriority(email, updateFields);
+              await submitPriority(email, updateFields);
           console.log('Attempting submit with:', { email, updateFields });
         // This will now handle both tables automatically
         await submitPriority(email, updateFields);

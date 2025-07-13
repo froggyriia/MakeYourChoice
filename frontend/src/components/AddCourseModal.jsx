@@ -7,14 +7,21 @@ import MDEditor from '@uiw/react-md-editor';
 const AddCourseModal = ({
     course,
     onChange,
-    onToggleYear,
     onSubmit,
+    onAccept,
+    onDecline,
     onCancel,
 }) => {
     const modalRef = useRef(null);
-    const textareaRef = useRef(null);
     const scrollPosition = useRef(0);
     const [programs, setPrograms] = useState([]);
+    const [localCourse, setLocalCourse] = useState(course);
+    const isEditMode = !!onAccept && !!onDecline;
+
+    // Обновляем локальное состояние при изменении пропса course
+    useEffect(() => {
+        setLocalCourse(course);
+    }, [course]);
 
     useEffect(() => {
         scrollPosition.current = window.scrollY;
@@ -53,47 +60,40 @@ const AddCourseModal = ({
         loadStudentPrograms();
     }, []);
 
-    useEffect(() => {
-        if (textareaRef.current) {
-            textareaRef.current.style.height = 'auto';
-            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-        }
-    }, [course.description]);
-
     const handleWheel = (e) => {
         e.stopPropagation();
     };
 
     const handleInputChange = (e) => {
-        onChange({ name: e.target.name, value: e.target.value });
-    };
-
-    const handleTextareaChange = (e) => {
-        handleInputChange(e);
-        e.target.style.height = 'auto';
-        e.target.style.height = `${e.target.scrollHeight}px`;
+        const { name, value } = e.target;
+        setLocalCourse(prev => ({ ...prev, [name]: value }));
+        onChange({ name, value });
     };
 
     const handleButtonChange = (field, value) => {
+        setLocalCourse(prev => ({ ...prev, [field]: value }));
         onChange({ name: field, value });
     };
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
 
-        if (!course.language) {
+        if (!localCourse.language) {
             alert("Please select a language.");
             return;
         }
-        if (!course.program || course.program.length === 0) {
+        if (!localCourse.program || localCourse.program.length === 0) {
             alert("Please select at least one program.");
             return;
         }
-        if (!course.years || course.years.length === 0) {
+        if (!localCourse.years || localCourse.years.length === 0) {
             alert("Please select at least one year.");
             return;
         }
-        onSubmit();
+
+        if (onSubmit) {
+            onSubmit();
+        }
     };
 
     return (
@@ -101,36 +101,27 @@ const AddCourseModal = ({
             <div className={styles.modalContainer}>
                 <div className={styles.modalContent}>
                     <form onSubmit={handleFormSubmit}>
-                        <h2>Add Course</h2>
+                        <h2>{isEditMode ? "Edit Course" : "Add Course"}</h2>
 
                         <label>
                             Title:
                             <input
                                 type="text"
                                 name="title"
-                                value={course.title}
+                                value={localCourse.title || ''}
                                 onChange={handleInputChange}
                                 required
                             />
                         </label>
 
-                        <label>
-                            Description:
-                            <div data-color-mode="light">
-                                <MDEditor
-                                    value={course.description}
-                                    onChange={(value) => onChange({ name: 'description', value: value || '' })}
-                                    height={400}
-                                />
-                            </div>
-                        </label>
+
 
                         <label>
                             Instructor:
                             <input
                                 type="text"
                                 name="teacher"
-                                value={course.teacher}
+                                value={localCourse.teacher || ''}
                                 onChange={handleInputChange}
                                 required
                             />
@@ -146,9 +137,10 @@ const AddCourseModal = ({
                                     'M1', 'M2',
                                     'PhD1', 'PhD2', 'PhD3', 'PhD4',
                                 ].map(y => ({ value: y, label: y }))}
-                                value={(course.years || []).map(y => ({ value: y, label: y }))}
+                                value={(localCourse.years || []).map(y => ({ value: y, label: y }))}
                                 onChange={(selected) => {
                                     const values = selected.map(item => item.value);
+                                    setLocalCourse(prev => ({ ...prev, years: values }));
                                     onChange({ name: 'years', value: values });
                                 }}
                                 placeholder="Select years..."
@@ -167,9 +159,10 @@ const AddCourseModal = ({
                                 isMulti
                                 name="program"
                                 options={programs.map(prog => ({ value: prog, label: prog }))}
-                                value={(course.program || []).map(p => ({ value: p, label: p }))}
+                                value={(localCourse.program || []).map(p => ({ value: p, label: p }))}
                                 onChange={(selected) => {
                                     const values = selected.map(item => item.value);
+                                    setLocalCourse(prev => ({ ...prev, program: values }));
                                     onChange({ name: 'program', value: values });
                                 }}
                                 placeholder="Select programs..."
@@ -185,7 +178,7 @@ const AddCourseModal = ({
                                     <button
                                         key={lang}
                                         type="button"
-                                        className={`${styles.btn} ${course.language === lang ? styles.btnActive : ''}`}
+                                        className={`${styles.btn} ${localCourse.language === lang ? styles.btnActive : ''}`}
                                         onClick={() => handleButtonChange('language', lang)}
                                     >
                                         {lang === 'Rus' ? 'Russian' : 'English'}
@@ -201,7 +194,7 @@ const AddCourseModal = ({
                                     <button
                                         key={type}
                                         type="button"
-                                        className={`${styles.btn} ${course.type === type ? styles.btnActive : ''}`}
+                                        className={`${styles.btn} ${localCourse.type === type ? styles.btnActive : ''}`}
                                         onClick={() => handleButtonChange('type', type)}
                                     >
                                         {type === 'tech' ? 'Technical' : 'Humanities'}
@@ -209,16 +202,63 @@ const AddCourseModal = ({
                                 ))}
                             </div>
                         </label>
+
+                        <label>
+                            Description:
+                            <div data-color-mode="light">
+                                <MDEditor
+                                    value={course.description}
+                                    onChange={(value) => onChange({ name: 'description', value: value || '' })}
+                                    height={400}
+                                />
+                            </div>
+                        </label>
+
                     </form>
                 </div>
 
                 <div className={styles.modalFooter}>
-                    <button type="button" onClick={onCancel}>
-                        Cancel
-                    </button>
-                    <button type="submit" onClick={handleFormSubmit}>
-                        Submit
-                    </button>
+                    {isEditMode ? (
+                        <>
+                            <button
+                                type="button"
+                                className={styles.declineButton}
+                                onClick={onDecline}
+                            >
+                                Decline
+                            </button>
+                            <button
+                                type="button"
+                                className={styles.acceptButton}
+                                onClick={onAccept}
+                            >
+                                Accept
+                            </button>
+                            <button
+                                type="button"
+                                className={styles.cancelButton}
+                                onClick={onCancel}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                className={styles.saveButton}
+                                onClick={handleFormSubmit}
+                            >
+                                Save Changes
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <button type="button" onClick={onCancel}>
+                                Cancel
+                            </button>
+                            <button type="button" onClick={handleFormSubmit}>
+                                Submit
+                            </button>
+                        </>
+                    )}
                 </div>
             </div>
         </div>

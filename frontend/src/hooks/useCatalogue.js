@@ -22,7 +22,8 @@ import { getUserProgram } from '../api/functions_for_users.js';
 export const useCatalogue = () => {
     const { email, currentRole } = useAuth();
 
-    const [courses, setCourses] = useState([]);
+    const [allCourses, setAllCourses] = useState([]);
+    const [filteredCourses, setFilteredCourses] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -53,25 +54,108 @@ export const useCatalogue = () => {
     });
 
     const [courseTypeFilter, setCourseTypeFilter] = useState('tech');
+    const isUserAdmin = currentRole === 'admin';
 
     // Load and filter courses
     const loadCourses = async () => {
         try {
             setLoading(true);
-            const isUserAdmin = currentRole === 'admin';
-            const activeFilters = { ...filters };
-            if (!isUserAdmin && courseTypeFilter) {
-                activeFilters.types = [courseTypeFilter];
+            const data = await fetchCourses(email, isUserAdmin);
+            setAllCourses(data);
+            setError(null);
+            return data;
+        } catch (err) {
+            console.error(err);
+            setAllCourses([]);
+            setError(err.message || 'Failed to load courses');
+            return [];
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (allCourses.length === 0) return;
+
+        const filtered = allCourses.filter(course => {
+            const studentTypeMatch = !isUserAdmin ? course.type === courseTypeFilter : true;
+
+        const adminTypeMatch = filters.types.length === 0 ||
+                            filters.types.includes(course.type);
+
+        const typeMatch = isUserAdmin ? adminTypeMatch : studentTypeMatch;
+
+
+            const programMatch = filters.programs.length === 0 ||
+                (course.program && course.program.some(p =>
+                    filters.programs.includes(p)));
+
+            const languageMatch = filters.languages.length === 0 ||
+                filters.languages.includes(course.language);
+
+            const yearsMatch = filters.years.length === 0 ||
+                (course.years && course.years.some(y =>
+                    filters.years.includes(y)));
+
+            const archiveMatch = typeof filters.isArchived !== 'boolean' ||
+                course.archived === filters.isArchived;
+
+            return typeMatch && programMatch && languageMatch &&
+                   yearsMatch && archiveMatch;
+        });
+
+        setFilteredCourses(filtered);
+    }, [allCourses, filters, courseTypeFilter]);
+
+    const updateFilter = (filterName, value) => {
+        setFilters(prev => ({
+            ...prev,
+            [filterName]: value
+        }));
+    };
+
+    const resetFilters = () => {
+        setFilters({
+            types: [],
+            programs: [],
+            languages: [],
+            years: [],
+            isArchived: undefined
+        });
+        setCourseTypeFilter('tech');
+    };
+
+    const updateCourseInLocalState = (updatedCourse) => {
+        setAllCourses(prev =>
+            prev.map(c => c.id === updatedCourse.id ? updatedCourse : c)
+        );
+    };
+
+    const addCourseToLocalState = (newCourse) => {
+        setAllCourses(prev => [...prev, newCourse]);
+    };
+
+    const handleSubmit = async () => {
+        try {
+            const cleaned = {
+                ...currentCourse,
+                years: (currentCourse.years || []).map(String),
+                program: (currentCourse.program || []).map(String)
+            };
+            if (cleaned.id) {
+                const updated = await editCourseInfo(cleaned);
+                updateCourseInLocalState(updated);
+            } else {
+                const { data, error } = await addCourse(cleaned);
+                if (error) throw error;
+                addCourseToLocalState(data[0]);
             }
-            const data = await fetchCourses(email, isUserAdmin, activeFilters);
-            setCourses(data);
+            setCurrentCourse(initialCourse);
+            setShowAddForm(false);
             setError(null);
         } catch (err) {
             console.error(err);
-            setCourses([]);
-            setError(err.message || 'Failed to load courses');
-        } finally {
-            setLoading(false);
+            setError(err.message);
         }
     };
 
@@ -119,31 +203,6 @@ export const useCatalogue = () => {
         setCurrentCourse(prev => ({ ...prev, [name]: value }));
     };
 
-    // Submit add/edit form
-    const handleSubmit = async () => {
-        try {
-            const cleaned = {
-                ...currentCourse,
-                years: (currentCourse.years || []).map(String),
-                program: (currentCourse.program || []).map(String)
-            };
-            if (cleaned.id) {
-                const updated = await editCourseInfo(cleaned);
-                setCourses(prev => prev.map(c => c.id === updated.id ? updated : c));
-            } else {
-                const { data, error } = await addCourse(cleaned);
-                if (error) throw error;
-                setCourses(prev => [...prev, data[0]]);
-            }
-            setCurrentCourse(initialCourse);
-            setShowAddForm(false);
-            setError(null);
-        } catch (err) {
-            console.error(err);
-            setError(err.message);
-        }
-    };
-
     // Cancel form
     const handleCancel = () => {
         setCurrentCourse(initialCourse);
@@ -153,7 +212,7 @@ export const useCatalogue = () => {
 
     // Delete course locally
     const handleDeleteCourse = id => {
-        setCourses(prev => prev.filter(c => c.id !== id));
+        setAllCourses(prev => prev.filter(c => c.id !== id));
     };
 
     // Archive/unarchive course
@@ -169,8 +228,8 @@ export const useCatalogue = () => {
     };
 
     return {
-        courses,
-        setCourses,
+        courses: filteredCourses,
+        setCourses: setAllCourses,
         loading,
         error,
         showAddForm,

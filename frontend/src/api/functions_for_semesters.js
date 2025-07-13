@@ -5,10 +5,7 @@ import { supabase } from '../pages/supabaseClient.jsx';
  * @param {Object} semData - Semester data object
  * @param {string} semData.semester - Semester name (e.g., "Fall")
  * @param {number} semData.semester_year - Academic year
- * @param {string} [semData.start_date] - Start date (optional)
- * @param {string} [semData.end_date] - End date (optional)
- * @param {Array} [semData.courses] - List of courses (optional)
- * @param {number} [semData.id] - Semester ID (automatically removed before saving)
+ * @param {Array} [semData.courses] - List of courses
  * @returns {Promise<Array>} Array of saved semester records
  * @throws {Error} If database operation fails
  */
@@ -117,3 +114,121 @@ export const isSemesterExists = async (semTitle, semYear) => {
   }
 };
 
+/**
+ * Получает последнюю запись из таблицы, где semester равен заданному значению
+ * @param {string} semester - Значение семестра для поиска
+ * @returns {Promise<Object|null>} Последняя запись или null, если не найдено
+ */
+export async function getLatestRecordBySemester(semesterName) {
+  try {
+    const { data, error } = await supabase
+      .from('semesters')
+      .select('*')
+      .eq('semester', semesterName)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Ошибка при получении записи:', error.message);
+    return null;
+  }
+}
+
+/**
+ * Fetch a single semester by its PK.
+ * @param {number} id
+ * @returns {Promise<Object>}
+ */
+export async function getSemesterById(id) {
+  const { data, error } = await supabase
+      .from('semesters')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+  if (error) throw error;
+  return data;
+}
+/**
+ * Находит единственный активный семестр
+ * @param {string} tableName - Название таблицы (по умолчанию 'your_table_name')
+ * @returns {Promise<Object|boolean>} Активная запись или false
+ */
+export async function isSingleActiveSemester() {
+  try {
+    const { data: activeRecords, error } = await supabase
+      .from('semesters')
+      .select('*')
+      .eq('is_active', true);
+
+    if (error) throw error;
+
+    if (activeRecords.length === 1) {
+      return activeRecords[0];
+    }
+
+    return false;
+
+  } catch (error) {
+    console.error('Ошибка при проверке активных семестров:', error.message);
+    return false;
+  }
+}
+
+/**
+* Проверяет может ли студент иметь доступ к форме и каталогу в данной итерации
+* @param {string} email - почта студента
+* @param {Promise<Object>} - объект семестра который активен
+* @returns {boolean} - имеет студент доступ или нет
+*/
+
+export async function isStudentAllowedInSemester(email, semester) {
+try {
+    const userProgram = await getUserProgram(email);
+    const userYear = await getUserYear(email);
+
+    if (!userProgram || !userYear) {
+      console.warn('Не удалось получить данные студента');
+      return false;
+    }
+
+    // 2. Проверяем, что семестр существует и содержит programs
+    if (!semester || !semester.programs || !Array.isArray(semester.programs)) {
+      console.warn('Некорректные данные семестра');
+      return false;
+    }
+
+    // 3. Проверяем совпадение программы студента с программами семестра
+    const isProgramAllowed = semester.programs.includes(userProgram);
+
+    return isProgramAllowed;
+
+} catch (error) {
+    console.error('Ошибка при проверке возможностей студента:', error.message);
+    return false;
+  }
+}
+
+/**
+ * Получает все записи из таблицы semesters
+ * @returns {Promise<Array>} Массив всех семестров или пустой массив при ошибке
+ */
+export async function getAllSemesters() {
+  try {
+    const { data: semesters, error } = await supabase
+      .from('semesters')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    return semesters || [];
+
+  } catch (error) {
+    console.error('Ошибка при получении семестров:', error.message);
+    return [];
+  }
+}

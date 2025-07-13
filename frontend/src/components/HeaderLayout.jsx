@@ -37,7 +37,6 @@ const HeaderLayout = () => {
             <Header />
 
             <div className={styles.belowHeader}>
-                <AdminSubMenu />
                 {/* Show filter bar only for students or only on course page for admins */}
                 {showFilterBar && (
                     <FilterBar filters={filters} setFilters={setFilters} />
