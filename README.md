@@ -1,7 +1,11 @@
 <!-- markdownlint-disable MD033 -->
 <!-- Enable Mermaid.js rendering -->
 
-# MakeYourChoice
+<p align="center">
+  <img src="docs/myc_logo_transparent.svg" alt="Logo" width="40" style="vertical-align: middle; margin-right: 10px;"/>
+  <span style="font-size: 3em; font-weight: bold; vertical-align: middle;">MakeYourChoice</span>
+</p>
+
 
 A simple web app for students to choose and submit elective course preferences, with role-based access for admins.
 
