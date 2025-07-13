@@ -86,7 +86,7 @@ User testing of 3 specific AC was combined with general use. During the whole me
 3. change position of filter options so that it is easy to navigate. Add a caption for language filter (specify that it is related to the elective) ([Gitlab issue](https://gitlab.pg.innopolis.university/makeyourchoice-team-17/makeyourchoice/-/issues/25))
 
 ### Session 2: Search & Voting
-**Date**: 29/06/2025    
+**Date**: 06/07/2025    
 **Participants**: Admin (Customer)  
 **Link**: [video recording](https://drive.google.com/file/d/1pLmJHEOGe5PryAmqKRQWg0dHXSvvQbwr/view?usp=sharing), [audio recording](https://drive.google.com/file/d/1G4DdqumI9G4Z2N0MkSqC4hzjSEGJwgRT/view?usp=sharing)
 
