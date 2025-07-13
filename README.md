@@ -208,8 +208,8 @@ That's it! You've successfully deployed your project on Vercel.
 ## Documentation
 - [Development](docs/CONTRIBUTING.md)
 - [Quality characteristics and quality attribute scenarios](docs/quality-attributes/quality-attribute-scenarios.md)
-- Automated tests
-- User acceptance tests
+- [Automated tests](https://gitlab.pg.innopolis.university/makeyourchoice-team-17/makeyourchoice/-/blob/main/docs/quality-assurance/automated-tests.md?ref_type=heads)
+- [User acceptance tests](https://gitlab.pg.innopolis.university/makeyourchoice-team-17/makeyourchoice/-/blob/main/docs/quality-assurance/user-acceptance-tests.md?ref_type=heads)
 - [Continuous Integration](docs/automation/continuous-integration.md)
 - [Architecture](docs/architecture/architecture.md)
 
