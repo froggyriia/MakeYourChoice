@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import CompactCourseTile from './CompactCourseTile';
+import CompactCourseTile from '../../../src/components/CompactCourseTile';
 
 describe('CompactCourseTile', () => {
   it('should display course information correctly', () => {

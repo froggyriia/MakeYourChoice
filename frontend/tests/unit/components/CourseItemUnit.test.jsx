@@ -1,9 +1,39 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { createContext } from 'react';
 import CourseItem from '@/components/CourseItem.jsx';
 
+// 1. First, mock the CatalogueContext module before imports are hoisted
+vi.mock('@/context/CatalogueContext', async (importOriginal) => {
+  const MockCatalogueContext = createContext({
+    catalogue: {
+      searchQuery: '',
+      // Add other required catalogue properties
+    },
+  });
+
+  return {
+    __esModule: true,
+    default: MockCatalogueContext,
+    useCatalogueContext: () => ({
+      catalogue: {
+        searchQuery: '',
+        // Add other required properties
+      }
+    }),
+  };
+});
+
+// 2. Mock other required hooks
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({
+    email: 'test@example.com',
+    currentRole: 'student',
+    // Add other required auth properties
+  }),
+}));
+
 describe('CourseItem - Show more button', () => {
-  // Mock course data for testing
   const mockCourse = {
     id: 1,
     title: 'Test Course',
@@ -16,43 +46,40 @@ describe('CourseItem - Show more button', () => {
     archived: false
   };
 
-  // Test that the Show more button renders by default
+  beforeEach(() => {
+    // Clear all mocks before each test if needed
+    vi.clearAllMocks();
+  });
+
   it('should render the Show more button', () => {
     render(<CourseItem course={mockCourse} />);
     expect(screen.getByText('Show more')).toBeInTheDocument();
   });
 
-  // Test the toggle functionality of the Show more/less button
   it('should toggle description visibility when clicked', () => {
     render(<CourseItem course={mockCourse} />);
     
     const button = screen.getByText('Show more');
-    // First click should show description and change button text
     fireEvent.click(button);
     
     expect(screen.getByText('Show less')).toBeInTheDocument();
     expect(screen.getByText(mockCourse.description)).toBeInTheDocument();
     
-    // Second click should hide description and revert button text
     fireEvent.click(button);
     
     expect(screen.getByText('Show more')).toBeInTheDocument();
     expect(screen.queryByText(mockCourse.description)).not.toBeInTheDocument();
   });
 
-  // Test button text changes based on state
   it('should change button text based on isOpen state', () => {
     render(<CourseItem course={mockCourse} />);
     
     const button = screen.getByRole('button', { name: /Show more/i });
-    // Initial state
     expect(button).toHaveTextContent('Show more');
     
-    // After first click
     fireEvent.click(button);
     expect(button).toHaveTextContent('Show less');
     
-    // After second click (back to initial)
     fireEvent.click(button);
     expect(button).toHaveTextContent('Show more');
   });

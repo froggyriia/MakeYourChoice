@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
-import LoginForm from './LoginForm';
+import LoginForm from '../../../src/components/LoginForm';
 
 function setup() {
   const mockOnSubmit = vi.fn();

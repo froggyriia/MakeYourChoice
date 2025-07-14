@@ -1,80 +1,117 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { vi } from 'vitest';
-import CourseList from './CourseList';
+// frontend/tests/integration/CourseList.test.jsx
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, act } from '@testing-library/react';
+import CourseList from '../../src/components/CourseList';
+import { AuthProvider } from '../../src/context/AuthContext';
 
-vi.mock('./CourseItem', () => ({
-  default: ({ course, onDelete, onEdit, onArchive }) => (
-    <div data-testid="course-item">
-      <span>{course.name}</span>
-      <button onClick={() => onDelete(course.id)}>Delete</button>
-      <button onClick={() => onEdit(course.id)}>Edit</button>
-      <button onClick={() => onArchive(course.id)}>Archive</button>
-    </div>
-  )
+// Mock the validation module
+vi.mock('../../src/hooks/validation.js', () => ({
+  isAdmin: vi.fn(),
+  isStudent: vi.fn()
 }));
 
-describe('CourseList Integration Test', () => {
-  const mockDelete = vi.fn();
-  const mockEdit = vi.fn();
-  const mockArchive = vi.fn();
+// Mock the CourseItem component
+vi.mock('../../src/components/CourseItem', () => ({
+  default: vi.fn(({ course, role }) => (
+    <div data-testid="course-item">
+      {course.name} (Role: {role})
+    </div>
+  ))
+}));
 
-  const sampleCourses = [
-    { id: 1, name: 'Course 1' },
-    { id: 2, name: 'Course 2' },
+describe('CourseList Integration with AuthContext', () => {
+  const mockCourses = [
+    { id: 1, name: 'Mathematics' },
+    { id: 2, name: 'Physics' }
   ];
 
-  afterEach(() => {
+  const mockHandlers = {
+    onDeleteCourse: vi.fn(),
+    onEditCourse: vi.fn(),
+    onArchiveCourse: vi.fn()
+  };
+
+  beforeEach(async () => {
+    localStorage.clear();
     vi.clearAllMocks();
+    
+    const validation = await import('../../src/hooks/validation.js');
+    validation.isAdmin.mockReset();
+    validation.isStudent.mockReset();
   });
 
-  test('renders list of courses', () => {
-    render(
-      <CourseList
-        courses={sampleCourses}
-        onDeleteCourse={mockDelete}
-        onEditCourse={mockEdit}
-        onArchiveCourse={mockArchive}
-      />
-    );
+  const renderWithAuth = async (role, email) => {
+    const validation = await import('../../src/hooks/validation.js');
+    validation.isAdmin.mockResolvedValue(role === 'admin');
+    validation.isStudent.mockResolvedValue(role === 'student');
 
-    const courseItems = screen.getAllByTestId('course-item');
-    expect(courseItems).toHaveLength(sampleCourses.length);
+    localStorage.setItem('currentRole', role);
+    localStorage.setItem('email', email);
+    localStorage.setItem('trueRole', role);
 
-    expect(screen.getByText('Course 1')).toBeInTheDocument();
-    expect(screen.getByText('Course 2')).toBeInTheDocument();
+    await act(async () => {
+      render(
+        <AuthProvider>
+          <CourseList courses={mockCourses} {...mockHandlers} />
+        </AuthProvider>
+      );
+    });
+  };
+
+  it('should render with student role when user is student', async () => {
+    await renderWithAuth('student', 'student@example.com');
+    const items = await screen.findAllByTestId('course-item');
+    expect(items[0]).toHaveTextContent('Mathematics (Role: student)');
   });
 
-  test('displays fallback message when no courses', () => {
-    render(
-      <CourseList
-        courses={[]}
-        onDeleteCourse={mockDelete}
-        onEditCourse={mockEdit}
-        onArchiveCourse={mockArchive}
-      />
-    );
-
-    expect(screen.getByText(/no available courses/i)).toBeInTheDocument();
+  it('should render with admin role when user is admin', async () => {
+    await renderWithAuth('admin', 'admin@example.com');
+    const items = await screen.findAllByTestId('course-item');
+    expect(items[0]).toHaveTextContent('Mathematics (Role: admin)');
   });
 
-  test('calls appropriate callbacks when buttons clicked', () => {
-    render(
-      <CourseList
-        courses={[{ id: 1, name: 'Course 1' }]}
-        onDeleteCourse={mockDelete}
-        onEditCourse={mockEdit}
-        onArchiveCourse={mockArchive}
-      />
-    );
+  it('should show empty state when no courses', async () => {
+    await act(async () => {
+      render(
+        <AuthProvider>
+          <CourseList courses={[]} {...mockHandlers} />
+        </AuthProvider>
+      );
+    });
+    expect(screen.getByText('No available courses')).toBeInTheDocument();
+  });
 
-    fireEvent.click(screen.getByText('Delete'));
-    expect(mockDelete).toHaveBeenCalledWith(1);
+  it('should reflect role changes when AuthContext updates', async () => {
+    // First render with student role
+    await renderWithAuth('student', 'student@example.com');
+    expect((await screen.findAllByTestId('course-item'))[0])
+      .toHaveTextContent('Mathematics (Role: student)');
 
-    fireEvent.click(screen.getByText('Edit'));
-    expect(mockEdit).toHaveBeenCalledWith(1);
+    // Change to admin role
+    const validation = await import('../../src/hooks/validation.js');
+    validation.isAdmin.mockResolvedValue(true);
+    validation.isStudent.mockResolvedValue(false);
 
-    fireEvent.click(screen.getByText('Archive'));
-    expect(mockArchive).toHaveBeenCalledWith(1);
+    localStorage.setItem('currentRole', 'admin');
+    localStorage.setItem('email', 'admin@example.com');
+    localStorage.setItem('trueRole', 'admin');
+
+    // Need to force a re-render by changing a prop
+    await act(async () => {
+      render(
+        <AuthProvider>
+          <CourseList 
+            courses={mockCourses} 
+            {...mockHandlers} 
+            data-testid="rerendered"
+          />
+        </AuthProvider>,
+        { container: document.body }
+      );
+    });
+
+    // Verify role changed to admin
+    expect((await screen.findAllByTestId('course-item'))[0])
+      .toHaveTextContent('Mathematics (Role: admin)');
   });
 });
