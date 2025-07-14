@@ -77,7 +77,6 @@
     background-color: #888;
 }
 
-/* Остальные стили остаются без изменений */
 
 /* Prevent page scrolling and fix layout when modal is open */
 body.modal-open {
@@ -378,11 +377,6 @@ button[type="button"]:hover {
 .modalFooter button[type="submit"]:hover {
     background-color: var(--color-primary-dark);
     transform: translateY(-2px);
-}
-
-.modalFooter button[type="button"] {
-    background-color: var(--color-inactive);
-    color: white;
 }
 
 .modalFooter button[type="button"]:hover {

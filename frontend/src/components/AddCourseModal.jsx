@@ -251,11 +251,12 @@ const AddCourseModal = ({
                         </>
                     ) : (
                         <>
+                            <button type="submit" onClick={handleFormSubmit}>
+                                Submit
+                            </button>
+                            
                             <button type="button" onClick={onCancel}>
                                 Cancel
-                            </button>
-                            <button type="button" onClick={handleFormSubmit}>
-                                Submit
                             </button>
                         </>
                     )}
