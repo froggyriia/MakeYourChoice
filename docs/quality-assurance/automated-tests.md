@@ -244,7 +244,19 @@ npm run test:unit
 
 **Technical details: Frontend part**
 
-TBA
+**Framework:** Vitest   
+
+**What is being testing:**
+- Component rendering (with props, slots, and dynamic content)
+- User interactions (clicks, inputs, navigation)
+- API calls & mock responses
+- State management
+- Utility functions
+
+**Launch**
+```commandline
+npm run test:unit
+```
 
 **Integration with CI/CD**
 ```commandline
@@ -302,7 +314,16 @@ npm run test:integration
 
 **Technical details: Frontend part**
 
-TBA
+**Framework:** Vitest   
+**What is being testing:**
+- Component + API integration (e.g., fetching data and rendering it)
+- Routing/navigation
+- State management flows
+
+**Launch**
+```commandline
+npm run test:integration
+```
 
 **Integration with CI/CD**
 ```commandline
