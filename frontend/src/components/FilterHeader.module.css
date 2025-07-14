@@ -11,16 +11,16 @@
 }
 
 .filterHeader {
-    width: calc(100%);
-    position: sticky;
+    width: 17rem;
+    position: fixed;
     top: 32px;
     z-index: 5;
     background-color: white;
     padding: 20px 24px;
-    margin-bottom: 8px;
-    margin-left: 1.5rem;
+    margin-top: 2.5rem;
+    margin-left: -3.05rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.0);
-    border-radius: var(--border-radius-lg);
+    border-radius: var(--border-radius-sm);
     transform: translateX(-24px);
 }
 

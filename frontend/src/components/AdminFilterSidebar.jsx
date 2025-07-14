@@ -47,7 +47,7 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
     return (
         <div className={styles.sidebar}>
             <div className={styles.sidebarHeader}>
-                <h3>Filters</h3>
+                <h3 className={styles.sidebarText}>Filters</h3>
                 <button
                     className={styles.resetButton}
                     onClick={handleReset}
