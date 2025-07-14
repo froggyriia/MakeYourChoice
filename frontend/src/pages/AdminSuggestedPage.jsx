@@ -78,7 +78,7 @@ const AdminSuggestedCoursesPage = () => {
 
   return (
     <div className={styles.catalogueWrapper}>
-      <h2 className={styles.pageTitle}>All suggested courses</h2>
+      <h2 className={styles.pageTitle}>Suggested courses</h2>
 
       {courses.length === 0 ? (
         <p style={{ textAlign: 'center' }}>No suggested courses</p>
