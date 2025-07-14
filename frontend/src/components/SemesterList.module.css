@@ -1,12 +1,20 @@
 /* outer white card */
 .container {
-    background-color: white;
+
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    background-color: white;
     padding: 16px;
     margin-bottom: 16px;
+    /* Скрыть скроллбар */
+    scrollbar-width: none;          /* Firefox */
+    -ms-overflow-style: none;       /* IE 10+ */
+
 }
 
+/* Для Chrome, Edge, Safari */
+.list::-webkit-scrollbar {
+    display: none;
+}
 /* heading above list */
 .header {
     font-family: 'Montserrat', sans-serif;
