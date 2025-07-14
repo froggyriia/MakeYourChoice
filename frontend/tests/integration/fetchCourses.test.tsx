@@ -9,7 +9,7 @@ vi.mock('../../src/pages/supabaseClient.jsx')
 vi.mock('../../src/api/functions_for_users.js');
 
 describe('fetchCourses', () => {
-  const mockEmail = 'test@example.com';
+  const mockEmail = 'n.test@example.com';
   const mockUserProgram = 'Computer Science';
   const mockUserYear = 2;
 

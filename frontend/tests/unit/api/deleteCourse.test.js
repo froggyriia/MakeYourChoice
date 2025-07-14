@@ -20,14 +20,14 @@ describe('deleteCourse', () => {
     supabase.from.mockReturnValue({ delete: mockDelete });
   });
 
-  it('should delete a course by title successfully', async () => {
+  it('should delete a course by id successfully', async () => {
     mockEq.mockResolvedValue({ error: null });
 
-    const result = await deleteCourse('JavaScript Basics');
+    const result = await deleteCourse('123');
 
     expect(supabase.from).toHaveBeenCalledWith('catalogue');
     expect(mockDelete).toHaveBeenCalled();
-    expect(mockEq).toHaveBeenCalledWith('title', 'JavaScript Basics');
+    expect(mockEq).toHaveBeenCalledWith('id', '123');
     expect(result).toEqual({ error: null });
   });
 
