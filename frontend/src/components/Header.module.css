@@ -106,6 +106,24 @@
   color: black;
 }
 
+.searchInput {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin: 0 10px;
+    width: 200px;
+}
+
+.deadline {
+    font-size: 14px;
+    color: #d00;
+    background-color: #fff2f2;
+    padding: 4px 8px;
+    border-radius: 6px;
+    margin-right: 10px;
+}
+
 @media (max-width: 768px) {
   .header {
     flex-direction: column;

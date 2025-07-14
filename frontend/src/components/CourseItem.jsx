@@ -126,27 +126,27 @@ const CourseItem = ({ course, onDelete, onEdit, onArchive, role }) => {
 
             <div className={styles.courseInfo}>
                 <p className={styles.info}>
-                    <span className={styles.infoLabel}>Instructor:</span>
+                    <span className={styles.infoLabel}>Instructor: </span>
                     {highlightText(course.teacher, searchQuery)}
                 </p>
                 <p className={styles.info}>
-                    <span className={styles.infoLabel}>Language:</span>
+                    <span className={styles.infoLabel}>Language: </span>
                     {course.language}
                 </p>
                 <p className={styles.info}>
-                    <span className={styles.infoLabel}>Program:</span>
+                    <span className={styles.infoLabel}>Program: </span>
                     {Array.isArray(course.program) 
                         ? highlightText(course.program.join(', '), searchQuery)
                         : course.program}
                 </p>
                 <p className={styles.info}>
-                    <span className={styles.infoLabel}>Years:</span>
+                    <span className={styles.infoLabel}>Years: </span>
                     {Array.isArray(course.years) 
                         ? course.years.sort().join(', ') 
                         : 'No data'}
                 </p>
                 <p className={styles.info}>
-                    <span className={styles.infoLabel}>Type:</span>
+                    <span className={styles.infoLabel}>Type: </span>
                     {course.type}
                 </p>
             </div>

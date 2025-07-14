@@ -1,4 +1,3 @@
-// Header.jsx
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -21,7 +20,7 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef();
 
-  // Click outside to close
+  // Click outside to close menu
   useEffect(() => {
     const handler = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -32,7 +31,7 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Deadline
+  // Fetch deadline for student
   useEffect(() => {
     const fetchDeadline = async () => {
       if (!email || currentRole === 'admin') return;
@@ -51,7 +50,7 @@ export default function Header() {
     fetchDeadline();
   }, [email, currentRole]);
 
-  // Search
+  // Search logic for student
   useEffect(() => {
     const delay = setTimeout(async () => {
       if (currentRole !== 'student') return;
@@ -64,6 +63,7 @@ export default function Header() {
             courseTypeFilter !== 'all' ? courseTypeFilter : undefined
           );
           catalogue.setCourses(res);
+          catalogue.setSearchQuery(searchText);
         } else if (searchText.trim() === '') {
           const all = await fetchCourses(email, false, {
             types: courseTypeFilter !== 'all' ? [courseTypeFilter] : [],
@@ -108,7 +108,22 @@ export default function Header() {
       </nav>
 
       <div className={styles.headerRight}>
+        {currentRole === 'student' && deadline && (
+          <span className={styles.deadline}>⏰ Deadline: {deadline}</span>
+        )}
+
+        {currentRole === 'student' && (
+          <input
+            type="text"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            placeholder={"Search..."}
+            className={styles.searchInput}
+          />
+        )}
+
         <span className={styles.email}>{email}</span>
+
         <div className={styles.userMenuWrapper} ref={menuRef}>
           <button className={styles.menuButton} onClick={() => setMenuOpen(p => !p)}>▾</button>
           {menuOpen && (
@@ -124,10 +139,13 @@ export default function Header() {
                   setCurrentRole(newRole);
                   navigate(newRole === 'admin' ? '/admin/courses' : '/student-catalogue');
                 }}>
-                  <img width="16" height="16" src="https://img.icons8.com/material-outlined/24/student-male.png" alt="student-male"/>{currentRole === 'admin' ? 'View as Student' : 'Back to Admin'}
+                  <img width="16" height="16" src="https://img.icons8.com/material-outlined/24/student-male.png" alt="student-male"/>
+                  {currentRole === 'admin' ? 'View as Student' : 'Back to Admin'}
                 </button>
               )}
-              <button className={styles.logoutButton} onClick={logout}> <img width="16" height="16" src="https://img.icons8.com/material-outlined/24/exit.png" alt="exit"/> Log out</button>
+              <button className={styles.logoutButton} onClick={logout}>
+                <img width="16" height="16" src="https://img.icons8.com/material-outlined/24/exit.png" alt="exit"/> Log out
+              </button>
             </div>
           )}
         </div>
