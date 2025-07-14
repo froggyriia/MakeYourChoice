@@ -195,3 +195,131 @@ lint:
     paths:
       - frontend/reports/
 ```
+---
+## Unit tests   
+**Description**
+
+Unit tests cover key modules of both the backend and the frontend:
+- Overall tests: 10
+  - Backend: 6 tests
+    - [addCourse.test.js](frontend/tests/unit/api/addCourse.test.js)
+    - [archiveCourse.test.js](frontend/tests/unit/api/archiveCourse.test.js)
+    - [deleteCourse.test.js](frontend/tests/unit/api/deleteCourse.test.js)
+    - [editCourseInfo.test.js](frontend/tests/unit/api/editCourseInfo.test.js)
+    - [updateSemesterActiveStatus.test.js](frontend/tests/unit/api/updateSemesterActiveStatus.test.js)
+    - [createAbbreviation.test.js](frontend/tests/unit/hooks/createAbbreviation.test.js)
+  - Frontend: 4 tests
+    - TBA
+
+**Technical details: Backend part**
+
+**Framework:** Vitest   
+**What is being testing:**
+- API endpoints
+- Data validation
+- Algorithm correctness 
+- Data processing (formatting, filtration)
+- Conditional branching (error handling)
+- Isolated work with the database
+```
+vi.mock('../../supabaseClient', () => ({
+  supabase: {
+    from: vi.fn().mockReturnThis(),
+    insert: vi.fn().mockReturnThis(),
+    select: vi.fn().mockResolvedValue({ 
+      data: [mockCourse], 
+      error: null 
+    }),
+    eq: vi.fn().mockReturnThis()
+  }
+}));
+```
+**Launch**
+```commandline
+npm run test:unit
+```
+
+**Technical details: Frontend part**
+
+TBA
+
+**Integration with CI/CD**
+```commandline
+unit_tests:
+  stage: test
+  image: node:20
+  variables:
+    SUPABASE_URL: "$SUPABASE_URL"
+    SUPABASE_ANON_KEY: "$SUPABASE_ANON_KEY"
+    VITE_SUPABASE_URL: "$SUPABASE_URL"
+    VITE_SUPABASE_ANON_KEY: "$SUPABASE_ANON_KEY"
+  before_script:
+    - cd frontend
+    - npm install
+    - npx supabase gen types typescript --project-id "$SUPABASE_PROJECT_ID" > src/database.types.ts || true
+    - npm update
+  script:
+    - echo "VITE_SUPABASE_URL=$VITE_SUPABASE_URL" >> .env
+    - echo "VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY" >> .env
+    - cat .env
+    - npm run test:unit
+  artifacts:
+    reports:
+      junit: frontend/reports/unit-tests.xml
+    paths:
+      - frontend/reports/
+```
+---
+## Integration tests
+**Description**
+
+Unit tests cover key modules of both the backend and the frontend too:
+- Overall tests: 10
+  - Backend: 3 tests
+    - [archivedCourses.test.tsx](frontend/tests/integration/archivedCourses.test.tsx)
+    - [excelExport.test.tsx](frontend/tests/integration/excelExport.test.tsx)
+    - [fetchCourses.test.tsx](frontend/tests/integration/fetchCourses.test.tsx)
+  - Frontend: 7 tests
+    - TBA
+
+**Technical details: Backend part**
+
+**Framework:** Vitest   
+**What is being testing:**
+- API endpoints
+- Request/response validation
+- Error handling between layers
+
+**Launch**
+```commandline
+npm run test:integration
+```
+
+**Technical details: Frontend part**
+
+TBA
+
+**Integration with CI/CD**
+```commandline
+integration_tests:
+  stage: test
+  image: node:20
+  variables:
+    SUPABASE_URL: "$SUPABASE_URL"
+    SUPABASE_ANON_KEY: "$SUPABASE_ANON_KEY"
+    VITE_SUPABASE_URL: "$SUPABASE_URL"
+    VITE_SUPABASE_ANON_KEY: "$SUPABASE_ANON_KEY"
+  before_script:
+    - cd frontend
+    - npm install
+    - npx supabase gen types typescript --project-id "$SUPABASE_PROJECT_ID" > src/database.types.ts || true
+    - npm update
+  script:
+    - echo "VITE_SUPABASE_URL=$VITE_SUPABASE_URL" >> .env
+    - echo "VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY" >> .env
+    - cat .env
+    - npm run test:integration
+  artifacts:
+    reports:
+      junit: frontend/reports/integration-tests.xml
+```
