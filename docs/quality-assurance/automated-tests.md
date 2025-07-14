@@ -209,7 +209,10 @@ Unit tests cover key modules of both the backend and the frontend:
     - [updateSemesterActiveStatus.test.js](frontend/tests/unit/api/updateSemesterActiveStatus.test.js)
     - [createAbbreviation.test.js](frontend/tests/unit/hooks/createAbbreviation.test.js)
   - Frontend: 4 tests
-    - TBA
+    - [CompactCourseTileUnit.test.jsx](frontend/tests/unit/components/CompactCourseTileUnit.test.jsx)
+    - [CourseItemUnit.test.jsx](frontend/tests/unit/components/CourseItemUnit.test.jsx)
+    - [ElectivesFormUnit.test.jsx](frontend/tests/unit/components/ElectivesFormUnit.test.jsx)
+    - [LoginFormUnit.test.jsx](frontend/tests/unit/components/LoginFormUnit.test.jsx)
 
 **Technical details: Backend part**
 
@@ -274,13 +277,15 @@ unit_tests:
 **Description**
 
 Unit tests cover key modules of both the backend and the frontend too:
-- Overall tests: 10
+- Overall tests: 6
   - Backend: 3 tests
     - [archivedCourses.test.tsx](frontend/tests/integration/archivedCourses.test.tsx)
     - [excelExport.test.tsx](frontend/tests/integration/excelExport.test.tsx)
     - [fetchCourses.test.tsx](frontend/tests/integration/fetchCourses.test.tsx)
-  - Frontend: 7 tests
-    - TBA
+  - Frontend: 3 tests
+    - [CourseListGridInteg.test.jsx](frontend/tests/integration/CourseListGridInteg.test.jsx)
+    - [CourseListInteg.test.jsx](frontend/tests/integration/CourseListInteg.test.jsx)
+    - [HeaderInteg.test.jsx](frontend/tests/integration/HeaderInteg.test.jsx)
 
 **Technical details: Backend part**
 
