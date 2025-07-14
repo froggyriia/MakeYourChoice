@@ -63,6 +63,7 @@ Comprehensive review of the code and configurations on:
 | frontend/requirements.txt | pip        | 0               | -                         |
 | package-lock.json   | npm        | 0               | -                         |
 |   Dockerfile                    | dockerfile | -               | 3 (medium and low levels) |
+
 Legend:
 - '-': Not scanned
 - '0': Clean (no security findings detected)
@@ -92,6 +93,7 @@ Automated checking of Docker-images for vulnerabilities in dependencies and the 
 | Target | Type       | Vulnerabilities            | Secrets |
 |------|------------|----------------------------|---------|
 | harbor.pg.innopolis.university/makeyourchoice/my-app:latest| ubuntu         | 25 (medium and low levels) | -       |
+
 Legend:
 - '-': Not scanned
 - '0': Clean (no security findings detected)
