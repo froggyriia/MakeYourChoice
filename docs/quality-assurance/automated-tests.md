@@ -253,6 +253,20 @@ npm run test:unit
 - State management
 - Utility functions
 
+```
+vi.mock('../../supabaseClient', () => ({
+  supabase: {
+    from: vi.fn().mockReturnThis(),
+    insert: vi.fn().mockReturnThis(),
+    select: vi.fn().mockResolvedValue({ 
+      data: [mockCourse], 
+      error: null 
+    }),
+    eq: vi.fn().mockReturnThis()
+  }
+}));
+```
+
 **Launch**
 ```commandline
 npm run test:unit
