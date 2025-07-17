@@ -30,13 +30,22 @@ import { supabase } from '../pages/supabaseClient.jsx';
 export function useExcelExport() {
     const [isExported, setIsExported] = useState(false);
 
-    const exportToExcel = async () => {
+    const exportToExcel = async (semesterId) => {
         try {
-            // Fetch data from both tables
+            const { data: semesterData, error: semesterError } = await supabase
+                .from('semesters')
+                .select('semester, semester_year')
+                .eq('id', semesterId)
+                .single();
+
+            if (semesterError) throw semesterError;
+
+            const semesterName = `${semesterData.semester}${semesterData.semester_year}`;
+
             const [{ data: prioritiesData, error: prioritiesError },
                    { data: lastPrioritiesData, error: lastPrioritiesError }] = await Promise.all([
-                supabase.from("all_priorities").select("*"),
-                supabase.from("last_priorities").select("*")
+                supabase.from("all_priorities").select("*").eq("semester_name", semesterId),
+                supabase.from("last_priorities").select("*").eq("semester_name", semesterId)
             ]);
 
             if (prioritiesError || lastPrioritiesError) {
@@ -44,7 +53,7 @@ export function useExcelExport() {
             }
 
             if (!prioritiesData?.length && !lastPrioritiesData?.length) {
-                alert("No data to export");
+                alert('No data to export for this semester');
                 return;
             }
 
@@ -74,6 +83,10 @@ export function useExcelExport() {
 
             // Create workbook and sheets
             const workbook = new ExcelJS.Workbook();
+
+//            const infoSheet = workbook.addWorksheet("Info");
+//            infoSheet.addRow(["Semester", semester]);
+//            infoSheet.addRow(["Export Date", new Date().toLocaleString()]);
 
             // Priorities sheet
             if (processedPriorities.length > 0) {
@@ -121,8 +134,8 @@ export function useExcelExport() {
 
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = `priorities_export_${new Date().toISOString().slice(0, 10)}.xlsx`;
-            document.body.appendChild(link);
+            link.download = `priorities_${semesterName}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+             document.body.appendChild(link);
             link.click();
             setTimeout(() => {
                 document.body.removeChild(link);

@@ -8,7 +8,7 @@ import styles from './SemesterTile.module.css';
  * @param {Function} props.onEdit        - clicked “Edit”
  * @param {Function} props.onDelete      - clicked “Delete”
  */
-export default function SemesterTile({ semester, onSelect, onEdit, onDelete }) {
+export default function SemesterTile({ semester, onSelect, onDelete, onExport }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const ref = useRef();
 
@@ -24,9 +24,13 @@ export default function SemesterTile({ semester, onSelect, onEdit, onDelete }) {
     }, []);
 
     const handleTileClick = () => onSelect?.(semester.id);
-    const toggleMenu     = e => { e.stopPropagation(); setMenuOpen(m => !m); };
-    const clickEdit      = e => { e.stopPropagation(); onEdit?.(semester.id); setMenuOpen(false); };
-    const clickDelete    = e => { e.stopPropagation(); onDelete?.(semester.id); setMenuOpen(false); };
+    const toggleMenu = e => { e.stopPropagation(); setMenuOpen(m => !m); };
+//     const clickEdit = e => { e.stopPropagation(); onEdit?.(semester.id); setMenuOpen(false); };
+    const clickDelete = e => { e.stopPropagation(); onDelete?.(semester.id); setMenuOpen(false); };
+    const clickExport = e => {e.stopPropagation();
+        onExport?.(semester.id);
+        setMenuOpen(false);
+    };
 
     return (
         <div
@@ -34,9 +38,9 @@ export default function SemesterTile({ semester, onSelect, onEdit, onDelete }) {
             onClick={handleTileClick}
             className={`${styles.tile} ${semester.is_active ? styles.active : ''}`}
         >
-      <span className={styles.label}>
-        {semester.semester} {semester.semester_year}
-      </span>
+            <span className={styles.label}>
+                {semester.semester} {semester.semester_year}
+            </span>
 
             <button
                 onClick={toggleMenu}
@@ -48,8 +52,8 @@ export default function SemesterTile({ semester, onSelect, onEdit, onDelete }) {
 
             {menuOpen && (
                 <div className={styles.dropdown}>
-                    <button className={styles.dropdownItem} onClick={clickEdit}>
-                        Edit
+                    <button className={`${styles.dropdownItem} ${styles.exportButton}`} onClick={clickExport}>
+                        Export to Excel
                     </button>
                     <button className={styles.dropdownItem} onClick={clickDelete}>
                         <span className={styles.deleteButton}>Delete</span>
