@@ -165,7 +165,7 @@ export const useCatalogue = () => {
 
     // Start editing existing course
     const startEditingCourse = async (courseId) => {
-        let course = courses.find(c => c.id === courseId);
+        let course = allCourses.find(c => c.id === courseId) || courses.find(c => c.id === courseId);
         if (!course) {
             try {
                 course = await getCourseInfo(courseId);
