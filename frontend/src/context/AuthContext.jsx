@@ -1,6 +1,6 @@
-// AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { isAdmin, isStudent } from '../hooks/validation.js'
+import { isAdmin, isStudent } from '../hooks/validation.js';
+import { isSingleActiveSemester } from '../api/functions_for_semesters.js';
 
 const AuthContext = createContext();
 
@@ -9,50 +9,89 @@ export const AuthProvider = ({ children }) => {
     const [currentRole, setCurrentRole] = useState(null);
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(true);
+    const [currentSemId, setCurrentSemId] = useState(null); // Теперь храним только ID
 
+    // Загрузка данных при инициализации
     useEffect(() => {
-        const storedCurrentRole = localStorage.getItem('currentRole');
-        const storedTrueRole = localStorage.getItem('trueRole');
-        const storedEmail = localStorage.getItem('email');
+        const loadAuthData = async () => {
+            try {
+                const storedCurrentRole = localStorage.getItem('currentRole');
+                const storedTrueRole = localStorage.getItem('trueRole');
+                const storedEmail = localStorage.getItem('email');
+                const storedSemId = localStorage.getItem('currentSemId');
 
-        if (storedCurrentRole) setCurrentRole(storedCurrentRole);
-        if (storedTrueRole) setTrueRole(storedTrueRole);
-        if (storedEmail) setEmail(storedEmail);
+                if (storedCurrentRole) setCurrentRole(storedCurrentRole);
+                if (storedTrueRole) setTrueRole(storedTrueRole);
+                if (storedEmail) setEmail(storedEmail);
+                if (storedSemId) setCurrentSemId(storedSemId);
+            } catch (error) {
+                console.error('Ошибка загрузки данных:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        setLoading(false);
+        loadAuthData();
     }, []);
 
     const loginAs = async (userEmail) => {
-        const admin = await isAdmin(userEmail);
-        const student = await isStudent(userEmail);
+        try {
+            const [admin, student, semester] = await Promise.all([
+                isAdmin(userEmail),
+                isStudent(userEmail),
+                isSingleActiveSemester()
+            ]);
 
-        let roleGroup;
-        if (admin && student) roleGroup = 'admin-student';
-        else if (admin) roleGroup = 'admin';
-        else roleGroup = 'student';
+            console.log('semAuth in auth', semester);
 
-        const resolvedRole = admin ? 'admin' : 'student';
+            if (!semester) {
+                throw new Error('Активный семестр не найден');
+            }
 
-        setTrueRole(roleGroup);
-        setCurrentRole(resolvedRole);
-        setEmail(userEmail);
+            const roleGroup = admin 
+                ? (student ? 'admin-student' : 'admin')
+                : 'student';
 
-        localStorage.setItem('trueRole', roleGroup);
-        localStorage.setItem('currentRole', resolvedRole);
-        localStorage.setItem('email', userEmail);
+            const resolvedRole = admin ? 'admin' : 'student';
 
-        return resolvedRole;
+            // Обновляем состояние
+            setTrueRole(roleGroup);
+            setCurrentRole(resolvedRole);
+            setEmail(userEmail);
+            setCurrentSemId(semester.id);
+
+            // Сохраняем в localStorage
+            localStorage.setItem('trueRole', roleGroup);
+            localStorage.setItem('currentRole', resolvedRole);
+            localStorage.setItem('email', userEmail);
+            localStorage.setItem('currentSemId', semester.id);
+
+            return resolvedRole;
+        } catch (error) {
+            console.error('Ошибка входа:', error);
+            throw error; // Пробрасываем ошибку для обработки в компоненте
+        }
     };
 
     const logout = () => {
         setTrueRole(null);
         setCurrentRole(null);
         setEmail('');
+        setCurrentSemId(null);
         localStorage.clear();
     };
 
     return (
-        <AuthContext.Provider value={{ trueRole, currentRole, setCurrentRole, email, loginAs, logout, loading }}>
+        <AuthContext.Provider value={{
+            trueRole,
+            currentRole,
+            setCurrentRole,
+            email,
+            currentSemId, // Теперь передаём только ID
+            loginAs,
+            logout,
+            loading
+        }}>
             {children}
         </AuthContext.Provider>
     );

@@ -20,8 +20,7 @@ import { supabase } from '../pages/supabaseClient.jsx';
       return null;
     }
 
-    const group = data.student_group;
-    return group;
+    return data.student_group;
   } catch (err) {
     console.error('Error in getUserProgram:', err);
     return null;

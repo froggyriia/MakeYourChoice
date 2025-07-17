@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SemesterList from '../components/SemesterList';
 import SemesterForm from '../components/SemesterForm';
-import { getAllSemesters } from '../api/functions_for_semesters.js';
+import { getAllSemesters, deleteSemester } from '../api/functions_for_semesters.js';
 import styles from './AdminSemestersPage.module.css';
 
 export default function AdminSemestersPage() {
@@ -21,7 +21,7 @@ export default function AdminSemestersPage() {
     const handleSelect = id => setEditingId(id);
     const handleEdit   = id => setEditingId(id);
     const handleDelete = async id => {
-        // your delete logic here...
+        await deleteSemester(id);
         await refresh();
         if (id === editingId) setEditingId(null);
     }
