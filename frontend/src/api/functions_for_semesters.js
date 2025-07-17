@@ -145,7 +145,7 @@ export async function getLatestRecordBySemester(semesterName) {
  * @returns {Promise<Object>}
  */
 export async function getSemesterById(id) {
-  const { data, error } = await supabase
+  try {const { data, error } = await supabase
       .from('semesters')
       .select('*')
       .eq('id', id)
@@ -153,6 +153,11 @@ export async function getSemesterById(id) {
 
   if (error) throw error;
   return data;
+  }
+  catch (error) {
+    console.error('Ошибка возвращении семестра по айди:', error.message);
+    return false;
+  }
 }
 /**
  * Находит единственный активный семестр
@@ -191,21 +196,22 @@ export async function isSingleActiveSemester() {
 export async function isStudentAllowedInSemester(email, semester) {
 try {
     const userProgram = await getUserProgram(email);
-    const userYear = await getUserYear(email);
+    console.log('semester in func', semester);
+    console.log('user program', userProgram);
 
-    if (!userProgram || !userYear) {
+    if (!userProgram) {
       console.warn('Не удалось получить данные студента');
       return false;
     }
 
     // 2. Проверяем, что семестр существует и содержит programs
-    if (!semester || !semester.programs || !Array.isArray(semester.programs)) {
+    if (!semester) {
       console.warn('Некорректные данные семестра');
       return false;
     }
 
-    // 3. Проверяем совпадение программы студента с программами семестра
-    const isProgramAllowed = semester.programs.includes(userProgram);
+    const isProgramAllowed = Array.isArray(semester.program) &&
+                        semester.program.some(program => program === userProgram);
 
     return isProgramAllowed;
 
