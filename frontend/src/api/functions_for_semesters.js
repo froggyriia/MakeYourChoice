@@ -1,4 +1,6 @@
 import { supabase } from '../pages/supabaseClient.jsx';
+import { getUserYear, getUserProgram } from './functions_for_users.js'
+
 /**
  * Saves semester information to the database.
  * If a semester with the given name and year exists, updates it; otherwise creates a new record.
@@ -143,7 +145,7 @@ export async function getLatestRecordBySemester(semesterName) {
  * @returns {Promise<Object>}
  */
 export async function getSemesterById(id) {
-  const { data, error } = await supabase
+  try {const { data, error } = await supabase
       .from('semesters')
       .select('*')
       .eq('id', id)
@@ -151,10 +153,14 @@ export async function getSemesterById(id) {
 
   if (error) throw error;
   return data;
+  }
+  catch (error) {
+    console.error('Ошибка возвращении семестра по айди:', error.message);
+    return false;
+  }
 }
 /**
  * Находит единственный активный семестр
- * @param {string} tableName - Название таблицы (по умолчанию 'your_table_name')
  * @returns {Promise<Object|boolean>} Активная запись или false
  */
 export async function isSingleActiveSemester() {
@@ -163,6 +169,8 @@ export async function isSingleActiveSemester() {
       .from('semesters')
       .select('*')
       .eq('is_active', true);
+
+    console.log('activeRecords in funcs for sems', activeRecords[0]);
 
     if (error) throw error;
 
@@ -188,21 +196,22 @@ export async function isSingleActiveSemester() {
 export async function isStudentAllowedInSemester(email, semester) {
 try {
     const userProgram = await getUserProgram(email);
-    const userYear = await getUserYear(email);
+    console.log('semester in func', semester);
+    console.log('user program', userProgram);
 
-    if (!userProgram || !userYear) {
+    if (!userProgram) {
       console.warn('Не удалось получить данные студента');
       return false;
     }
 
     // 2. Проверяем, что семестр существует и содержит programs
-    if (!semester || !semester.programs || !Array.isArray(semester.programs)) {
+    if (!semester) {
       console.warn('Некорректные данные семестра');
       return false;
     }
 
-    // 3. Проверяем совпадение программы студента с программами семестра
-    const isProgramAllowed = semester.programs.includes(userProgram);
+    const isProgramAllowed = Array.isArray(semester.program) &&
+                        semester.program.some(program => program === userProgram);
 
     return isProgramAllowed;
 
@@ -213,22 +222,45 @@ try {
 }
 
 /**
- * Получает все записи из таблицы semesters
+ * Получает все записи из таблицы semesters (отфильтрованные)
  * @returns {Promise<Array>} Массив всех семестров или пустой массив при ошибке
  */
 export async function getAllSemesters() {
   try {
     const { data: semesters, error } = await supabase
       .from('semesters')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('*');
 
     if (error) throw error;
 
-    return semesters || [];
+    const sortedSemesters = (semesters || []).sort((a, b) => {
+      if (b.semester_year !== a.semester_year) {
+        return b.semester_year - a.semester_year;
+      }
+
+      const seasonOrder = { 'Fall': 1, 'Summer': 2, 'Spring': 3 };
+      return seasonOrder[a.semester] - seasonOrder[b.semester];
+    });
+
+    return sortedSemesters  ;
 
   } catch (error) {
     console.error('Ошибка при получении семестров:', error.message);
+    return [];
+  }
+}
+
+export async function deleteSemester(id) {
+try {
+    const { data: semesters, error } = await supabase
+      .from('semesters')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+
+  } catch (error) {
+    console.error('Ошибка при удалении семестра:', error.message);
     return [];
   }
 }

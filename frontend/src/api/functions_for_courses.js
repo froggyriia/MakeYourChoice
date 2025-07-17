@@ -141,7 +141,7 @@ export async function fetchCourses(email, allCourses = false) {
       const userYear = await getUserYear(email);
 
       if (!userProgram || !userYear) {
-        console.warn(`User data not found for ${email}`);
+        console.warn('User data not found for', email);
         return [];
       }
 
