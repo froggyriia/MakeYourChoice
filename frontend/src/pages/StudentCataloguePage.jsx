@@ -16,9 +16,10 @@ import { useAuth } from '../context/AuthContext';
 import { useFormSubmit } from '../hooks/useFormSubmit';
 import styles from './CataloguePage.module.css';
 import HeaderLayout from "../components/HeaderLayout.jsx";
+import { isStudentAllowedInSemester } from '../api/functions_for_semesters.js';
 
 const StudentCataloguePage = () => {
-    const { currentRole, email } = useAuth(); // Get auth info
+    const { currentRole, email, currentSem } = useAuth(); // Get auth info
     const { catalogue } = useCatalogueContext(); // Course state
     const { onSubmit } = useFormSubmit(email); // Hook for handling form submission
     const scrollPosition = useRef(0); // For potential scroll restoration
@@ -31,8 +32,12 @@ const StudentCataloguePage = () => {
     console.log("[StudentCataloguePage] current courseTypeFilter:", courseTypeFilter);
 
 
-    // Only students are allowed to access this page
-    if (currentRole === 'admin') return <p>Access denied</p>;
+    // Only students during the active semester and who are in the group of this semester are allowed to access this page
+    if (currentRole === 'admin' || !currentSem) return <p>Access denied</p>;
+
+    const approvement = isStudentAllowedInSemester(email, currentSem);
+
+    if (!approvement) return <p>Access denied</p>;
 
     return (
         <>

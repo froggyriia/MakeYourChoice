@@ -1,6 +1,7 @@
 // AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { isAdmin, isStudent } from '../hooks/validation.js'
+import { isAdmin, isStudent } from '../hooks/validation.js';
+import { isSingleActiveSemester } from '../api/functions_for_semesters.js';
 
 const AuthContext = createContext();
 
@@ -9,15 +10,18 @@ export const AuthProvider = ({ children }) => {
     const [currentRole, setCurrentRole] = useState(null);
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(true);
+    const [currentSem, setSem] = useState(null);
 
     useEffect(() => {
         const storedCurrentRole = localStorage.getItem('currentRole');
         const storedTrueRole = localStorage.getItem('trueRole');
         const storedEmail = localStorage.getItem('email');
+        const storedSem = localStorage.getItem('currentSem');
 
         if (storedCurrentRole) setCurrentRole(storedCurrentRole);
         if (storedTrueRole) setTrueRole(storedTrueRole);
         if (storedEmail) setEmail(storedEmail);
+        if (storedSem) setSem(storedSem);
 
         setLoading(false);
     }, []);
@@ -25,6 +29,8 @@ export const AuthProvider = ({ children }) => {
     const loginAs = async (userEmail) => {
         const admin = await isAdmin(userEmail);
         const student = await isStudent(userEmail);
+        const semester = await isSingleActiveSemester();
+        console.log('semAuth in auth', semester);
 
         let roleGroup;
         if (admin && student) roleGroup = 'admin-student';
@@ -36,10 +42,12 @@ export const AuthProvider = ({ children }) => {
         setTrueRole(roleGroup);
         setCurrentRole(resolvedRole);
         setEmail(userEmail);
+        setSem(semester);
 
         localStorage.setItem('trueRole', roleGroup);
         localStorage.setItem('currentRole', resolvedRole);
         localStorage.setItem('email', userEmail);
+        localStorage.setItem('currentSem', semester);
 
         return resolvedRole;
     };
@@ -48,11 +56,12 @@ export const AuthProvider = ({ children }) => {
         setTrueRole(null);
         setCurrentRole(null);
         setEmail('');
+        setSem(null);
         localStorage.clear();
     };
 
     return (
-        <AuthContext.Provider value={{ trueRole, currentRole, setCurrentRole, email, loginAs, logout, loading }}>
+        <AuthContext.Provider value={{ trueRole, currentRole, setCurrentRole, email, loginAs, logout, loading, currentSem }}>
             {children}
         </AuthContext.Provider>
     );
