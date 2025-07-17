@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './FilterBar.module.css';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useCatalogueContext } from '../context/CatalogueContext.jsx';
+import { searchCoursesByTitle } from '../api/function_for_search.js';
+import { fetchCourses } from '../api/functions_for_courses.js';
+import { getUserProgram } from '../api/functions_for_users.js';
 
 /**
  * Student-only FilterBar component.
- * Allows toggling course type (tech/hum) and language.
+ * Allows toggling course type (tech/hum), language and search.
  */
 const FilterBar = ({ filters = {}, setFilters }) => {
-    const { currentRole } = useAuth();
+    const { currentRole, email } = useAuth();
     const { catalogue } = useCatalogueContext();
     const { courseTypeFilter, setCourseTypeFilter } = catalogue;
+
+    const [studentProgram, setStudentProgram] = useState(null);
+    const [searchText, setSearchText] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
 
     if (currentRole !== 'student') return null;
 
@@ -27,6 +34,56 @@ const FilterBar = ({ filters = {}, setFilters }) => {
     const isLangActive = (lang) => {
         return (filters.languages || []).includes(lang);
     };
+
+    useEffect(() => {
+        const fetchProgram = async () => {
+            if (!email || currentRole !== 'student') return;
+            const group = await getUserProgram(email);
+            setStudentProgram(group);
+        };
+        fetchProgram();
+    }, [email, currentRole]);
+
+    useEffect(() => {
+        const delay = setTimeout(async () => {
+            if (currentRole !== 'student' || !studentProgram) return;
+
+            setIsSearching(true);
+            try {
+                if (searchText.trim().length >= 3) {
+                    const res = await searchCoursesByTitle(
+                        searchText,
+                        studentProgram,
+                        courseTypeFilter !== 'all' ? courseTypeFilter : undefined
+                    );
+                    catalogue.setCourses(res);
+                    catalogue.setSearchQuery(searchText);
+                } else if (searchText.trim() === '') {
+                    const all = await fetchCourses(email, false, {
+                        types: courseTypeFilter !== 'all' ? [courseTypeFilter] : [],
+                        programs: [studentProgram]
+                    });
+
+                    // Clean Green Highlight
+                    const cleared = all.map(course => {
+                        const { _matches, ...rest } = course;
+                        return rest;
+                    });
+
+                    catalogue.setCourses(cleared);
+                    catalogue.setSearchQuery('');
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setIsSearching(false);
+            }
+        }, 300);
+
+        return () => clearTimeout(delay);
+    }, [searchText, email, courseTypeFilter, studentProgram]);
+
+    if (!email) return null;
 
     return (
         <div className={styles.filterBarContainer}>
@@ -59,6 +116,17 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                         {lang}
                     </button>
                 ))}
+            </div>
+
+            {/* Search */}
+            <div className={styles.filterGroup}>
+                <input
+                    type="text"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    placeholder="Search..."
+                    className={styles.searchInput}
+                />
             </div>
         </div>
     );

@@ -5,17 +5,12 @@ import { useCatalogueContext } from '../context/CatalogueContext.jsx';
 import styles from './Header.module.css';
 import { getUserProgram } from '../api/functions_for_users.js';
 import { getDeadlineForGroup } from '../api/functions_for_programs.js';
-import { searchCoursesByTitle } from '../api/function_for_search.js';
-import { fetchCourses } from '../api/functions_for_courses.js';
 
 export default function Header() {
   const { email, logout, trueRole, currentRole, setCurrentRole } = useAuth();
   const navigate = useNavigate();
   const { catalogue, excelExport } = useCatalogueContext();
-  const { courseTypeFilter, programFilter } = catalogue;
 
-  const [searchText, setSearchText] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
   const [deadline, setDeadline] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef();
@@ -50,36 +45,6 @@ export default function Header() {
     fetchDeadline();
   }, [email, currentRole]);
 
-  // Search logic for student
-  useEffect(() => {
-    const delay = setTimeout(async () => {
-      if (currentRole !== 'student') return;
-      setIsSearching(true);
-      try {
-        if (searchText.trim().length >= 3) {
-          const res = await searchCoursesByTitle(
-            searchText,
-            programFilter !== 'all' ? programFilter : undefined,
-            courseTypeFilter !== 'all' ? courseTypeFilter : undefined
-          );
-          catalogue.setCourses(res);
-          catalogue.setSearchQuery(searchText);
-        } else if (searchText.trim() === '') {
-          const all = await fetchCourses(email, false, {
-            types: courseTypeFilter !== 'all' ? [courseTypeFilter] : [],
-            programs: programFilter !== 'all' ? [programFilter] : []
-          });
-          catalogue.setCourses(all);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 300);
-    return () => clearTimeout(delay);
-  }, [searchText, email, courseTypeFilter, programFilter]);
-
   if (!email) return null;
 
   return (
@@ -110,16 +75,6 @@ export default function Header() {
       <div className={styles.headerRight}>
         {currentRole === 'student' && deadline && (
           <span className={styles.deadline}>⏰ Deadline: {deadline}</span>
-        )}
-
-        {currentRole === 'student' && (
-          <input
-            type="text"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            placeholder={"Search..."}
-            className={styles.searchInput}
-          />
         )}
 
         <span className={styles.email}>{email}</span>
