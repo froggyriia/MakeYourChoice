@@ -67,6 +67,7 @@
 }
 
 .filterButton {
+    width: 6.7rem;
     padding: var(--spacing-sm) var(--spacing-lg);
     border-radius: var(--border-radius-md);
     font-size: var(--font-size-md);
@@ -78,7 +79,7 @@
 }
 
 .filterButtonLangStat {
-    width: 6.1rem;
+    width: 6.7rem;
     padding: var(--spacing-sm) var(--spacing-lg);
     border-radius: var(--border-radius-md);
     font-size: var(--font-size-md);
