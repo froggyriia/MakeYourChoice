@@ -8,47 +8,40 @@ import { supabase } from '../pages/supabaseClient.jsx';
  * @param {string} currentType - Current course type filter
  * @returns {Promise<Array>} - Filtered courses
  */
-export async function searchCoursesByTitle(query, currentProgram, currentType) {
+export async function searchCoursesByTitle(query, courses, currentType) {
   try {
-    // Start with base query
-    let queryBuilder = supabase
-      .from('catalogue')
-      .select('*')
-      .eq('archived', false);
-
-    // Apply program filter if available
-    if (currentProgram && currentProgram !== 'all') {
-      queryBuilder = queryBuilder.contains('program', [currentProgram]);
-    }
-
-    // Apply type filter if available
-    if (currentType && currentType !== 'all') {
-      queryBuilder = queryBuilder.eq('type', currentType);
-    }
-
-    const { data, error } = await queryBuilder;
-
-    if (error) {
-      console.error('Error fetching courses:', error);
+    // Если courses не передан, возвращаем пустой массив
+    if (!courses || !Array.isArray(courses)) {
+      console.warn('No courses array provided for search');
       return [];
     }
 
-    // Return all filtered courses if no search query
-    if (!query || query.trim() === '') return data;
+    // Применяем фильтр по типу, если указан
+    let filteredCourses = courses;
+    if (currentType && currentType !== 'all') {
+      filteredCourses = courses.filter(course => course.type === currentType);
+    }
 
-    // Perform fuzzy search on pre-filtered data
-    const fuse = new Fuse(data, {
+    // Возвращаем все отфильтрованные курсы, если нет поискового запроса
+    if (!query || query.trim() === '') {
+      return filteredCourses;
+    }
+
+    // Настраиваем fuzzy search
+    const fuse = new Fuse(filteredCourses, {
       keys: ['title', 'description', 'teacher'],
       threshold: 0.3,
       includeMatches: true,
     });
 
+    // Выполняем поиск и преобразуем результат
     const result = fuse.search(query);
 
     return result.map(({ item, matches }) => ({
       ...item,
-      _matches: matches,
+      _matches: matches, // Добавляем информацию о совпадениях
     }));
+
   } catch (err) {
     console.error('Unexpected error during course search:', err);
     return [];

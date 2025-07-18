@@ -150,12 +150,12 @@ export const deleteProgram = async (programTitle) => {
  * @returns {timestamptz} - deadline of the program
  * @throws {Error} - If an error occurs
  */
-export async function getDeadlineForGroup(programTitle) {
+export async function getDeadlineForSem(semId) {
   try {
     const { data, error } = await supabase
-        .from('groups_electives')
+        .from('semesters')
         .select('deadline')
-        .eq('student_group', programTitle)
+        .eq('id', semId)
         .single();
 
     if (error || !data) {

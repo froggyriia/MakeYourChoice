@@ -11,7 +11,7 @@ import { getUserProgram } from '../api/functions_for_users.js';
  * Allows toggling course type (tech/hum), language and search.
  */
 const FilterBar = ({ filters = {}, setFilters }) => {
-    const { currentRole, email } = useAuth();
+    const { currentRole, email, currentSemId } = useAuth();
     const { catalogue } = useCatalogueContext();
     const { courseTypeFilter, setCourseTypeFilter } = catalogue;
 
@@ -53,16 +53,13 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                 if (searchText.trim().length >= 3) {
                     const res = await searchCoursesByTitle(
                         searchText,
-                        studentProgram,
+                        catalogue.courses,
                         courseTypeFilter !== 'all' ? courseTypeFilter : undefined
                     );
                     catalogue.setCourses(res);
                     catalogue.setSearchQuery(searchText);
                 } else if (searchText.trim() === '') {
-                    const all = await fetchCourses(email, false, {
-                        types: courseTypeFilter !== 'all' ? [courseTypeFilter] : [],
-                        programs: [studentProgram]
-                    });
+                    const all = await fetchCourses(email, false, currentSemId);
 
                     // Clean Green Highlight
                     const cleared = all.map(course => {

@@ -64,15 +64,22 @@ export default function SemesterForm({ semesterId, onSave }) {
 
     // ─── 3. Reload courses when programs change ───────────────────────────────────────
     useEffect(() => {
-        if (selectedPrograms.length) {
-            fetchCourses(null, true, { programs: selectedPrograms })
-                .then(setAvailableCourses)
-                .catch(console.error);
-        } else {
-            setAvailableCourses([]);
-            setSelectedCourses([]);
-        }
-    }, [selectedPrograms]);
+    if (selectedPrograms.length) {
+        fetchCourses(null, true, semesterId)
+            .then((courses) => {
+                const filteredCourses = courses.filter(course =>
+                    selectedPrograms.some(program =>
+                        course.program?.includes(program)
+                    )
+                );
+                setAvailableCourses(filteredCourses);
+            })
+            .catch(console.error);
+    } else {
+        setAvailableCourses([]);
+        setSelectedCourses([]);
+    }
+}, [selectedPrograms, semesterId]);
 
     // ─── 4. Persist draft on every change ────────────────────────────────────────────
     useEffect(() => {

@@ -13,7 +13,7 @@ const AdminFilterHeader = () => {
         const delayDebounce = setTimeout(async () => {
             try {
                 if (searchText.trim().length >= 3) {
-                    const results = await searchCoursesByTitle(searchText);
+                    const results = await searchCoursesByTitle(searchText, catalogue.courses);
                     setCourses(results);
                     setSearchQuery(searchText);
                 } else if (searchText.trim() === '') {

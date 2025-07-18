@@ -122,71 +122,6 @@ export const deleteCourse = async (courseId) => {
   }
 };
 
-
-/**
- * Fetches and filters courses based on students' academic group
- * @param {Object} options - Configuration options
- * @param {string} [options.email] - User email for program filtering
- * @param {boolean} [options.allCourses=false] - If true, returns all courses without program filtering
- * @returns {Promise<Array>} - Filtered array of courses
- */
-export async function fetchCourses(email, allCourses = false) {
-  try {
-    let query = supabase
-      .from('catalogue')
-      .select('*');
-
-    if (!allCourses && email) {
-      const userProgram = await getUserProgram(email);
-      const userYear = await getUserYear(email);
-
-      if (!userProgram || !userYear) {
-        console.warn('User data not found for', email);
-        return [];
-      }
-
-      query = query
-        .contains('program', [userProgram])
-        .contains('years', [userYear])
-        .eq('archived', false);
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-
-    let resultData = Array.isArray(data) ? data : [];
-
-    if (!allCourses && email) {
-      const { data: historyData, error: historyError } = await supabase
-        .from('history')
-        .select('course')
-        .eq('email', email);
-
-      if (!historyError && historyData) {
-        const completedCourses = historyData
-          .filter(item => item.course !== null)
-          .map(item => item.course);
-
-        resultData = resultData.filter(course =>
-          !completedCourses.includes(course.title)
-        );
-      }
-    }
-
-    if (allCourses) {
-      resultData.sort((a, b) =>
-        a.archived === b.archived ? 0 : a.archived ? 1 : -1
-      );
-    }
-
-    return resultData;
-
-  } catch (error) {
-    console.error('Error fetching courses:', error);
-    return [];
-  }
-}
-
 /**
 * Toggles the status of the course (archived/unarchived)
 * @param {number} courseId - course ID, that need to be archived/unarchived
@@ -240,3 +175,89 @@ export async function unarchiveCourse(courseId) {
         return null;
     }
 };
+
+export async function fetchCourses(email, allCourses = false, semesterId) {
+  try {
+    console.log('sem id in fetch', semesterId);
+    let query = supabase
+      .from('catalogue')
+      .select('*');
+
+    if (!allCourses && email) {
+      const userProgram = await getUserProgram(email);
+      const userYear = await getUserYear(email);
+
+      if (!userProgram || !userYear) {
+        console.warn('User data not found for', email);
+        return [];
+      }
+
+      query = query
+        .contains('program', [userProgram])
+        .contains('years', [userYear])
+        .eq('archived', false);
+    }
+
+    // First get the semester courses if semesterId is provided
+    if (semesterId) {
+      const semesterCourses = await getSemesterCourses(semesterId);
+      if (semesterCourses.length === 0) return [];
+      query = query.in('id', semesterCourses);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    let resultData = Array.isArray(data) ? data : [];
+
+    if (!allCourses && email) {
+      const { data: historyData, error: historyError } = await supabase
+        .from('history')
+        .select('course')
+        .eq('email', email);
+
+      if (!historyError && historyData) {
+        const completedCourses = historyData
+          .filter(item => item.course !== null)
+          .map(item => item.course);
+
+        resultData = resultData.filter(course =>
+          !completedCourses.includes(course.title)
+        );
+      }
+    }
+
+    if (allCourses) {
+      resultData.sort((a, b) =>
+        a.archived === b.archived ? 0 : a.archived ? 1 : -1
+      );
+    }
+
+    return resultData;
+
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    return [];
+  }
+}
+
+export async function getSemesterCourses(semesterId) {
+  try {
+    console.log('sem id in get', semesterId);
+    const { data: semester, error: semesterError } = await supabase
+      .from('semesters')
+      .select('courses')
+      .eq('id', semesterId)
+      .single();
+
+    if (semesterError || !semester) {
+      throw new Error(semesterError?.message || 'Семестр не найден');
+    }
+    console.log('Courses from semester:', semester.courses); 
+    return semester.courses || [];
+
+  } catch (error) {
+    console.error('Ошибка при получении курсов семестра:', error.message);
+    return [];
+  }
+}
