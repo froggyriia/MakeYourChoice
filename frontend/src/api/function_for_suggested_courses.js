@@ -1,10 +1,11 @@
 import { supabase } from '../pages/supabaseClient.jsx';
 
-// Получение всех предложенных курсов
+// Getting undeclined suggested courses
 export const fetchSuggestedCourses = async () => {
   const { data, error } = await supabase
     .from('suggested_courses')
     .select('*')
+    .eq('is_declined', false)
     .order('id', { ascending: false });
 
   if (error) {
@@ -14,6 +15,21 @@ export const fetchSuggestedCourses = async () => {
 
   return data || [];
 };
+
+// function for Declined Courses Page
+export const fetchDeclinedCourses = async () => {
+    const { data, error } = await supabase
+        .from('suggested_courses')
+        .select('*')
+        .eq('is_declined', true)
+        .order('id', { ascending: false });
+
+    if (error) {
+        console.error('Error while loading suggested courses:', error);
+        return [];
+    }
+    return data || [];
+}
 
 // Обновление предложенного курса
 export const updateSuggestedCourse = async (id, fieldsToUpdate) => {
@@ -96,17 +112,46 @@ export const acceptSuggestedCourse = async (course) => {
   }
 };
 
-// Отклонение предложенного курса
-export const declineSuggestedCourse = async (id) => {
-  const { error } = await supabase
-    .from('suggested_courses')
-    .delete()
-    .eq('id', id);
+export async function declineSuggestedCourse(id) {
+    try {
+        const { data, error } = await supabase
+            .from("suggested_courses")
+            .update({ is_declined: true })
+            .eq("id", id);
 
-  if (error) {
-    console.error('Error declining suggested course:', error);
-    throw error;
-  }
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        console.error("Error declining suggested course:", error.message);
+        return null;
+    }
+}
 
-  return true;
+export async function recoverSuggestedCourse(id) {
+    try {
+        const { data, error } = await supabase
+            .from("suggested_courses")
+            .update({ is_declined: false })
+            .eq("id", id);
+
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        console.error("Error while recovering suggested course:", error.message);
+        return null;
+    }
 };
+
+export async function deleteDeclinedCourse(id) {
+    try {
+        const { data, error } = await supabase
+            .from ("suggested_courses")
+            .delete()
+            .eq("id", id);
+            if (err) throw error;
+            return data;
+    } catch (error) {
+        console.error("Error deleting declined course:", error.message);
+        return null;
+    }
+}

@@ -84,6 +84,7 @@
     font-weight: 600;
     font-size: 18px;
     cursor: pointer;
+    text-decoration: none;
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
 }
@@ -91,6 +92,7 @@
 .addCourseButton:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    text-decoration: none;
 }
 
 .exportButton {

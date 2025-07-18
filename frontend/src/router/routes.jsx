@@ -37,6 +37,9 @@ const routes = [
 
             // /admin/suggested_courses
             { path: 'suggested_courses', element: <AdminSuggestedPage /> },
+
+            // /admin/declined_courses
+            { path: 'declined_courses', element: <DeclinedCoursesPage /> },
         ]
     },
 
