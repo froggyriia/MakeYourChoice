@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './CourseItem.module.css';
 
-const SuggestedCourseItem = ({ course, onAccept, onEdit, onDecline }) => {
+const DeclinedCourseItem = ({ course, onRecover, onDelete }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -35,30 +35,22 @@ const SuggestedCourseItem = ({ course, onAccept, onEdit, onDecline }) => {
                 </button>
 
                 <button
-                    onClick={() => onAccept(course)}
+                    onClick={() => onRecover(course)}
                     className={styles.toggleButton}
                     style={{ backgroundColor: '#4caf50' }}
                 >
-                    Accept
+                    Recover
                 </button>
 
                 <button
-                    onClick={() => onEdit(course)}
-                    className={styles.toggleButton}
-                    style={{ backgroundColor: '#2196f3' }}
-                >
-                    Edit
-                </button>
-
-                <button
-                    onClick={() => onDecline(course.id)}
+                    onClick={() => onDelete(course.id)}
                     className={styles.deleteButton}
                 >
-                    Decline
+                    Delete
                 </button>
             </div>
         </div>
     );
 };
 
-export default SuggestedCourseItem;
+export default DeclinedCourseItem;

@@ -48,6 +48,7 @@ const SuggestFormPage = () => {
       handleChange('years', '');
       handleChange('program', '');
       handleChange('archived', false);
+      handleChange('is_declined', false);
     }, 0);
 
     setStep(2);
@@ -64,6 +65,7 @@ const SuggestFormPage = () => {
       program: currentCourse.program,
       creator: fullName,
       archived: false,
+      is_declined: false,
     };
 
     const { data, error } = await supabase
@@ -148,6 +150,7 @@ const SuggestFormPage = () => {
           onToggleYear={handleYearsChange}
           onSubmit={handleSubmit}
           onCancel={handleModalCancel}
+          isStandAlone={true}
         />
       )}
 

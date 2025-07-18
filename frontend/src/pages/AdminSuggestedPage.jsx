@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import styles from './CataloguePage.module.css';
-import { useAuth } from '../context/AuthContext';
 import AddCourseModal from '../components/AddCourseModal';
 import SuggestedCourseItem from '../components/SuggestedCourseItem';
+import { NavLink } from 'react-router-dom';
 
 import {
   fetchSuggestedCourses,
@@ -14,7 +14,6 @@ import {
 const AdminSuggestedCoursesPage = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { role } = useAuth();
   const [editingCourse, setEditingCourse] = useState(null);
 
   useEffect(() => {
@@ -78,7 +77,16 @@ const AdminSuggestedCoursesPage = () => {
 
   return (
     <div className={styles.catalogueWrapper}>
-      <h2 className={styles.pageTitle}>Suggested courses</h2>
+        {/* Title and Show Declined Courses button */}
+            <div className={styles.headerContainer}>
+                <h2>Suggested courses</h2>
+                <NavLink
+                    to="/admin/declined_courses"
+                    className={styles.addCourseButton}
+                >
+                    Show Declined Courses
+                </NavLink>
+            </div>
 
       {courses.length === 0 ? (
         <p style={{ textAlign: 'center' }}>No suggested courses</p>

@@ -10,6 +10,7 @@ import { CatalogueProvider } from './context/CatalogueContext.jsx';
 import AdminSemesterPage from "./pages/AdminSemesterPage.jsx";
 import AdminSuggestedPage from "./pages/AdminSuggestedPage.jsx";
 import SuggestFormPage from "./pages/SuggestFormPage.jsx";
+import DeclinedCoursesPage from "./pages/DeclinedCoursesPage.jsx";
 
 
 export default function App() {
@@ -64,6 +65,16 @@ export default function App() {
                     element={
                         <ProtectedRoute
                             element={<AdminSuggestedPage />}
+                            requireAdmin={true}
+                        />
+                    }
+                />
+
+                <Route
+                    path="declined_courses"
+                    element={
+                        <ProtectedRoute
+                            element={<DeclinedCoursesPage />}
                             requireAdmin={true}
                         />
                     }
