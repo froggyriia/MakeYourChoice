@@ -25,6 +25,10 @@
     white-space: nowrap;
 }
 
+.filterGroupSearch {
+    margin-bottom: 0.3rem;
+}
+
 .filterLabel {
     font-weight: 600;
     font-size: 14px;

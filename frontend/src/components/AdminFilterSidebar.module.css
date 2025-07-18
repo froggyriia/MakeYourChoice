@@ -1,5 +1,5 @@
 .sidebar {
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--border-radius-xl);
     position: fixed;
     top: 80px;
     align-self: flex-start;
@@ -15,8 +15,13 @@
     max-width: 100%;
     height: calc(100vh - 80px - 11.5rem);
     overflow-x: hidden;
+    scrollbar-width: none;
     border: 1px solid #f0f0f0;
     z-index: 100;
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none;
 }
 
 .sidebarHeader {

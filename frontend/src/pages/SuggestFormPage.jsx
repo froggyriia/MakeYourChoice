@@ -3,10 +3,12 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import AddCourseModal from '../components/AddCourseModal';
 import { useCatalogueContext } from '../context/CatalogueContext';
 import { supabase } from '../pages/supabaseClient.jsx';
+import styles from './SuggestFormPage.module.css';
 
 const SuggestFormPage = () => {
   const scrollPosition = useRef(0);
   const recaptchaRef = useRef(null);
+  const formRef = useRef(null);
   const [message, setMessage] = useState('');
   const [step, setStep] = useState(1);
   const [fullName, setFullName] = useState('');
@@ -53,6 +55,27 @@ const SuggestFormPage = () => {
 
     setStep(2);
   };
+
+  // Обработчик нажатия клавиш
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleContinue();
+    }
+  };
+
+  useEffect(() => {
+    const formElement = formRef.current;
+    if (formElement) {
+      formElement.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      if (formElement) {
+        formElement.removeEventListener('keydown', handleKeyDown);
+      }
+    };
+  }, [fullName, recaptchaToken]);
 
   const handleSubmit = async () => {
     const newCourse = {
@@ -102,41 +125,29 @@ const SuggestFormPage = () => {
   };
 
   return (
-    <div style={{ maxWidth: '500px', margin: '40px auto', padding: '16px' }}>
+    <div className={styles.container} ref={formRef}> {/* Добавлен ref к форме */}
       {step === 1 && (
         <>
-          <h2 style={{ color: 'green' }}>Enter your name</h2>
-          <label style={{ display: 'block', marginBottom: '12px' }}>
+          <h2 className={styles.title}>Enter your name</h2>
+          <label className={styles.label}>
             Name:
             <input
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px',
-                marginTop: '4px',
-                borderRadius: '4px',
-                border: '1px solid #ccc',
-              }}
+              className={styles.input}
+              onKeyDown={(e) => e.key === 'Enter' && handleContinue()}
             />
           </label>
           <ReCAPTCHA
             ref={recaptchaRef}
             sitekey="6LeAKX0rAAAAABHyEWK7mJr9_RjtXi1q4piqOa5y"
             onChange={handleRecaptchaChange}
-            style={{ marginBottom: '16px' }}
+            className={styles.recaptcha}
           />
           <button
             onClick={handleContinue}
-            style={{
-              padding: '10px 20px',
-              backgroundColor: '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
+            className={styles.button}
           >
             Next
           </button>
@@ -155,12 +166,9 @@ const SuggestFormPage = () => {
       )}
 
       {message && (
-        <p style={{
-          textAlign: 'center',
-          marginTop: '20px',
-          fontWeight: 'bold',
-          color: message.includes('Ошибка') ? 'red' : 'green',
-        }}>
+        <p className={`${styles.message} ${
+          message.includes('Error') ? styles.error : styles.success
+        }`}>
           {message}
         </p>
       )}

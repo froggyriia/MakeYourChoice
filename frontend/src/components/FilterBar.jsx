@@ -119,7 +119,7 @@ const FilterBar = ({ filters = {}, setFilters }) => {
             </div>
 
             {/* Search */}
-            <div className={styles.filterGroup}>
+            <div className={styles.filterGroupSearch}>
                 <input
                     type="text"
                     value={searchText}
