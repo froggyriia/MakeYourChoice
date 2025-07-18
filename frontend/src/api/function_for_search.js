@@ -21,6 +21,7 @@ export async function searchCoursesByTitle(query, courses, currentType) {
     if (currentType && currentType !== 'all') {
       filteredCourses = courses.filter(course => course.type === currentType);
     }
+    if (!query || query.trim() === '') return data;
 
     // Возвращаем все отфильтрованные курсы, если нет поискового запроса
     if (!query || query.trim() === '') {
@@ -29,9 +30,19 @@ export async function searchCoursesByTitle(query, courses, currentType) {
 
     // Настраиваем fuzzy search
     const fuse = new Fuse(filteredCourses, {
+    const sanitizedData = data.map((course) => ({
+      ...course,
+      description: course.description || '',
+      title: course.title || '',
+      teacher: course.teacher || '',
+    }));
+
+    const fuse = new Fuse(sanitizedData, {
       keys: ['title', 'description', 'teacher'],
       threshold: 0.3,
       includeMatches: true,
+      ignoreLocation: true,
+      minMatchCharLength: 2,
     });
 
     // Выполняем поиск и преобразуем результат
