@@ -178,7 +178,6 @@ export async function unarchiveCourse(courseId) {
 
 export async function fetchCourses(email, allCourses = false, semesterId) {
   try {
-    console.log('sem id in fetch', semesterId);
     let query = supabase
       .from('catalogue')
       .select('*');
@@ -199,7 +198,7 @@ export async function fetchCourses(email, allCourses = false, semesterId) {
     }
 
     // First get the semester courses if semesterId is provided
-    if (semesterId) {
+    if (semesterId && !allCourses) {
       const semesterCourses = await getSemesterCourses(semesterId);
       if (semesterCourses.length === 0) return [];
       query = query.in('id', semesterCourses);
@@ -253,7 +252,7 @@ export async function getSemesterCourses(semesterId) {
     if (semesterError || !semester) {
       throw new Error(semesterError?.message || 'Семестр не найден');
     }
-    console.log('Courses from semester:', semester.courses); 
+    console.log('Courses from semester:', semester.courses);
     return semester.courses || [];
 
   } catch (error) {
