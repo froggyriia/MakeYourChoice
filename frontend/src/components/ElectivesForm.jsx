@@ -31,7 +31,7 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
 
     const [priorityCount, setPriorityCount] = useState(0);
     const [selectedCourses, setSelectedCourses] = useState(Array(priorityCount).fill(""));
-    const { email, currentRole } = useAuth();
+    const { email, currentRole, currentSemId } = useAuth();
 
     useEffect(() => {
         // Initializes the form by fetching elective courses and program info
@@ -41,7 +41,7 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
 
                 // Fetch both the course list and user's program info in parallel
                 const [courses, program] = await Promise.all([
-                    fetchCourses(email),
+                    fetchCourses(email, false, currentSemId),
                     getProgramInfo(email)
                 ]);
 

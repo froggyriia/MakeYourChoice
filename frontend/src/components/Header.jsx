@@ -4,10 +4,10 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useCatalogueContext } from '../context/CatalogueContext.jsx';
 import styles from './Header.module.css';
 import { getUserProgram } from '../api/functions_for_users.js';
-import { getDeadlineForGroup } from '../api/functions_for_programs.js';
+import { getDeadlineForSem } from '../api/functions_for_programs.js';
 
 export default function Header() {
-  const { email, logout, trueRole, currentRole, setCurrentRole } = useAuth();
+  const { email, logout, trueRole, currentRole, setCurrentRole, currentSemId } = useAuth();
   const navigate = useNavigate();
   const { catalogue, excelExport } = useCatalogueContext();
 
@@ -31,7 +31,7 @@ export default function Header() {
     const fetchDeadline = async () => {
       if (!email || currentRole === 'admin') return;
       const group = await getUserProgram(email);
-      const ts = await getDeadlineForGroup(group);
+      const ts = await getDeadlineForSem(currentSemId);
       if (ts) {
         const formatted = new Date(ts).toLocaleString('en-GB', {
           day: 'numeric',
