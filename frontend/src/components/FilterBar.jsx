@@ -53,7 +53,7 @@ const FilterBar = ({ filters = {}, setFilters }) => {
                 if (searchText.trim().length >= 3) {
                     const res = await searchCoursesByTitle(
                         searchText,
-                        studentProgram,
+                        catalogue.courses,
                         courseTypeFilter !== 'all' ? courseTypeFilter : undefined
                     );
                     catalogue.setCourses(res);

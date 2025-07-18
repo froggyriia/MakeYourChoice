@@ -15,7 +15,7 @@ const StudentSearchBar = () => {
         const delayDebounce = setTimeout(async () => {
             try {
                 if (searchText.trim().length >= 3) {
-                    const results = await searchCoursesByTitle(searchText);
+                    const results = await searchCoursesByTitle(searchText, catalogue.courses);
                     setCourses(results);
                 } else if (searchText.trim() === '') {
                     const allCourses = await fetchCourses(email, false, currentSemId); // student mode
