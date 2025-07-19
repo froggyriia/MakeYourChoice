@@ -199,7 +199,7 @@ export async function fetchCourses(email, allCourses = false, semesterId) {
     }
 
     // First get the semester courses if semesterId is provided
-    if (semesterId) {
+    if (semesterId && !allCourses) {
       const semesterCourses = await getSemesterCourses(semesterId);
       if (semesterCourses.length === 0) return [];
       query = query.in('id', semesterCourses);
@@ -209,6 +209,12 @@ export async function fetchCourses(email, allCourses = false, semesterId) {
     if (error) throw error;
 
     let resultData = Array.isArray(data) ? data : [];
+
+    if (allCourses) {
+      resultData.sort((a, b) =>
+        a.archived === b.archived ? 0 : a.archived ? 1 : -1
+      );
+    }
 
     if (!allCourses && email) {
       const { data: historyData, error: historyError } = await supabase
@@ -225,12 +231,6 @@ export async function fetchCourses(email, allCourses = false, semesterId) {
           !completedCourses.includes(course.title)
         );
       }
-    }
-
-    if (allCourses) {
-      resultData.sort((a, b) =>
-        a.archived === b.archived ? 0 : a.archived ? 1 : -1
-      );
     }
 
     return resultData;

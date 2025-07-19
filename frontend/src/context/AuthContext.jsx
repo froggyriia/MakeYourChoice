@@ -44,11 +44,11 @@ export const AuthProvider = ({ children }) => {
 
             console.log('semAuth in auth', semester);
 
-            if (!semester) {
+            if (!semester && currentRole === 'student') {
                 throw new Error('Активный семестр не найден');
             }
 
-            const roleGroup = admin 
+            const roleGroup = admin
                 ? (student ? 'admin-student' : 'admin')
                 : 'student';
 
@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }) => {
             currentRole,
             setCurrentRole,
             email,
-            currentSemId, // Теперь передаём только ID
+            currentSemId,
             loginAs,
             logout,
             loading
