@@ -77,7 +77,7 @@
 
 .addCourseButton {
     padding: 12px 24px;
-    background: linear-gradient(135deg, var(--color-primary), #4CAF50);
+    background: var(--color-primary);
     border: none;
     border-radius: 12px;
     color: white;
@@ -86,19 +86,17 @@
     cursor: pointer;
     text-decoration: none;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
 }
 
 .addCourseButton:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
     text-decoration: none;
 }
 
 .exportButton {
     margin-right: 0;
     padding: 12px 24px;
-    background: linear-gradient(135deg, #40BB20, #2E8B57);
+    background: var(--color-primary);
     border: none;
     border-radius: 12px;
     color: white;
