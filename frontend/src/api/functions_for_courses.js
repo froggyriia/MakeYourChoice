@@ -276,7 +276,7 @@ export async function getSemesterCourses(semesterId) {
     if (semesterError || !semester) {
       throw new Error(semesterError?.message || 'Семестр не найден');
     }
-    console.log('Courses from semester:', semester.courses); 
+    console.log('Courses from semester:', semester.courses);
     return semester.courses || [];
 
   } catch (error) {
