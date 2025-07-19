@@ -75,6 +75,7 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
         };
 
         initialize();
+
     }, [type, email]);
 
     /**
@@ -132,7 +133,7 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
                                         onChange={(e) => handleChange(i, e.target.value)}
                                         className={styles.select}
                                     >
-                                        <option value="" disabled>Select course</option>
+                                        <option value="">None</option>
                                         {availableCourses.map(course => (
                                             <option key={course.id} value={course.title}>
                                                 {course.title}
