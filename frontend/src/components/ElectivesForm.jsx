@@ -110,7 +110,7 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
-                            onSubmit(selectedCourses, type);
+                            onSubmit(selectedCourses, type, currentSemId);
                         }}
                         className={styles.form}
                     >
@@ -133,7 +133,7 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
                                         onChange={(e) => handleChange(i, e.target.value)}
                                         className={styles.select}
                                     >
-                                        <option value="">None</option>
+                                        <option value="">Select course</option>
                                         {availableCourses.map(course => (
                                             <option key={course.id} value={course.title}>
                                                 {course.title}
