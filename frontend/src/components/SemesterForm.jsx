@@ -67,11 +67,28 @@ export default function SemesterForm({ semesterId, onSave }) {
     if (selectedPrograms.length) {
         fetchCourses(null, true, semesterId)
             .then((courses) => {
-                const filteredCourses = courses.filter(course =>
-                    selectedPrograms.some(program =>
-                        course.program?.includes(program)
-                    )
-                );
+                // Преобразуем selectedPrograms в массив объектов {year, program}
+                const selectedCombinations = selectedPrograms.map(sp => {
+                    const [year, program] = sp.split(' ');
+                    return {year, program};
+                });
+
+                const filteredCourses = courses.filter(course => {
+                    // Проверяем что у курса есть массивы years и programs
+                    if (!course.years || !course.program ||
+                        !Array.isArray(course.years) ||
+                        !Array.isArray(course.program)) {
+                        return false;
+                    }
+
+                    // Проверяем каждую выбранную комбинацию
+                    return selectedCombinations.some(({year, program}) => {
+                        // Курс подходит если содержит И год И программу из комбинации
+                        return course.years.includes(year) &&
+                               course.program.includes(program);
+                    });
+                });
+
                 setAvailableCourses(filteredCourses);
             })
             .catch(console.error);

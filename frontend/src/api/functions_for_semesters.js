@@ -193,29 +193,32 @@ export async function isSingleActiveSemester() {
 * @returns {boolean} - имеет студент доступ или нет
 */
 
-export async function isStudentAllowedInSemester(email, semester) {
-try {
+    export async function isStudentAllowedInSemester(email, semester) {
+  try {
     const userProgram = await getUserProgram(email);
-    console.log('semester in func', semester);
-    console.log('user program', userProgram);
+    const userYear = await getUserYear(email);
 
-    if (!userProgram) {
+    if (!userProgram || !userYear) {
       console.warn('Не удалось получить данные студента');
       return false;
     }
 
-    // 2. Проверяем, что семестр существует и содержит programs
-    if (!semester) {
+    // Проверяем, что семестр существует и содержит programs
+    if (!semester || !Array.isArray(semester.program)) {
       console.warn('Некорректные данные семестра');
       return false;
     }
 
-    const isProgramAllowed = Array.isArray(semester.program) &&
-                        semester.program.some(program => program === userProgram);
+    // Создаем комбинированную строку "группа год"
+    const studentCombination = `${userYear} ${userProgram}`;
 
-    return isProgramAllowed;
+    // Проверяем, есть ли такая комбинация в массиве semester.program
+    const isAllowed = semester.program.some(
+      program => program === studentCombination
+    );
+    return isAllowed;
 
-} catch (error) {
+  } catch (error) {
     console.error('Ошибка при проверке возможностей студента:', error.message);
     return false;
   }

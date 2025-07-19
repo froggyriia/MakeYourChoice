@@ -35,12 +35,13 @@ import { supabase } from '../pages/supabaseClient.jsx';
  * @param {string} programName - The name of the academic program (e.g., "B24-DSAI").
  * @returns {Promise<{ tech: number, hum: number }>} An object with the number of tech and hum electives. Defaults to 0 if not found or error.
  */
- export async function getPrioritiesNumber(programName) {
+ export async function getPrioritiesNumber(programName, programYear) {
     try {
         const { data, error } = await supabase
             .from('groups_electives')
             .select('tech, hum') // need only number for tech and hum electives
             .eq('student_group', programName)
+            .eq('year', programYear)
             .single();
 
         if (error || !data) {

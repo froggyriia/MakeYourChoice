@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { getUserProgram, getPrioritiesNumber } from '../api/functions_for_users';
+import { getUserProgram, getPrioritiesNumber, getUserYear } from '../api/functions_for_users';
 import {
     submitPriority
 } from '../api/functions_for_users';
@@ -31,11 +31,12 @@ export function useFormSubmit(email) {
     useEffect(() => {
         // Get the user's program using their email
         async function fetchLimits() {
-            const program = await getUserProgram(email)
+            const program = await getUserProgram(email);
+            const year = await getUserYear(email);
 
             if (!program) return;
             // Fetch the allowed number of tech/hum priorities for this program
-            const limits = await getPrioritiesNumber(program);
+            const limits = await getPrioritiesNumber(program, year);
             setLimits(limits);
         }
 
