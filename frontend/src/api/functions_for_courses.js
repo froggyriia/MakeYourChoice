@@ -107,6 +107,27 @@ export const uniquePrograms = async () => {
     }
 };
 
+export const getProgramsTitles = async () => {
+    try {
+        const { data, error } = await supabase
+            .from('groups_electives')
+            .select('student_group');
+        console.log('programs', data)
+
+        if (error) throw error;
+
+        const uniquePrograms = [...new Set(
+            data.map(item => item.student_group).filter(Boolean)
+        )];
+
+        console.log('Unique programs:', uniquePrograms);
+        return uniquePrograms;
+    } catch (error) {
+        console.error("Couldn't return programs", error.message);
+        throw error;
+    }
+};
+
 /**
  * Deletes a course from the catalogue table by title
  * @param {string} courseTitle - Course title to delete
