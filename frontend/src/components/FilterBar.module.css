@@ -1,15 +1,19 @@
 .filterBarContainer {
-    margin-top: 4rem;
+    position: sticky;
+    top: 80px;
+    z-index: 90;
     display: flex;
     flex-wrap: nowrap;
     gap: 2rem;
-    padding: 1rem 2rem; /* match header padding */
+    padding: 1rem 2rem;
     align-items: center;
     overflow-x: auto;
-    background-color: white; /* same as header */
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); /* match header shadow */
-    scrollbar-width: none; /* Firefox */
+    background-color: white;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    scrollbar-width: none;
     -ms-overflow-style: none;
+    width: 100%;
+    margin-top: 4rem;
 }
 
 /* hide scrollbar for webkit */
