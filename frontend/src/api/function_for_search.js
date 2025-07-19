@@ -8,28 +8,35 @@ import { supabase } from '../pages/supabaseClient.jsx';
  * @param {string} currentType - Current course type filter
  * @returns {Promise<Array>} - Filtered courses
  */
-export async function searchCoursesByTitle(query, courses, currentType) {
+export async function searchCoursesByTitle(query, currentProgram, currentType) {
   try {
-    // Если courses не передан, возвращаем пустой массив
-    if (!courses || !Array.isArray(courses)) {
-      console.warn('No courses array provided for search');
+    // Start with base query
+    let queryBuilder = supabase
+      .from('catalogue')
+      .select('*')
+      .eq('archived', false);
+
+    // Apply program filter if available
+    if (currentProgram && currentProgram !== 'all') {
+      queryBuilder = queryBuilder.contains('program', [currentProgram]);
+    }
+
+    // Apply type filter if available
+    if (currentType && currentType !== 'all') {
+      queryBuilder = queryBuilder.eq('type', currentType);
+    }
+
+    const { data, error } = await queryBuilder;
+
+    if (error) {
+      console.error('Error fetching courses:', error);
       return [];
     }
 
-    // Применяем фильтр по типу, если указан
-    let filteredCourses = courses;
-    if (currentType && currentType !== 'all') {
-      filteredCourses = courses.filter(course => course.type === currentType);
-    }
+    // If no search query — return all filtered courses
     if (!query || query.trim() === '') return data;
 
-    // Возвращаем все отфильтрованные курсы, если нет поискового запроса
-    if (!query || query.trim() === '') {
-      return filteredCourses;
-    }
-
-    // Настраиваем fuzzy search
-    const fuse = new Fuse(filteredCourses, {
+    // Sanitize and prepare data for Fuse
     const sanitizedData = data.map((course) => ({
       ...course,
       description: course.description || '',
@@ -41,20 +48,17 @@ export async function searchCoursesByTitle(query, courses, currentType) {
       keys: ['title', 'description', 'teacher'],
       threshold: 0.3,
       includeMatches: true,
-      ignoreLocation: true,
-      minMatchCharLength: 2,
     });
 
-    // Выполняем поиск и преобразуем результат
     const result = fuse.search(query);
 
     return result.map(({ item, matches }) => ({
       ...item,
-      _matches: matches, // Добавляем информацию о совпадениях
+      _matches: matches,
     }));
-
   } catch (err) {
     console.error('Unexpected error during course search:', err);
     return [];
   }
 }
+
