@@ -75,6 +75,7 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
         };
 
         initialize();
+
     }, [type, email]);
 
     /**

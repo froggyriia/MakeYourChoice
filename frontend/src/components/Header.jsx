@@ -7,7 +7,7 @@ import { getUserProgram } from '../api/functions_for_users.js';
 import { getDeadlineForSem } from '../api/functions_for_programs.js';
 
 export default function Header() {
-  const { email, logout, trueRole, currentRole, setCurrentRole, currentSemId } = useAuth();
+  const { email, logout, trueRole, currentRole, setCurrentRole, currentSemId, switchRole } = useAuth();
   const navigate = useNavigate();
   const { catalogue, excelExport } = useCatalogueContext();
 
@@ -79,6 +79,7 @@ export default function Header() {
 
         <span className={styles.email}>{email}</span>
 
+
         <div className={styles.userMenuWrapper} ref={menuRef}>
           <button className={styles.menuButton} onClick={() => setMenuOpen(p => !p)}>▾</button>
           {menuOpen && (
@@ -89,15 +90,15 @@ export default function Header() {
                 </button>
               )}
               {trueRole === 'admin-student' && (
-                <button className={styles.exstButton} onClick={() => {
-                  const newRole = currentRole === 'admin' ? 'student' : 'admin';
-                  setCurrentRole(newRole);
-                  navigate(newRole === 'admin' ? '/admin/courses' : '/student-catalogue');
-                }}>
-                  <img width="16" height="16" src="https://img.icons8.com/material-outlined/24/student-male.png" alt="student-male"/>
-                  {currentRole === 'admin' ? 'View as Student' : 'Back to Admin'}
-                </button>
-              )}
+    <button className={styles.exstButton} onClick={() => {
+        const newRole = currentRole === 'admin' ? 'student' : 'admin';
+        switchRole(newRole); // Используем новую функцию вместо setCurrentRole
+        navigate(newRole === 'admin' ? '/admin/courses' : '/student-catalogue');
+    }}>
+        <img width="16" height="16" src="https://img.icons8.com/material-outlined/24/student-male.png" alt="student-male"/>
+        {currentRole === 'admin' ? 'View as Student' : 'Back to Admin'}
+    </button>
+)}
               <button className={styles.logoutButton} onClick={logout}>
                 <img width="16" height="16" src="https://img.icons8.com/material-outlined/24/exit.png" alt="exit"/> Log out
               </button>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SemesterTile from '../components/SemesterTile';
 import SemesterForm from '../components/SemesterForm';
-import { getAllSemesters } from '../api/functions_for_semesters.js';
+import { getAllSemesters, deleteSemester } from '../api/functions_for_semesters.js';
 import { useExcelExport } from '../hooks/useExcelExport';
 import styles from './AdminSemestersPage.module.css';
 
@@ -23,8 +23,20 @@ export default function AdminSemestersPage() {
     const handleEdit = id => setEditingId(id);
 
     const handleDelete = async id => {
-        await refresh();
+
+        setSemesters(prev => prev.filter(s => s.id !== id));
+
+
         if (id === editingId) setEditingId(null);
+
+        try {
+            await deleteSemester(id);
+        } catch (err) {
+            console.error('Ошибка при удалении:', err);
+            alert('Не удалось удалить семестр. Попробуйте еще раз.');
+            // Восстанавливаем список (откат)
+            await refresh();
+        }
     };
 
     const handleSaved = async sem => {

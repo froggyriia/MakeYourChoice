@@ -26,7 +26,7 @@ const ProgramItem = ({ program, onDelete, onEdit }) => {
     const handleDelete = async () => {
         if (window.confirm(`Are you sure you want to delete program "${program.student_group}"?`)) {
             setIsDeleting(true);
-            const { error } = await deleteProgram(program.student_group);
+            const { error } = await deleteProgram(program.id);
             if (!error) {
                 // Slight delay to show animation before removal
                 setTimeout(() => onDelete(program.student_group), 300);

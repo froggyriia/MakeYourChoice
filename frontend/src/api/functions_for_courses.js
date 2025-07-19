@@ -88,15 +88,40 @@ export const uniquePrograms = async () => {
     try {
         const { data, error } = await supabase
             .from('groups_electives')
-            .select('student_group');
+            .select('student_group, year');
 
         if (error) throw error;
 
-        const programList = Array.from(
-            new Set(data.map(item => item.student_group).filter(Boolean))
+        // Создаем уникальные комбинации "student_group + year"
+        const uniqueCombinations = Array.from(
+            new Set(data
+                .filter(item => item.student_group && item.year)
+                .map(item => `${item.year} ${item.student_group}`)
+            )
         );
 
-        return programList;
+        return uniqueCombinations;
+    } catch (error) {
+        console.error("Couldn't return programs", error.message);
+        throw error;
+    }
+};
+
+export const getProgramsTitles = async () => {
+    try {
+        const { data, error } = await supabase
+            .from('groups_electives')
+            .select('student_group');
+        console.log('programs', data)
+
+        if (error) throw error;
+
+        const uniquePrograms = [...new Set(
+            data.map(item => item.student_group).filter(Boolean)
+        )];
+
+        console.log('Unique programs:', uniquePrograms);
+        return uniquePrograms;
     } catch (error) {
         console.error("Couldn't return programs", error.message);
         throw error;
@@ -178,7 +203,6 @@ export async function unarchiveCourse(courseId) {
 
 export async function fetchCourses(email, allCourses = false, semesterId) {
   try {
-    console.log('sem id in fetch', semesterId);
     let query = supabase
       .from('catalogue')
       .select('*');
@@ -243,7 +267,6 @@ export async function fetchCourses(email, allCourses = false, semesterId) {
 
 export async function getSemesterCourses(semesterId) {
   try {
-    console.log('sem id in get', semesterId);
     const { data: semester, error: semesterError } = await supabase
       .from('semesters')
       .select('courses')
@@ -253,7 +276,7 @@ export async function getSemesterCourses(semesterId) {
     if (semesterError || !semester) {
       throw new Error(semesterError?.message || 'Семестр не найден');
     }
-    console.log('Courses from semester:', semester.courses); 
+    console.log('Courses from semester:', semester.courses);
     return semester.courses || [];
 
   } catch (error) {
