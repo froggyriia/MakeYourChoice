@@ -3,17 +3,19 @@
     position: fixed;
     top: 80px;
     align-self: flex-start;
-    margin-left: -4.5rem;
+    margin-left: -6.5rem;
     margin-top: 10.8rem;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 0.3rem;
     background: #fff;
     padding: 24px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    width: 17rem;
+    width: 20rem;
     max-width: 100%;
-    height: calc(100vh - 80px - 11.5rem);
+    max-height: 80vh;
+    height: auto;
+    overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: none;
     border: 1px solid #f0f0f0;
@@ -35,7 +37,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 0.75rem;
+    margin-top: 1rem;
 }
 
 .resetButton {
@@ -48,7 +50,6 @@
     color: white;
     cursor: pointer;
     transition: all var(--transition-fast);
-    margin-top: 16px;
 }
 
 .resetButton:hover {
@@ -67,7 +68,7 @@
 }
 
 .filterButton {
-    width: 6.7rem;
+    width: 8rem;
     padding: var(--spacing-sm) var(--spacing-lg);
     border-radius: var(--border-radius-md);
     font-size: var(--font-size-md);
@@ -79,7 +80,7 @@
 }
 
 .filterButtonLangStat {
-    width: 6.7rem;
+    width: 8rem;
     padding: var(--spacing-sm) var(--spacing-lg);
     border-radius: var(--border-radius-md);
     font-size: var(--font-size-md);
@@ -101,7 +102,7 @@
 }
 
 .sidebarText {
-    margin-top: 0.7rem;
+    margin-top: -0.5rem;
 }
 
 @media (max-width: 1024px) {
