@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import styles from './AdminFilterSidebar.module.css';
-import { uniquePrograms } from '../api/functions_for_courses.js';
+import { uniquePrograms, getProgramsTitles } from '../api/functions_for_courses.js';
 import { useCatalogueContext } from '../context/CatalogueContext.jsx';
 
 const AdminFilterSidebar = ({ filters, setFilters }) => {
@@ -13,7 +13,7 @@ const AdminFilterSidebar = ({ filters, setFilters }) => {
         const fetchPrograms = async () => {
             setIsLoadingPrograms(true);
             try {
-                const programs = await uniquePrograms();
+                const programs = await getProgramsTitles();
                 setProgramOptions(programs.map(p => ({ value: p, label: p })));
             } catch (err) {
                 console.error("Program loading failed", err);

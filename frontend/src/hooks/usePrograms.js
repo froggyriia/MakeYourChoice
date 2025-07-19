@@ -104,6 +104,7 @@ export const usePrograms = () => {
 
             const payload = {
                 student_group: programData.shortName,
+                year: programData.year,
                 tech: parseInt(programData.techCount, 10),
                 hum: parseInt(programData.humCount, 10),
             };
