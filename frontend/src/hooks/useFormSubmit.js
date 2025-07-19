@@ -53,7 +53,7 @@ export function useFormSubmit(email) {
      * @returns {Promise<void>}
      * @throws Alerts and logs errors from Supabase or invalid form states.
      */
-    const onSubmit = async (selectedCourses, activeTab) => {
+    const onSubmit = async (selectedCourses, activeTab, semId) => {
       const expectedCount = limits[activeTab];
 
       // Validation remains the same
@@ -69,6 +69,8 @@ export function useFormSubmit(email) {
           ? selectedCourses[i-1]
           : null;
       }
+
+        updateFields['semester_name'] = semId;
 
       try {
               await submitPriority(email, updateFields);
