@@ -44,8 +44,8 @@ export function useExcelExport() {
 
             const [{ data: prioritiesData, error: prioritiesError },
                    { data: lastPrioritiesData, error: lastPrioritiesError }] = await Promise.all([
-                supabase.from("all_priorities").select("*").eq("semester_name", semesterId),
-                supabase.from("last_priorities").select("*").eq("semester_name", semesterId)
+                supabase.from("all_priorities").select("*").eq("semester_id", semesterId),
+                supabase.from("last_priorities").select("*").eq("semester_id", semesterId)
             ]);
 
             if (prioritiesError || lastPrioritiesError) {
@@ -135,7 +135,7 @@ export function useExcelExport() {
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
             link.download = `priorities_${semesterName}_${new Date().toISOString().slice(0, 10)}.xlsx`;
-             document.body.appendChild(link);
+            document.body.appendChild(link);
             link.click();
             setTimeout(() => {
                 document.body.removeChild(link);
