@@ -1,14 +1,44 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Select from 'react-select';
+import Select, {components} from 'react-select';
 import {
     saveSemesterInfo,
     getLatestRecordBySemester,
-    getSemesterById
+    getSemesterById,
+    isSingleActiveSemester,
+    isSemesterExists
 } from '../api/functions_for_semesters.js';
 import { uniquePrograms, fetchCourses } from '../api/functions_for_courses.js';
 import addStyles from './AddCourseModal.module.css';
 import formStyles from './SemesterForm.module.css';
-import { showNotify } from '../components/CustomToast';
+import { showNotify, showConfirm } from '../components/CustomToast';
+
+const SelectAllMenu = ({ children, ...props }) => {
+    const { setValue, options } = props.selectProps;
+
+    const handleSelectAll = () => {
+        setValue(options); // выбираем все доступные options
+    };
+
+    return (
+        <>
+            <div
+                style={{
+                    padding: '8px',
+                    borderBottom: '1px solid #ccc',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    color: '#40BB20',
+                    textAlign: 'center',
+                }}
+                onClick={handleSelectAll}
+            >
+                + Select All
+            </div>
+            <components.MenuList {...props}>{children}</components.MenuList>
+        </>
+    );
+};
+
 
 const LS_KEY = 'semesterFormData';
 
@@ -40,7 +70,7 @@ export default function SemesterForm({ semesterId, onSave }) {
         if (!semesterId) {
             // “Add new”: clear to defaults, *and* allow the very next season change to auto-load
             setSeason('');
-            setYear(new Date().getFullYear());
+            setYear('');
             setSelectedPrograms([]);
             setSelectedCourses([]);
             setDeadline('');
@@ -130,6 +160,22 @@ export default function SemesterForm({ semesterId, onSave }) {
 
     // ─── Toggle Active/Deactivate immediately ────────────────────────────────────────
     const handleToggleActive = async () => {
+        if (!isActive) {
+            const existingActive = await isSingleActiveSemester();
+            if (existingActive && existingActive.id !== semesterId) {
+                showNotify("You cannot activate more than one semester");
+                return;
+            }
+
+            activateSemester();
+        } else {
+            showConfirm("Are you sure you want to deactivate this semester?", async () => {
+                await activateSemester();
+            });
+        }
+    };
+
+    const activateSemester = async () => {
         const newActive = !isActive;
         await saveSemesterInfo({
             semester: season,
@@ -139,18 +185,29 @@ export default function SemesterForm({ semesterId, onSave }) {
             deadline,
             is_active: newActive
         });
+
         setIsActive(newActive);
-        // bubble back up so the list can re-render & highlight
         onSave?.({ id: semesterId, is_active: newActive });
+
         showNotify(newActive ? "Semester activated" : "Semester deactivated");
     };
 
     // ─── Full Save (insert/update) ───────────────────────────────────────────────────
     const handleSave = async e => {
         e.preventDefault();
-        if (!season || !year || !selectedPrograms.length || !selectedCourses.length || !deadline) {
-            return; // you can add inline validation here
+
+        const exists = await isSemesterExists(season, year);
+        if (exists && (!semesterId)) { // если создаём новый семестр, а такой уже есть
+            showNotify("Semester with this season and year already exists");
+            return;
         }
+
+        if (!season || !year || !selectedPrograms.length || !selectedCourses.length || !deadline) {
+            showNotify("Please fill all required fields");
+            return;
+        }
+
+
         const saved = await saveSemesterInfo({
             semester: season,
             semester_year: year,
@@ -165,24 +222,23 @@ export default function SemesterForm({ semesterId, onSave }) {
     };
 
 
+
     return (
         <div className={addStyles.modalContainer}>
             <h2>Semester Info</h2>
 
             <div className={addStyles.modalContent}>
                 <form className={formStyles.form} onSubmit={handleSave}>
-                    <label className={formStyles.field}>
-                        <span>Season:</span>
-                        <select
-                            className={formStyles.select}
-                            value={season}
-                            onChange={e => setSeason(e.target.value)}
-                        >
-                            {['Fall','Spring','Summer'].map(s => (
-                                <option key={s} value={s}>{s}</option>
-                            ))}
-                        </select>
-                    </label>
+                    <select
+                        className={formStyles.select}
+                        value={season}
+                        onChange={e => setSeason(e.target.value)}
+                    >
+                        <option value="">Select season</option> {/* <-- Добавь плейсхолдер */}
+                        {['Fall','Spring','Summer'].map(s => (
+                            <option key={s} value={s}>{s}</option>
+                        ))}
+                    </select>
 
                     <label className={formStyles.field}>
                         <span>Year:</span>
@@ -191,6 +247,7 @@ export default function SemesterForm({ semesterId, onSave }) {
                             className={formStyles.input}
                             value={year}
                             onChange={e => setYear(+e.target.value)}
+                            placeholder="Select year" // <-- Добавь placeholder
                         />
                     </label>
 
@@ -198,9 +255,11 @@ export default function SemesterForm({ semesterId, onSave }) {
                         <span>Programs:</span>
                         <Select
                             isMulti
-                            options={programs.map(p=>({label:p,value:p}))}
-                            value={selectedPrograms.map(p=>({label:p,value:p}))}
-                            onChange={sel=>setSelectedPrograms(sel.map(x=>x.value))}
+                            options={programs.map(p => ({ label: p, value: p }))}
+                            value={selectedPrograms.map(p => ({ label: p, value: p }))}
+                            onChange={sel => setSelectedPrograms(sel.map(x => x.value))}
+                            components={{ MenuList: SelectAllMenu }}
+                            setValue={(newValue) => setSelectedPrograms(newValue.map(o => o.value))}
                             className={formStyles.reactSelect}
                             classNamePrefix="reactSelect"
                         />
@@ -210,18 +269,22 @@ export default function SemesterForm({ semesterId, onSave }) {
                         <span>Available Courses:</span>
                         <Select
                             isMulti
-                            options={availableCourses.map(c=>({label:c.title,value:c.id}))}
+                            options={availableCourses.map(c => ({ label: c.title, value: c.id }))}
                             value={selectedCourses
                                 .map(id => {
-                                    const c = availableCourses.find(x=>x.id===id);
-                                    return c ? {label:c.title,value:c.id} : null;
+                                    const c = availableCourses.find(x => x.id === id);
+                                    return c ? { label: c.title, value: c.id } : null;
                                 })
                                 .filter(Boolean)
                             }
-                            onChange={sel=>setSelectedCourses(sel.map(x=>x.value))}
+                            onChange={sel => setSelectedCourses(sel.map(x => x.value))}
+                            components={{ MenuList: SelectAllMenu }}
+                            availableCourses={availableCourses} // <-- передаётся в selectProps
+                            setValue={(newValue) => setSelectedCourses(newValue.map(o => o.value))} // <-- тоже
                             className={formStyles.reactSelect}
                             classNamePrefix="reactSelect"
                         />
+
                     </label>
 
                     <label className={formStyles.field}>
