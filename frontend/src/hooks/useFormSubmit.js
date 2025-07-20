@@ -27,7 +27,7 @@ export function useFormSubmit(email) {
     // State to store local submissions per student
     const [studentsPreferences, setStudentsPreferences] = useState([]);
     // Priority limits per student group, initially defaulting to 5 each
-    const [limits, setLimits] = useState({tech : 5, hum : 5});
+    const [limits, setLimits] = useState({tech : 0, hum : 0});
     // Fetch student's program and corresponding priority limits when email changes
     useEffect(() => {
         // Get the user's program using their email
@@ -55,50 +55,42 @@ export function useFormSubmit(email) {
      * @returns {Promise<void>}
      * @throws Alerts and logs errors from Supabase or invalid form states.
      */
-    const onSubmit = async (selectedCourses, activeTab, semId) => {
-      const expectedCount = limits[activeTab];
+    const onSubmit = async (selectedCourses, activeTab, semId, minCount) => {
+        if (selectedCourses.length !== minCount || selectedCourses.some(c => !c)) {
+            showNotify('Please fill all priority fields');
+            return;
+        }
 
-      // Validation remains the same
-      if (selectedCourses.length != expectedCount || selectedCourses.some(c => !c)) {
-        showNotify('Please fill all priority fields');
-        return;
-      }
+        const updateFields = {};
+        for (let i = 1; i <= 5; i++) {
+            updateFields[`${activeTab}${i}`] = i <= selectedCourses.length
+                ? selectedCourses[i - 1]
+                : null;
+        }
 
-      // Prepare update fields
-      const updateFields = {};
-      for (let i = 1; i <= 5; i++) {
-        updateFields[`${activeTab}${i}`] = i <= selectedCourses.length
-          ? selectedCourses[i-1]
-          : null;
-      }
+        updateFields['semester_id'] = semId;
 
-        updateFields['semester_name'] = semId;
+        try {
+            await submitPriority(email, updateFields);
 
-      try {
-              await submitPriority(email, updateFields);
-          console.log('Attempting submit with:', { email, updateFields });
-        // This will now handle both tables automatically
-        await submitPriority(email, updateFields);
+            setStudentsPreferences(prev => {
+                const current = prev.find(s => s.email === email) || { email };
+                return [
+                    ...prev.filter(s => s.email !== email),
+                    {
+                        ...current,
+                        [activeTab]: selectedCourses
+                    }
+                ];
+            });
 
-        // Update local state
-        setStudentsPreferences(prev => {
-          const current = prev.find(s => s.email === email) || {
-            email,
-            tech: Array(limits.tech).fill(""),
-            hum: Array(limits.hum).fill("")
-          };
-          return [
-            ...prev.filter(s => s.email !== email),
-            { ...current, [activeTab]: selectedCourses }
-          ];
-        });
-
-        showNotify("Priorities submitted successfully!");
-      } catch (error) {
-        showNotify(`Error: ${error.message}`);
-        console.error('Submission details:', error);
-      }
+            showNotify("Priorities submitted successfully!");
+        } catch (error) {
+            showNotify(`Error: ${error.message}`);
+            console.error('Submission details:', error);
+        }
     };
+
 
     return { studentsPreferences, onSubmit, limits };
 }

@@ -24,64 +24,42 @@ import {useAuth} from '../context/AuthContext.jsx'
  * @returns {JSX.Element}
  */
 
-export default function ElectivesForm({ type, onSubmit, onClear }) {
+export default function ElectivesForm({ type, priorityCount, onSubmit, onClear }) {
     const [filteredCourses, setFilteredCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const [priorityCount, setPriorityCount] = useState(0);
     const [selectedCourses, setSelectedCourses] = useState(Array(priorityCount).fill(""));
     const { email, currentRole, currentSemId } = useAuth();
 
     useEffect(() => {
-        // Initializes the form by fetching elective courses and program info
         const initialize = async () => {
             try {
                 setLoading(true);
-
-                // Fetch both the course list and user's program info in parallel
-                const [courses, program] = await Promise.all([
-                    fetchCourses(email, false, currentSemId),
-                    getProgramInfo(email)
-                ]);
-
-                console.log("Courses in elective form", courses);
-                // Filter courses by type (tech or hum)
+                const courses = await fetchCourses(email, false, currentSemId);
                 const filtered = courses.filter(course => course.type === type);
                 setFilteredCourses(filtered);
 
-                // Set number of electives based on program info
-
-                const programCount = type === 'tech' ? program.tech : program.hum;
-                const coursesCount = filtered.length;
-
-                const count = Math.min(programCount, coursesCount);
-                setPriorityCount(count);
-                setPriorityCount(count);
-                // Reset course selections
                 const saved = localStorage.getItem(`electives-${type}`);
                 if (saved) {
                     const parsed = JSON.parse(saved);
-                    // If saved data matches expected priority count, use it
-                    if (parsed.length === count) {
+                    if (parsed.length === priorityCount) {
                         setSelectedCourses(parsed);
                     } else {
-                        setSelectedCourses(Array(count).fill(""));
+                        setSelectedCourses(Array(priorityCount).fill(""));
                     }
                 } else {
-                    setSelectedCourses(Array(count).fill(""));
+                    setSelectedCourses(Array(priorityCount).fill(""));
                 }
             } catch (err) {
                 console.error('Error initializing form:', err);
-                setError(err.message || 'Failed to load data');
             } finally {
                 setLoading(false);
             }
         };
 
         initialize();
-
-    }, [type, email]);
+    }, [type, email, priorityCount]);
 
     /**
      * Handles a change in selected course at a given priority index.
