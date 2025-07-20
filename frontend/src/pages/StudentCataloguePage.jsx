@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect, useRef } from 'react';
 import CourseList from '../components/CourseList';
 import ElectivesForm from '../components/ElectivesForm';
@@ -7,6 +8,8 @@ import { useFormSubmit } from '../hooks/useFormSubmit';
 import styles from './CataloguePage.module.css';
 import HeaderLayout from "../components/HeaderLayout.jsx";
 import { isStudentAllowedInSemester, getSemesterById } from '../api/functions_for_semesters.js';
+import {getProgramInfo} from "@/api/functions_for_programs.js";
+import {fetchCourses} from "@/api/functions_for_courses.js";
 
 const StudentCataloguePage = () => {
     const { currentRole, email, currentSemId } = useAuth();
@@ -16,9 +19,11 @@ const StudentCataloguePage = () => {
     const [isAllowed, setIsAllowed] = useState(null);
     const [loading, setLoading] = useState(true);
     const scrollPosition = useRef(0);
+    const [minCount, setMinCount] = useState(0);
+    const { courses, courseTypeFilter } = catalogue;
 
     useEffect(() => {
-        const checkAccess = async () => {
+        const checkAccessAndSetMinCount = async () => {
             try {
                 if (!currentSemId || currentRole !== 'student') {
                     setIsAllowed(false);
@@ -28,9 +33,20 @@ const StudentCataloguePage = () => {
 
                 const semester = await getSemesterById(currentSemId);
                 setCurrentSemester(semester);
-                
                 const allowed = await isStudentAllowedInSemester(email, semester);
                 setIsAllowed(allowed);
+
+                const [allCourses, program] = await Promise.all([
+                    fetchCourses(email, false, currentSemId),
+                    getProgramInfo(email)
+                ]);
+
+                const filtered = allCourses.filter(course => course.type === courseTypeFilter);
+                const programCount = courseTypeFilter === 'tech' ? program.tech : program.hum;
+                const coursesCount = filtered.length;
+
+                setMinCount(Math.min(programCount, coursesCount));
+
             } catch (error) {
                 console.error('Access check failed:', error);
                 setIsAllowed(false);
@@ -39,10 +55,10 @@ const StudentCataloguePage = () => {
             }
         };
 
-        checkAccess();
-    }, [currentSemId, currentRole, email]);
+        checkAccessAndSetMinCount();
+    }, [currentSemId, currentRole, email, courseTypeFilter]);
 
-    const { courses, courseTypeFilter } = catalogue;
+
 
     if (loading) {
         return <p>Loading...</p>;
@@ -62,7 +78,8 @@ const StudentCataloguePage = () => {
                 <div className={styles.rightSection}>
                     <ElectivesForm
                         type={courseTypeFilter}
-                        onSubmit={onSubmit}
+                        priorityCount={minCount}
+                        onSubmit={(selectedCourses, type, semId) => onSubmit(selectedCourses, type, semId, minCount)}
                     />
                 </div>
             </div>
