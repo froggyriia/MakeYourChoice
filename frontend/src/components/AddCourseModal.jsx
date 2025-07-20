@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from './AddCourseModal.module.css';
-import { uniquePrograms } from "../api/functions_for_courses.js";
+import { uniquePrograms, getProgramsTitles } from "../api/functions_for_courses.js";
 import Select from 'react-select';
 import MDEditor from '@uiw/react-md-editor';
 import { showNotify } from './CustomToast';
@@ -56,7 +56,7 @@ const AddCourseModal = ({
     useEffect(() => {
         const loadStudentPrograms = async () => {
             try {
-                const data = await uniquePrograms();
+                const data = await getProgramsTitles();
                 setPrograms(data || []);
             } catch (error) {
                 console.error("Error loading programs", error);
