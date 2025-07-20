@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import styles from './AddCourseModal.module.css';
 import Select from 'react-select';
 import PropTypes from 'prop-types';
+import {showNotify} from "@/components/CustomToast.jsx";
 
 const AddStudentsProgramModal = ({
     programData,
@@ -42,11 +43,13 @@ const AddStudentsProgramModal = ({
     const handleFormSubmit = (e) => {
         e.preventDefault();
         if (!programData.shortName) {
-            alert('Please fill all required fields');
+            showNotify("Please fill all required fields");
+
             return;
         }
         console.log("[AddStudentsProgramModal] submitting new program:", programData);
         onSubmit();
+        showNotify("Student program was updated successfully");
     };
 
     return (

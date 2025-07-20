@@ -7,7 +7,7 @@
 import { useState } from 'react';
 import styles from './CourseItem.module.css';
 import { deleteProgram } from '../api/functions_for_programs.js';
-
+import { showConfirm } from './CustomToast';
 /**
  * ProgramItem Component
  *
@@ -23,17 +23,16 @@ const ProgramItem = ({ program, onDelete, onEdit }) => {
     const [isDeleting, setIsDeleting] = useState(false);
 
     // Handle program deletion
-    const handleDelete = async () => {
-        if (window.confirm(`Are you sure you want to delete program "${program.student_group}"?`)) {
+    const handleDelete = () => {
+        showConfirm(`Are you sure you want to delete program "${program.student_group}"?`, async () => {
             setIsDeleting(true);
             const { error } = await deleteProgram(program.id);
             if (!error) {
-                // Slight delay to show animation before removal
                 setTimeout(() => onDelete(program.student_group), 300);
             } else {
                 console.error('Delete error:', error.message);
             }
-        }
+        });
     };
 
     // Trigger the edit flow

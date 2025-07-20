@@ -8,6 +8,7 @@ import {
 import { uniquePrograms, fetchCourses } from '../api/functions_for_courses.js';
 import addStyles from './AddCourseModal.module.css';
 import formStyles from './SemesterForm.module.css';
+import { showNotify } from '../components/CustomToast';
 
 const LS_KEY = 'semesterFormData';
 
@@ -141,6 +142,7 @@ export default function SemesterForm({ semesterId, onSave }) {
         setIsActive(newActive);
         // bubble back up so the list can re-render & highlight
         onSave?.({ id: semesterId, is_active: newActive });
+        showNotify(newActive ? "Semester activated" : "Semester deactivated");
     };
 
     // ─── Full Save (insert/update) ───────────────────────────────────────────────────
@@ -159,6 +161,7 @@ export default function SemesterForm({ semesterId, onSave }) {
         });
         localStorage.removeItem(LS_KEY);
         onSave?.(saved[0] || saved);
+
     };
 
 

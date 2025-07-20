@@ -11,11 +11,13 @@ import AdminSemesterPage from "./pages/AdminSemesterPage.jsx";
 import AdminSuggestedPage from "./pages/AdminSuggestedPage.jsx";
 import SuggestFormPage from "./pages/SuggestFormPage.jsx";
 import DeclinedCoursesPage from "./pages/DeclinedCoursesPage.jsx";
+import { Toaster } from 'react-hot-toast';
 
 
 export default function App() {
     return (
         <CatalogueProvider>
+            <Toaster position="top-center" />
             <Routes>
                 <Route path="/" element={<LoginPage />} />
 
