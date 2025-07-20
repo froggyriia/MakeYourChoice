@@ -15,6 +15,7 @@
 }
 
 .content {
+    background-color: red;
     flex-grow: 1;
     max-width: 1000px;
     margin-left: 40px;
