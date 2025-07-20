@@ -5,6 +5,7 @@ import AddCourseModal from '../components/AddCourseModal';
 import { useCatalogueContext } from '../context/CatalogueContext';
 import { supabase } from '../pages/supabaseClient.jsx';
 import { showNotify } from '../components/CustomToast';
+import styles from './SuggestFormPage.module.css'; // Добавьте этот импорт
 
 const SuggestFormPage = () => {
   const scrollPosition = useRef(0);
