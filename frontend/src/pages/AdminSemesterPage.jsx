@@ -5,6 +5,7 @@ import { getAllSemesters, deleteSemester } from '../api/functions_for_semesters.
 import { useExcelExport } from '../hooks/useExcelExport';
 import styles from './AdminSemestersPage.module.css';
 import { showConfirm, showNotify } from '../components/CustomToast';
+import { supabase } from '../pages/supabaseClient.jsx';
 
 export default function AdminSemestersPage() {
     const [semesters, setSemesters] = useState([]);
@@ -48,6 +49,21 @@ export default function AdminSemestersPage() {
 
     const handleExport = async (semesterId) => {
         try {
+            const [{ data: prioritiesData, error: prioritiesError },
+                   { data: lastPrioritiesData, error: lastPrioritiesError }] = await Promise.all([
+                supabase.from("all_priorities").select("*").eq("semester_id", semesterId),
+                supabase.from("last_priorities").select("*").eq("semester_id", semesterId)
+            ]);
+
+            if (prioritiesError || lastPrioritiesError) {
+                throw prioritiesError || lastPrioritiesError;
+            }
+
+            if (!prioritiesData?.length && !lastPrioritiesData?.length) {
+                showNotify('No data to export for this semester');
+                return;
+            }
+
             await exportToExcel(semesterId);
             showNotify("Export completed successfully!");
         } catch (error) {
