@@ -1,0 +1,63 @@
+.toastContainer {
+    background: var(--color-elem-background);
+    color: #333;
+    border-radius: 12px;
+    font-family: 'Montserrat', sans-serif;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.toastMessage {
+    font-size: 15px;
+    margin: 0;
+}
+
+.toastButtons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.confirmButton {
+    background-color: rgb(255, 50, 50);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.confirmButton:hover {
+    background-color: rgb(255, 25, 25);
+}
+
+.cancelButton {
+    background-color: #ccc;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.cancelButton:hover {
+    background-color: #bbb;
+}
+
+/* Для notify уведомлений */
+.notifyToast {
+    background: var(--color-elem-background) !important;
+    color: #333 !important;
+    border-radius: 12px !important;
+    padding: 16px 20px !important;
+    font-family: 'Montserrat', sans-serif;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important;
+    font-size: 15px;
+}

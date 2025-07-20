@@ -11,6 +11,7 @@ import styles from './CourseItem.module.css';
 import { deleteCourse } from '../api/functions_for_courses';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import '@uiw/react-markdown-preview/markdown.css';
+import { showConfirm, showNotify } from './CustomToast';
 
 /**
  * Renders a course item with title, instructor, language, programs, years, and type.
@@ -37,11 +38,13 @@ const CourseItem = ({ course, onDelete, onEdit, onArchive, role }) => {
     }, []);
 
     const handleDelete = async () => {
-        if (window.confirm(`Are you sure you want to delete "${course.title}"?`)) {
+        showConfirm(`Are you sure you want to delete "${course.title}"?`, async () => {
             setIsDeleting(true);
             await deleteCourse(course.title);
-            setTimeout(() => onDelete(course.id), 300);
-        }
+            onDelete(course.id);
+
+        });
+
     };
 
     const handleEdit = () => {
