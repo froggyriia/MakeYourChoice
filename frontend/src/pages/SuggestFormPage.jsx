@@ -15,7 +15,6 @@ const SuggestFormPage = () => {
   const [step, setStep] = useState(1);
   const [fullName, setFullName] = useState('');
   const [recaptchaToken, setRecaptchaToken] = useState(null);
-
   const {
     catalogue: {
       currentCourse,

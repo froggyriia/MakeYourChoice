@@ -8,6 +8,7 @@ import { useFormSubmit } from '../hooks/useFormSubmit';
 import styles from './CataloguePage.module.css';
 import HeaderLayout from "../components/HeaderLayout.jsx";
 import { isStudentAllowedInSemester, getSemesterById } from '../api/functions_for_semesters.js';
+import AccessDenied from '../components/AccessDenied'; // Импорт нового компонента
 import {getProgramInfo} from "@/api/functions_for_programs.js";
 import {fetchCourses} from "@/api/functions_for_courses.js";
 
@@ -33,6 +34,10 @@ const StudentCataloguePage = () => {
 
                 const semester = await getSemesterById(currentSemId);
                 setCurrentSemester(semester);
+<<<<<<< frontend/src/pages/StudentCataloguePage.jsx
+
+=======
+>>>>>>> frontend/src/pages/StudentCataloguePage.jsx
                 const allowed = await isStudentAllowedInSemester(email, semester);
                 setIsAllowed(allowed);
 
@@ -61,11 +66,16 @@ const StudentCataloguePage = () => {
 
 
     if (loading) {
-        return <p>Loading...</p>;
+        return (
+            <div className={styles.loadingContainer}>
+                <div className={styles.loadingSpinner}></div>
+                <p>Checking access rights...</p>
+            </div>
+        );
     }
 
     if (currentRole !== 'student' || !isAllowed) {
-        return <p>Access denied</p>;
+        return <AccessDenied />;
     }
 
     return (

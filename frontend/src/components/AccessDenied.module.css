@@ -1,0 +1,118 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f8fafc;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    padding: 40px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    border: 1px solid #e5f5e0;
+}
+
+.catContainer {
+    margin: -80px auto 20px;
+    width: 180px;
+    height: 180px;
+}
+
+.sadCat {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.1));
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #22C55E;
+    margin-bottom: 16px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.message {
+    color: #4b5563;
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 30px;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.buttonPrimary {
+    background-color: #22C55E;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.buttonPrimary:hover {
+    background-color: #16A34A;
+    transform: translateY(-2px);
+}
+
+.buttonSecondary {
+    background-color: white;
+    color: #22C55E;
+    border: 1px solid #22C55E;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.buttonSecondary:hover {
+    background-color: #f0fdf4;
+}
+
+@media (max-width: 768px) {
+    .card {
+        padding: 30px 20px;
+    }
+
+    .catContainer {
+        width: 150px;
+        height: 150px;
+        margin: -60px auto 15px;
+    }
+
+    .title {
+        font-size: 24px;
+    }
+
+    .buttonGroup {
+        flex-direction: column;
+    }
+
+    .buttonPrimary,
+    .buttonSecondary {
+        width: 100%;
+    }
+}
