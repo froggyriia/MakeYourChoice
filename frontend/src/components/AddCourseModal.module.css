@@ -349,7 +349,7 @@ button[type="button"]:hover {
     display: flex;
     flex-direction: column;
     position: relative; /* Добавлено для позиционирования кнопок */
-    min-height: 80vh; /* Гарантирует место для контента */
+    min-height: 0vh; /* Гарантирует место для контента */
 }
 
 /* Content area - растягивается между header и footer */

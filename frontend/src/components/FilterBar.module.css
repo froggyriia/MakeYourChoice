@@ -1,15 +1,21 @@
 .filterBarContainer {
-    margin-top: 4rem;
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 2rem;
-    padding: 1rem 2rem; /* match header padding */
-    align-items: center;
-    overflow-x: auto;
-    background-color: white; /* same as header */
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); /* match header shadow */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2rem;
+  padding: 1rem 2rem;
+  align-items: center;
+  overflow-x: auto;
+  background-color: white;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  height: 5rem; 
+  z-index: 99;
+  box-sizing: border-box;
 }
 
 /* hide scrollbar for webkit */
@@ -23,6 +29,10 @@
     align-items: center;
     gap: 0.5rem;
     white-space: nowrap;
+}
+
+.filterGroupSearch {
+    margin-bottom: 0.3rem;
 }
 
 .filterLabel {

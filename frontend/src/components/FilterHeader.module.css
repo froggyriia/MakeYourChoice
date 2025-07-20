@@ -11,16 +11,16 @@
 }
 
 .filterHeader {
-    width: 17rem;
+    width: 20rem;
     position: fixed;
     top: 32px;
     z-index: 5;
     background-color: white;
     padding: 20px 24px;
     margin-top: 2.5rem;
-    margin-left: -3.05rem;
+    margin-left: -5rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.0);
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--border-radius-xl);
     transform: translateX(-24px);
 }
 
@@ -84,12 +84,12 @@
 }
 
 .filterButton {
-    width: 102px;
+    width: 8.2rem;
     padding: 8px 16px;
     border-radius: 8px;
     font-size: 13px;
     border: 1px solid #e0e0e0;
-    background: #ccc;
+    background: var(--color-inactive);
     cursor: pointer;
     transition: all 0.2s ease;
 }

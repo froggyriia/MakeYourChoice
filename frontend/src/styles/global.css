@@ -46,7 +46,7 @@ button.active {
 
 :root {
   /* Цветовая схема */
-  --color-inactive: #A5A5A5;
+  --color-inactive: #ccc;
   --color-elem-background: #FFFFFF;
   --color-input-field: #E5E5E5;
   --color-main-background: #E5E5E5;
