@@ -3,12 +3,14 @@ import Select from 'react-select';
 import {
     saveSemesterInfo,
     getLatestRecordBySemester,
-    getSemesterById
+    getSemesterById,
+    isSingleActiveSemester,
+    isSemesterExists
 } from '../api/functions_for_semesters.js';
 import { uniquePrograms, fetchCourses } from '../api/functions_for_courses.js';
 import addStyles from './AddCourseModal.module.css';
 import formStyles from './SemesterForm.module.css';
-import { showNotify } from '../components/CustomToast';
+import { showNotify, showConfirm } from '../components/CustomToast';
 
 const LS_KEY = 'semesterFormData';
 
@@ -130,6 +132,22 @@ export default function SemesterForm({ semesterId, onSave }) {
 
     // ─── Toggle Active/Deactivate immediately ────────────────────────────────────────
     const handleToggleActive = async () => {
+        if (!isActive) {
+            const existingActive = await isSingleActiveSemester();
+            if (existingActive && existingActive.id !== semesterId) {
+                showNotify("You cannot activate more than one semester");
+                return;
+            }
+
+            activateSemester();
+        } else {
+            showConfirm("Are you sure you want to deactivate this semester?", async () => {
+                await activateSemester();
+            });
+        }
+    };
+
+    const activateSemester = async () => {
         const newActive = !isActive;
         await saveSemesterInfo({
             semester: season,
@@ -139,19 +157,29 @@ export default function SemesterForm({ semesterId, onSave }) {
             deadline,
             is_active: newActive
         });
+
         setIsActive(newActive);
-        // bubble back up so the list can re-render & highlight
         onSave?.({ id: semesterId, is_active: newActive });
+
         showNotify(newActive ? "Semester activated" : "Semester deactivated");
     };
 
     // ─── Full Save (insert/update) ───────────────────────────────────────────────────
     const handleSave = async e => {
         e.preventDefault();
+
+        const exists = await isSemesterExists(season, year);
+        if (exists && (!semesterId)) { // если создаём новый семестр, а такой уже есть
+            showNotify("Semester with this season and year already exists");
+            return;
+        }
+
         if (!season || !year || !selectedPrograms.length || !selectedCourses.length || !deadline) {
             showNotify("Please fill all required fields");
             return;
         }
+
+
         const saved = await saveSemesterInfo({
             semester: season,
             semester_year: year,
