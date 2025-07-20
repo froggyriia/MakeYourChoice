@@ -1,8 +1,10 @@
+import React from "react";
 import { useEffect, useState } from 'react';
 import styles from './CataloguePage.module.css';
 import AddCourseModal from '../components/AddCourseModal';
 import DeclinedCourseItem from '../components/DeclinedCourseItem';
 import { NavLink } from 'react-router-dom';
+import { showNotify } from '../components/CustomToast';
 
 import {
   fetchDeclinedCourses,
@@ -30,7 +32,7 @@ const DeclinedCoursesPage = () => {
         setCourses((prev) => prev.filter((c) => c.id !== course.id));
       } catch (err) {
         console.error('Recover failed:', err);
-        alert('Failed to recover the course');
+        showNotify('Failed to recover the course');
       }
   };
 
@@ -40,7 +42,7 @@ const DeclinedCoursesPage = () => {
         setCourses((prev) => prev.filter((c) => c.id !== id));
       } catch (err) {
         console.error('Delete failed:', err);
-        alert('Failed to delete the course');
+        showNotify('Failed to delete the course');
       }
   };
 

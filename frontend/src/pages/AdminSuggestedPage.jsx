@@ -1,8 +1,10 @@
+import React from "react";
 import { useEffect, useState } from 'react';
 import styles from './CataloguePage.module.css';
 import AddCourseModal from '../components/AddCourseModal';
 import SuggestedCourseItem from '../components/SuggestedCourseItem';
 import { NavLink } from 'react-router-dom';
+import { showNotify } from '../components/CustomToast';
 
 import {
   fetchSuggestedCourses,
@@ -40,24 +42,28 @@ const AdminSuggestedCoursesPage = () => {
       const updatedCourse = await updateSuggestedCourse(id, fieldsToUpdate);
 
       setCourses((prev) =>
-        prev.map((course) =>
-          course.id === id ? updatedCourse : course
-        )
+          prev.map((course) =>
+              course.id === id ? updatedCourse : course
+          )
       );
       setEditingCourse(null);
+      showNotify("Course updated successfully!");
     } catch (err) {
       console.error('Update error:', err);
-      alert(`Update failed: ${err.message}`);
+      showNotify(`Update failed: ${err.message}`);
     }
   };
+
 
   const handleAccept = async (course) => {
     try {
       await acceptSuggestedCourse(course);
       setCourses((prev) => prev.filter((c) => c.id !== course.id));
       setEditingCourse(null);
+      showNotify("Course accepted successfully!");
     } catch (err) {
       console.error('Accept error:', err);
+      showNotify(`Accept failed: ${err.message}`);
     }
   };
 
@@ -66,10 +72,13 @@ const AdminSuggestedCoursesPage = () => {
       await declineSuggestedCourse(id);
       setCourses((prev) => prev.filter((c) => c.id !== id));
       setEditingCourse(null);
+      showNotify("Course declined.");
     } catch (err) {
       console.error('Decline error:', err);
+      showNotify(`Decline failed: ${err.message}`);
     }
   };
+
 
   if (loading) {
     return <p style={{ textAlign: 'center' }}>Loading...</p>;

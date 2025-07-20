@@ -3,6 +3,7 @@ import styles from './AddCourseModal.module.css';
 import { uniquePrograms } from "../api/functions_for_courses.js";
 import Select from 'react-select';
 import MDEditor from '@uiw/react-md-editor';
+import { showNotify } from './CustomToast';
 
 const AddCourseModal = ({
     course,
@@ -83,20 +84,21 @@ const AddCourseModal = ({
         e.preventDefault();
 
         if (!localCourse.language) {
-            alert("Please select a language.");
+            showNotify("Please select a language");
             return;
         }
         if (!localCourse.program || localCourse.program.length === 0) {
-            alert("Please select at least one program.");
+            showNotify("Please select at least one program");
             return;
         }
         if (!localCourse.years || localCourse.years.length === 0) {
-            alert("Please select at least one year.");
+            showNotify("Please select at least one year");
             return;
         }
 
         if (onSubmit) {
             onSubmit();
+            showNotify("Course was updated successfully");
         }
     };
 

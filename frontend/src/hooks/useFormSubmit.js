@@ -11,6 +11,7 @@ import { getUserProgram, getPrioritiesNumber, getUserYear } from '../api/functio
 import {
     submitPriority
 } from '../api/functions_for_users';
+import { showNotify } from '../components/CustomToast';
 
 /**
  * Hook to manage course preference form submission and retrieve submission limits.
@@ -59,7 +60,7 @@ export function useFormSubmit(email) {
 
       // Validation remains the same
       if (selectedCourses.length != expectedCount || selectedCourses.some(c => !c)) {
-        alert('Please fill all priority fields');
+        showNotify('Please fill all priority fields');
         return;
       }
 
@@ -92,9 +93,9 @@ export function useFormSubmit(email) {
           ];
         });
 
-        alert("Priorities submitted successfully!");
+        showNotify("Priorities submitted successfully!");
       } catch (error) {
-        alert(`Error: ${error.message}`);
+        showNotify(`Error: ${error.message}`);
         console.error('Submission details:', error);
       }
     };

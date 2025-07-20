@@ -9,7 +9,7 @@
 import { useState } from 'react';
 import ExcelJS from 'exceljs';
 import { supabase } from '../pages/supabaseClient.jsx';
-
+import { showNotify } from '../components/CustomToast';
 /**
      * creates an abbreviation from a course name by taking the first letter of each word.
      * handles various word separators (spaces, hyphens, colons) and eng/ru characters.
@@ -53,7 +53,7 @@ export function useExcelExport() {
             }
 
             if (!prioritiesData?.length && !lastPrioritiesData?.length) {
-                alert('No data to export for this semester');
+                showNotify('No data to export for this semester');
                 return;
             }
 
@@ -145,7 +145,7 @@ export function useExcelExport() {
             setIsExported(true);
         } catch (error) {
             console.error("Export error:", error);
-            alert("Error occurred: " + error.message);
+            showNotify("Error occurred: " + error.message);
         }
     };
 
