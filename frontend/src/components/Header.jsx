@@ -84,11 +84,7 @@ export default function Header() {
           <button className={styles.menuButton} onClick={() => setMenuOpen(p => !p)}>▾</button>
           {menuOpen && (
             <div className={styles.dropdown}>
-              {currentRole === 'admin' && (
-                <button className={styles.exstButton} onClick={excelExport.exportToExcel}>
-                  <img width="16" height="16" src="https://img.icons8.com/ios/50/ms-excel.png" alt="ms-excel"/> {excelExport.isExported ? 'Exported!' : 'Export to Excel'}
-                </button>
-              )}
+
               {trueRole === 'admin-student' && (
     <button className={styles.exstButton} onClick={() => {
         const newRole = currentRole === 'admin' ? 'student' : 'admin';
