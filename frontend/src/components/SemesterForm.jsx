@@ -40,7 +40,7 @@ export default function SemesterForm({ semesterId, onSave }) {
         if (!semesterId) {
             // “Add new”: clear to defaults, *and* allow the very next season change to auto-load
             setSeason('');
-            setYear(new Date().getFullYear());
+            setYear('');
             setSelectedPrograms([]);
             setSelectedCourses([]);
             setDeadline('');
@@ -149,7 +149,8 @@ export default function SemesterForm({ semesterId, onSave }) {
     const handleSave = async e => {
         e.preventDefault();
         if (!season || !year || !selectedPrograms.length || !selectedCourses.length || !deadline) {
-            return; // you can add inline validation here
+            showNotify("Please fill all required fields");
+            return;
         }
         const saved = await saveSemesterInfo({
             semester: season,
@@ -165,24 +166,23 @@ export default function SemesterForm({ semesterId, onSave }) {
     };
 
 
+
     return (
         <div className={addStyles.modalContainer}>
             <h2>Semester Info</h2>
 
             <div className={addStyles.modalContent}>
                 <form className={formStyles.form} onSubmit={handleSave}>
-                    <label className={formStyles.field}>
-                        <span>Season:</span>
-                        <select
-                            className={formStyles.select}
-                            value={season}
-                            onChange={e => setSeason(e.target.value)}
-                        >
-                            {['Fall','Spring','Summer'].map(s => (
-                                <option key={s} value={s}>{s}</option>
-                            ))}
-                        </select>
-                    </label>
+                    <select
+                        className={formStyles.select}
+                        value={season}
+                        onChange={e => setSeason(e.target.value)}
+                    >
+                        <option value="">Select season</option> {/* <-- Добавь плейсхолдер */}
+                        {['Fall','Spring','Summer'].map(s => (
+                            <option key={s} value={s}>{s}</option>
+                        ))}
+                    </select>
 
                     <label className={formStyles.field}>
                         <span>Year:</span>
@@ -191,6 +191,7 @@ export default function SemesterForm({ semesterId, onSave }) {
                             className={formStyles.input}
                             value={year}
                             onChange={e => setYear(+e.target.value)}
+                            placeholder="Select year" // <-- Добавь placeholder
                         />
                     </label>
 
