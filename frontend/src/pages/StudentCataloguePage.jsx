@@ -7,6 +7,7 @@ import { useFormSubmit } from '../hooks/useFormSubmit';
 import styles from './CataloguePage.module.css';
 import HeaderLayout from "../components/HeaderLayout.jsx";
 import { isStudentAllowedInSemester, getSemesterById } from '../api/functions_for_semesters.js';
+import AccessDenied from '../components/AccessDenied'; // Импорт нового компонента
 
 const StudentCataloguePage = () => {
     const { currentRole, email, currentSemId } = useAuth();
@@ -28,7 +29,7 @@ const StudentCataloguePage = () => {
 
                 const semester = await getSemesterById(currentSemId);
                 setCurrentSemester(semester);
-                
+
                 const allowed = await isStudentAllowedInSemester(email, semester);
                 setIsAllowed(allowed);
             } catch (error) {
@@ -45,11 +46,16 @@ const StudentCataloguePage = () => {
     const { courses, courseTypeFilter } = catalogue;
 
     if (loading) {
-        return <p>Loading...</p>;
+        return (
+            <div className={styles.loadingContainer}>
+                <div className={styles.loadingSpinner}></div>
+                <p>Checking access rights...</p>
+            </div>
+        );
     }
 
     if (currentRole !== 'student' || !isAllowed) {
-        return <p>Access denied</p>;
+        return <AccessDenied />;
     }
 
     return (
