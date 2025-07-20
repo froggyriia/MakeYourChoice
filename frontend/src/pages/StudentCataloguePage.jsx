@@ -9,8 +9,8 @@ import styles from './CataloguePage.module.css';
 import HeaderLayout from "../components/HeaderLayout.jsx";
 import { isStudentAllowedInSemester, getSemesterById } from '../api/functions_for_semesters.js';
 import AccessDenied from '../components/AccessDenied'; // Импорт нового компонента
-import {getProgramInfo} from "@/api/functions_for_programs.js";
-import {fetchCourses} from "@/api/functions_for_courses.js";
+import {getProgramInfo} from "../api/functions_for_programs.js";
+import {fetchCourses} from "../api/functions_for_courses.js";
 
 const StudentCataloguePage = () => {
     const { currentRole, email, currentSemId } = useAuth();
@@ -34,10 +34,6 @@ const StudentCataloguePage = () => {
 
                 const semester = await getSemesterById(currentSemId);
                 setCurrentSemester(semester);
-<<<<<<< frontend/src/pages/StudentCataloguePage.jsx
-
-=======
->>>>>>> frontend/src/pages/StudentCataloguePage.jsx
                 const allowed = await isStudentAllowedInSemester(email, semester);
                 setIsAllowed(allowed);
 
