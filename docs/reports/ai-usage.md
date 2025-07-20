@@ -1,19 +1,19 @@
-**#Report on AI-usage for assignments 1-7#**
+**Report on AI-usage for assignments 1-7**
 
-**##Assignment 1##**
+**Assignment 1**
 Used AI to help translate the "Questions asked during the interview" section into grammatically correct English.
 
-**##Assignment 2##**
+**Assignment 2**
 Asked AI to explan or translate some keywords in the assignment (e.g. Detailed appropriately principle for Backlog). Also used it to understand Postman functionality.
 
 Consulted AI while writing the code to clarify requirements and get suggestions on structure and logic.
 
-**##Assignment 3##**
+**Assignment 3**
 We consultated while code writing and for grammar checking. Also, we used AI to translate YouGile’s tasks in English.
 
 Consulted AI while writing the code to clarify requirements and get suggestions on structure and logic.
 
-**##Assignment 4##**
+**Assignment 4**
 Consulted AI while writing the code to clarify requirements and get suggestions on structure and logic.
 
 ##Assignment 5##
