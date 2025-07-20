@@ -7,10 +7,11 @@
  */
 
 import { useEffect, useState } from 'react';
-import { getUserProgram, getPrioritiesNumber } from '../api/functions_for_users';
+import { getUserProgram, getPrioritiesNumber, getUserYear } from '../api/functions_for_users';
 import {
     submitPriority
 } from '../api/functions_for_users';
+import { showNotify } from '../components/CustomToast';
 
 /**
  * Hook to manage course preference form submission and retrieve submission limits.
@@ -31,11 +32,12 @@ export function useFormSubmit(email) {
     useEffect(() => {
         // Get the user's program using their email
         async function fetchLimits() {
-            const program = await getUserProgram(email)
+            const program = await getUserProgram(email);
+            const year = await getUserYear(email);
 
             if (!program) return;
             // Fetch the allowed number of tech/hum priorities for this program
-            const limits = await getPrioritiesNumber(program);
+            const limits = await getPrioritiesNumber(program, year);
             setLimits(limits);
         }
 
@@ -53,12 +55,12 @@ export function useFormSubmit(email) {
      * @returns {Promise<void>}
      * @throws Alerts and logs errors from Supabase or invalid form states.
      */
-    const onSubmit = async (selectedCourses, activeTab) => {
+    const onSubmit = async (selectedCourses, activeTab, semId) => {
       const expectedCount = limits[activeTab];
 
       // Validation remains the same
       if (selectedCourses.length != expectedCount || selectedCourses.some(c => !c)) {
-        alert('Please fill all priority fields');
+        showNotify('Please fill all priority fields');
         return;
       }
 
@@ -69,6 +71,8 @@ export function useFormSubmit(email) {
           ? selectedCourses[i-1]
           : null;
       }
+
+        updateFields['semester_name'] = semId;
 
       try {
               await submitPriority(email, updateFields);
@@ -89,9 +93,9 @@ export function useFormSubmit(email) {
           ];
         });
 
-        alert("Priorities submitted successfully!");
+        showNotify("Priorities submitted successfully!");
       } catch (error) {
-        alert(`Error: ${error.message}`);
+        showNotify(`Error: ${error.message}`);
         console.error('Submission details:', error);
       }
     };

@@ -31,7 +31,7 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
 
     const [priorityCount, setPriorityCount] = useState(0);
     const [selectedCourses, setSelectedCourses] = useState(Array(priorityCount).fill(""));
-    const { email, currentRole } = useAuth();
+    const { email, currentRole, currentSemId } = useAuth();
 
     useEffect(() => {
         // Initializes the form by fetching elective courses and program info
@@ -41,7 +41,7 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
 
                 // Fetch both the course list and user's program info in parallel
                 const [courses, program] = await Promise.all([
-                    fetchCourses(email),
+                    fetchCourses(email, false, currentSemId),
                     getProgramInfo(email)
                 ]);
 
@@ -51,7 +51,12 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
                 setFilteredCourses(filtered);
 
                 // Set number of electives based on program info
-                const count = type === 'tech' ? program.tech : program.hum;
+
+                const programCount = type === 'tech' ? program.tech : program.hum;
+                const coursesCount = filtered.length;
+
+                const count = Math.min(programCount, coursesCount);
+                setPriorityCount(count);
                 setPriorityCount(count);
                 // Reset course selections
                 const saved = localStorage.getItem(`electives-${type}`);
@@ -75,6 +80,7 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
         };
 
         initialize();
+
     }, [type, email]);
 
     /**
@@ -109,7 +115,7 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
-                            onSubmit(selectedCourses, type);
+                            onSubmit(selectedCourses, type, currentSemId);
                         }}
                         className={styles.form}
                     >
@@ -132,7 +138,7 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
                                         onChange={(e) => handleChange(i, e.target.value)}
                                         className={styles.select}
                                     >
-                                        <option value="" disabled>Select course</option>
+                                        <option value="">Select course</option>
                                         {availableCourses.map(course => (
                                             <option key={course.id} value={course.title}>
                                                 {course.title}

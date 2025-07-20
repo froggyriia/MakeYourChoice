@@ -20,7 +20,7 @@ import {
 import { getUserProgram } from '../api/functions_for_users.js';
 
 export const useCatalogue = () => {
-    const { email, currentRole } = useAuth();
+    const { email, currentRole, currentSemId } = useAuth();
 
     const [allCourses, setAllCourses] = useState([]);
     const [filteredCourses, setFilteredCourses] = useState([]);
@@ -60,7 +60,7 @@ export const useCatalogue = () => {
     const loadCourses = async () => {
         try {
             setLoading(true);
-            const data = await fetchCourses(email, isUserAdmin);
+            const data = await fetchCourses(email, isUserAdmin, currentSemId);
             setAllCourses(data);
             setError(null);
             return data;

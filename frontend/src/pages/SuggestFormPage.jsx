@@ -1,9 +1,10 @@
+import React from "react";
 import { useRef, useEffect, useState } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import AddCourseModal from '../components/AddCourseModal';
 import { useCatalogueContext } from '../context/CatalogueContext';
 import { supabase } from '../pages/supabaseClient.jsx';
-import styles from './SuggestFormPage.module.css';
+import { showNotify } from '../components/CustomToast';
 
 const SuggestFormPage = () => {
   const scrollPosition = useRef(0);
@@ -92,8 +93,8 @@ const SuggestFormPage = () => {
     };
 
     const { data, error } = await supabase
-      .from('suggested_courses')
-      .insert([newCourse]);
+        .from('suggested_courses')
+        .insert([newCourse]);
 
     console.log('📦 newCourse:', newCourse);
     console.log('✅ data:', data);
@@ -101,18 +102,18 @@ const SuggestFormPage = () => {
 
     if (!error) {
       setCourses([...courses, ...(data || [])]);
-      setMessage('Successfully submitted!');
+      showNotify("Your course suggestion was submitted successfully!");
       handleCancel();
       setStep(1);
       setFullName('');
       setRecaptchaToken(null);
       if (recaptchaRef.current) recaptchaRef.current.reset();
-      setTimeout(() => setMessage(''), 3000);
     } else {
       console.error('Error from Supabase:', error);
-      setMessage('Error while adding');
+      showNotify("Error while adding course: " + error.message);
     }
   };
+
 
   const handleModalCancel = () => {
     handleCancel();

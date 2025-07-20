@@ -62,7 +62,7 @@ const StudentCataloguePage = () => {
                 <div className={styles.rightSection}>
                     <ElectivesForm
                         type={courseTypeFilter}
-                        onSubmit={(selectedCourses) => onSubmit(selectedCourses, courseTypeFilter)}
+                        onSubmit={onSubmit}
                     />
                 </div>
             </div>

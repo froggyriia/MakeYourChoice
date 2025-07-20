@@ -8,6 +8,7 @@ import {
 import { uniquePrograms, fetchCourses } from '../api/functions_for_courses.js';
 import addStyles from './AddCourseModal.module.css';
 import formStyles from './SemesterForm.module.css';
+import { showNotify } from '../components/CustomToast';
 
 const LS_KEY = 'semesterFormData';
 
@@ -64,15 +65,39 @@ export default function SemesterForm({ semesterId, onSave }) {
 
     // ─── 3. Reload courses when programs change ───────────────────────────────────────
     useEffect(() => {
-        if (selectedPrograms.length) {
-            fetchCourses(null, true, { programs: selectedPrograms })
-                .then(setAvailableCourses)
-                .catch(console.error);
-        } else {
-            setAvailableCourses([]);
-            setSelectedCourses([]);
-        }
-    }, [selectedPrograms]);
+    if (selectedPrograms.length) {
+        fetchCourses(null, true, semesterId)
+            .then((courses) => {
+                // Преобразуем selectedPrograms в массив объектов {year, program}
+                const selectedCombinations = selectedPrograms.map(sp => {
+                    const [year, program] = sp.split(' ');
+                    return {year, program};
+                });
+
+                const filteredCourses = courses.filter(course => {
+                    // Проверяем что у курса есть массивы years и programs
+                    if (!course.years || !course.program ||
+                        !Array.isArray(course.years) ||
+                        !Array.isArray(course.program)) {
+                        return false;
+                    }
+
+                    // Проверяем каждую выбранную комбинацию
+                    return selectedCombinations.some(({year, program}) => {
+                        // Курс подходит если содержит И год И программу из комбинации
+                        return course.years.includes(year) &&
+                               course.program.includes(program);
+                    });
+                });
+
+                setAvailableCourses(filteredCourses);
+            })
+            .catch(console.error);
+    } else {
+        setAvailableCourses([]);
+        setSelectedCourses([]);
+    }
+}, [selectedPrograms, semesterId]);
 
     // ─── 4. Persist draft on every change ────────────────────────────────────────────
     useEffect(() => {
@@ -117,6 +142,7 @@ export default function SemesterForm({ semesterId, onSave }) {
         setIsActive(newActive);
         // bubble back up so the list can re-render & highlight
         onSave?.({ id: semesterId, is_active: newActive });
+        showNotify(newActive ? "Semester activated" : "Semester deactivated");
     };
 
     // ─── Full Save (insert/update) ───────────────────────────────────────────────────
@@ -135,6 +161,7 @@ export default function SemesterForm({ semesterId, onSave }) {
         });
         localStorage.removeItem(LS_KEY);
         onSave?.(saved[0] || saved);
+
     };
 
 

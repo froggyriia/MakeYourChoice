@@ -1,5 +1,5 @@
 import { supabase } from '../pages/supabaseClient.jsx';
-import { getUserProgram } from './functions_for_users.js'
+import { getUserProgram, getUserYear } from './functions_for_users.js'
 
 /**
  * Checks if the form is active for the specified student program. The catalogue and form should be displayed ONLY if this is true
@@ -42,17 +42,23 @@ export const getProgramInfo = async (email) => {
 
   try {
     const programTitle = await getUserProgram(email);
+    const programYear = await getUserYear(email);
 
-    if (!programTitle) {
+    if (!programTitle || !programYear) {
       console.warn(`No program found for email: ${email}`);
       return null;
     }
+
+    console.log('year', programYear)
 
     const { data, error } = await supabase
       .from('groups_electives')
       .select('*')
       .eq('student_group', programTitle)
+      .eq('year', programYear)
       .maybeSingle();
+
+    console.log('info about program', data)
 
     if (error) throw error;
 
@@ -78,13 +84,6 @@ export const getProgramInfo = async (email) => {
 export const addProgram = async (programData) => {
   try {
     const dataToInsert = { ...programData };
-
-    if (dataToInsert.year !== undefined && dataToInsert.group !== undefined) {
-      dataToInsert.student_group = `${dataToInsert.year}_${dataToInsert.group}`;
-
-      delete dataToInsert.year;
-      delete dataToInsert.group;
-    }
 
     const { data, error } = await supabase
       .from('groups_electives')
@@ -130,12 +129,12 @@ export const editProgramInfo = async (programNewData) => {
  * @returns {Promise<Object>} - an object of program data type
  * @throws {Error} - if an error occurs
  */
-export const deleteProgram = async (programTitle) => {
+export const deleteProgram = async (programId) => {
   try {
     const { error } = await supabase
       .from('groups_electives')
       .delete()
-      .eq('student_group', programTitle);
+      .eq('id', programId);
 
     return { error };
   } catch (error) {
@@ -150,12 +149,12 @@ export const deleteProgram = async (programTitle) => {
  * @returns {timestamptz} - deadline of the program
  * @throws {Error} - If an error occurs
  */
-export async function getDeadlineForGroup(programTitle) {
+export async function getDeadlineForSem(semId) {
   try {
     const { data, error } = await supabase
-        .from('groups_electives')
+        .from('semesters')
         .select('deadline')
-        .eq('student_group', programTitle)
+        .eq('id', semId)
         .single();
 
     if (error || !data) {

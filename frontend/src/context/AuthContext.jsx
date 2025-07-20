@@ -14,64 +14,98 @@ export const AuthProvider = ({ children }) => {
     // Загрузка данных при инициализации
     useEffect(() => {
         const loadAuthData = async () => {
-            try {
-                const storedCurrentRole = localStorage.getItem('currentRole');
-                const storedTrueRole = localStorage.getItem('trueRole');
-                const storedEmail = localStorage.getItem('email');
-                const storedSemId = localStorage.getItem('currentSemId');
+    try {
+        const storedCurrentRole = localStorage.getItem('currentRole');
+        const storedTrueRole = localStorage.getItem('trueRole');
+        const storedEmail = localStorage.getItem('email');
+        const storedSemId = localStorage.getItem('currentSemId');
 
-                if (storedCurrentRole) setCurrentRole(storedCurrentRole);
-                if (storedTrueRole) setTrueRole(storedTrueRole);
-                if (storedEmail) setEmail(storedEmail);
-                if (storedSemId) setCurrentSemId(storedSemId);
-            } catch (error) {
-                console.error('Ошибка загрузки данных:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+        if (storedTrueRole) setTrueRole(storedTrueRole);
+        if (storedEmail) setEmail(storedEmail);
+
+        // Для admin-student восстанавливаем сохранённую роль
+        if (storedTrueRole === 'admin-student' && storedCurrentRole) {
+            setCurrentRole(storedCurrentRole);
+        }
+        // Для обычных пользователей
+        else if (storedCurrentRole) {
+            setCurrentRole(storedCurrentRole);
+        }
+
+        // Устанавливаем semId только для студентов
+        if (storedSemId && storedCurrentRole === 'student') {
+            setCurrentSemId(storedSemId);
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки данных:', error);
+    } finally {
+        setLoading(false);
+    }
+};
 
         loadAuthData();
     }, []);
 
     const loginAs = async (userEmail) => {
-        try {
-            const [admin, student, semester] = await Promise.all([
-                isAdmin(userEmail),
-                isStudent(userEmail),
-                isSingleActiveSemester()
-            ]);
+    try {
+        const [admin, student, semester] = await Promise.all([
+            isAdmin(userEmail),
+            isStudent(userEmail),
+            isSingleActiveSemester()
+        ]);
 
-            console.log('semAuth in auth', semester);
+        console.log('semAuth in auth', semester);
 
-            if (!semester) {
-                throw new Error('Активный семестр не найден');
-            }
+        const roleGroup = admin
+            ? (student ? 'admin-student' : 'admin')
+            : 'student';
 
-            const roleGroup = admin 
-                ? (student ? 'admin-student' : 'admin')
-                : 'student';
+        const resolvedRole = admin ? 'admin' : 'student';
 
-            const resolvedRole = admin ? 'admin' : 'student';
-
-            // Обновляем состояние
-            setTrueRole(roleGroup);
-            setCurrentRole(resolvedRole);
-            setEmail(userEmail);
-            setCurrentSemId(semester.id);
-
-            // Сохраняем в localStorage
-            localStorage.setItem('trueRole', roleGroup);
-            localStorage.setItem('currentRole', resolvedRole);
-            localStorage.setItem('email', userEmail);
-            localStorage.setItem('currentSemId', semester.id);
-
-            return resolvedRole;
-        } catch (error) {
-            console.error('Ошибка входа:', error);
-            throw error; // Пробрасываем ошибку для обработки в компоненте
+        // Проверяем семестр только для студентов (после определения роли)
+        if (resolvedRole === 'student' && !semester) {
+            throw new Error('Активный семестр не найден');
         }
-    };
+
+        // Обновляем состояние
+        setTrueRole(roleGroup);
+        setCurrentRole(resolvedRole);
+        setEmail(userEmail);
+        setCurrentSemId(resolvedRole === 'student' ? semester?.id : null);
+
+        // Сохраняем в localStorage
+        localStorage.setItem('trueRole', roleGroup);
+        localStorage.setItem('currentRole', resolvedRole);
+        localStorage.setItem('email', userEmail);
+        localStorage.setItem('currentSemId', resolvedRole === 'student' ? semester?.id : '');
+
+        return resolvedRole;
+    } catch (error) {
+        console.error('Ошибка входа:', error);
+        throw error;
+    }
+};
+
+    const switchRole = (newRole) => {
+    if (trueRole === 'admin-student') {
+        setCurrentRole(newRole);
+        localStorage.setItem('currentRole', newRole);
+
+        // Обновляем семестр при переключении на студента
+        if (newRole === 'student') {
+            isSingleActiveSemester().then(semester => {
+                if (semester) {
+                    setCurrentSemId(semester.id);
+                    localStorage.setItem('currentSemId', semester.id);
+                }
+            });
+        } else {
+            // Очищаем семестр при переключении на админа
+            setCurrentSemId(null);
+            localStorage.setItem('currentSemId', '');
+        }
+    }
+};
 
     const logout = () => {
         setTrueRole(null);
@@ -81,13 +115,15 @@ export const AuthProvider = ({ children }) => {
         localStorage.clear();
     };
 
+
     return (
         <AuthContext.Provider value={{
             trueRole,
             currentRole,
             setCurrentRole,
             email,
-            currentSemId, // Теперь передаём только ID
+            currentSemId,
+            switchRole,
             loginAs,
             logout,
             loading

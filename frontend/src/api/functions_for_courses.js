@@ -88,15 +88,40 @@ export const uniquePrograms = async () => {
     try {
         const { data, error } = await supabase
             .from('groups_electives')
-            .select('student_group');
+            .select('student_group, year');
 
         if (error) throw error;
 
-        const programList = Array.from(
-            new Set(data.map(item => item.student_group).filter(Boolean))
+        // Создаем уникальные комбинации "student_group + year"
+        const uniqueCombinations = Array.from(
+            new Set(data
+                .filter(item => item.student_group && item.year)
+                .map(item => `${item.year} ${item.student_group}`)
+            )
         );
 
-        return programList;
+        return uniqueCombinations;
+    } catch (error) {
+        console.error("Couldn't return programs", error.message);
+        throw error;
+    }
+};
+
+export const getProgramsTitles = async () => {
+    try {
+        const { data, error } = await supabase
+            .from('groups_electives')
+            .select('student_group');
+        console.log('programs', data)
+
+        if (error) throw error;
+
+        const uniquePrograms = [...new Set(
+            data.map(item => item.student_group).filter(Boolean)
+        )];
+
+        console.log('Unique programs:', uniquePrograms);
+        return uniquePrograms;
     } catch (error) {
         console.error("Couldn't return programs", error.message);
         throw error;
@@ -121,71 +146,6 @@ export const deleteCourse = async (courseId) => {
     return { error };
   }
 };
-
-
-/**
- * Fetches and filters courses based on students' academic group
- * @param {Object} options - Configuration options
- * @param {string} [options.email] - User email for program filtering
- * @param {boolean} [options.allCourses=false] - If true, returns all courses without program filtering
- * @returns {Promise<Array>} - Filtered array of courses
- */
-export async function fetchCourses(email, allCourses = false) {
-  try {
-    let query = supabase
-      .from('catalogue')
-      .select('*');
-
-    if (!allCourses && email) {
-      const userProgram = await getUserProgram(email);
-      const userYear = await getUserYear(email);
-
-      if (!userProgram || !userYear) {
-        console.warn('User data not found for', email);
-        return [];
-      }
-
-      query = query
-        .contains('program', [userProgram])
-        .contains('years', [userYear])
-        .eq('archived', false);
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-
-    let resultData = Array.isArray(data) ? data : [];
-
-    if (!allCourses && email) {
-      const { data: historyData, error: historyError } = await supabase
-        .from('history')
-        .select('course')
-        .eq('email', email);
-
-      if (!historyError && historyData) {
-        const completedCourses = historyData
-          .filter(item => item.course !== null)
-          .map(item => item.course);
-
-        resultData = resultData.filter(course =>
-          !completedCourses.includes(course.title)
-        );
-      }
-    }
-
-    if (allCourses) {
-      resultData.sort((a, b) =>
-        a.archived === b.archived ? 0 : a.archived ? 1 : -1
-      );
-    }
-
-    return resultData;
-
-  } catch (error) {
-    console.error('Error fetching courses:', error);
-    return [];
-  }
-}
 
 /**
 * Toggles the status of the course (archived/unarchived)
@@ -240,3 +200,87 @@ export async function unarchiveCourse(courseId) {
         return null;
     }
 };
+
+export async function fetchCourses(email, allCourses = false, semesterId) {
+  try {
+    let query = supabase
+      .from('catalogue')
+      .select('*');
+
+    if (!allCourses && email) {
+      const userProgram = await getUserProgram(email);
+      const userYear = await getUserYear(email);
+
+      if (!userProgram || !userYear) {
+        console.warn('User data not found for', email);
+        return [];
+      }
+
+      query = query
+        .contains('program', [userProgram])
+        .contains('years', [userYear])
+        .eq('archived', false);
+    }
+
+    // First get the semester courses if semesterId is provided
+    if (semesterId && !allCourses) {
+      const semesterCourses = await getSemesterCourses(semesterId);
+      if (semesterCourses.length === 0) return [];
+      query = query.in('id', semesterCourses);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    let resultData = Array.isArray(data) ? data : [];
+
+    if (allCourses) {
+      resultData.sort((a, b) =>
+        a.archived === b.archived ? 0 : a.archived ? 1 : -1
+      );
+    }
+
+    if (!allCourses && email) {
+      const { data: historyData, error: historyError } = await supabase
+        .from('history')
+        .select('course')
+        .eq('email', email);
+
+      if (!historyError && historyData) {
+        const completedCourses = historyData
+          .filter(item => item.course !== null)
+          .map(item => item.course);
+
+        resultData = resultData.filter(course =>
+          !completedCourses.includes(course.title)
+        );
+      }
+    }
+
+    return resultData;
+
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    return [];
+  }
+}
+
+export async function getSemesterCourses(semesterId) {
+  try {
+    const { data: semester, error: semesterError } = await supabase
+      .from('semesters')
+      .select('courses')
+      .eq('id', semesterId)
+      .single();
+
+    if (semesterError || !semester) {
+      throw new Error(semesterError?.message || 'Семестр не найден');
+    }
+    console.log('Courses from semester:', semester.courses);
+    return semester.courses || [];
+
+  } catch (error) {
+    console.error('Ошибка при получении курсов семестра:', error.message);
+    return [];
+  }
+}

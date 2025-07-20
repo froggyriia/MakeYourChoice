@@ -3,20 +3,22 @@ import { useCatalogueContext } from '../context/CatalogueContext';
 import { searchCoursesByTitle } from '../api/function_for_search';
 import { fetchCourses } from '../api/functions_for_courses';
 import styles from './FilterHeader.module.css';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const StudentSearchBar = () => {
     const [searchText, setSearchText] = useState('');
     const { catalogue } = useCatalogueContext();
     const { setCourses, email } = catalogue;
+    const { currentRole, email, currentSemId } = useAuth();
 
     useEffect(() => {
         const delayDebounce = setTimeout(async () => {
             try {
                 if (searchText.trim().length >= 3) {
-                    const results = await searchCoursesByTitle(searchText);
+                    const results = await searchCoursesByTitle(searchText, catalogue.courses);
                     setCourses(results);
                 } else if (searchText.trim() === '') {
-                    const allCourses = await fetchCourses(email, false); // student mode
+                    const allCourses = await fetchCourses(email, false, currentSemId); // student mode
                     setCourses(allCourses);
                 }
             } catch (err) {
