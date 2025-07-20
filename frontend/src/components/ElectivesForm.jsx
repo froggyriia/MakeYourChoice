@@ -51,7 +51,7 @@ export default function ElectivesForm({ type, onSubmit, onClear }) {
                 setFilteredCourses(filtered);
 
                 // Set number of electives based on program info
-                const count = type === 'tech' ? program.tech : program.hum;
+
                 const programCount = type === 'tech' ? program.tech : program.hum;
                 const coursesCount = filtered.length;
 
